@@ -34,6 +34,8 @@ public class Account {
     @Builder.Default
     private Gender gender = Gender.UNKNOWN;
 
+    private boolean status;
+
     private String avatarLink;
 
     private Date dateOfBirth;
@@ -94,6 +96,7 @@ public class Account {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", status='" + status + '\'' +
                 ", name='" + name + '\'' +
                 ", role=" + role +
                 ", gender=" + gender +
@@ -103,7 +106,6 @@ public class Account {
                 ", occupation='" + occupation + '\'' +
                 ", lastLogin=" + lastLogin +
                 ", loginCount=" + loginCount +
-                ", externalAccount=" + externalAccount +
                 '}';
     }
 }
