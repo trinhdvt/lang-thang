@@ -21,14 +21,21 @@ public class Notify {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     private String content;
+
     private Date notifyDate;
+
     private boolean isSeen;
 
     @Override
     public String toString() {
         return "Notify{" +
                 "id=" + id +
+                ", post=" + (post != null ? post.getId() : "null") +
                 ", content='" + content + '\'' +
                 ", notifyDate=" + notifyDate +
                 ", isSeen=" + isSeen +
