@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/doan_langthang
+    url: jdbc:mysql://localhost:3306/do-an-lang-thang
     username: root
     password: illusion
   jpa:
@@ -14,14 +14,13 @@ spring:
       max-file-size: 3MB
       max-request-size: 3MB
 
-
 cloud:
   aws:
     bucket:
       name: langthang-user-photos
     credentials:
-      access-key: AKIAUNGRYFYGATBT7VAZ
-      secret-key: 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
+      access-key:
+      secret-key:
     region:
       static: ap-southeast-1
     stack:
@@ -32,3 +31,11 @@ cloud:
 application:
   image:
     support-type: image/png,image/jpg,image/jpeg
+
+security:
+  jwt:
+    token:
+      prefix: Bearer
+      secret-key: WeAreBrother
+      expire-length: 100000
+
