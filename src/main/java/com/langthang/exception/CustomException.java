@@ -1,16 +1,23 @@
 package com.langthang.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
-import java.util.Date;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CustomException {
-    private String message;
-    private int status;
-    private Date timestamp;
+public class CustomException extends RuntimeException {
+    private final String message;
+    private final HttpStatus httpStatus;
+
+    public CustomException(String message, HttpStatus httpStatus) {
+        this.message = message;
+        this.httpStatus = httpStatus;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
 }
