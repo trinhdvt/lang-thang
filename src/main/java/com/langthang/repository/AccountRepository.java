@@ -7,5 +7,5 @@ public interface AccountRepository extends CrudRepository<Account, Integer> {
 
     Account findByEmail(String email);
 
-    Account findByEmailAndStatus(String email, boolean status);
+    Account findByEmailAndEnabled(String email, boolean enabled);
 }
