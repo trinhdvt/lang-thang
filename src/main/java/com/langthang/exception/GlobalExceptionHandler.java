@@ -46,9 +46,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolation() {
+    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
         CustomResponse customResponse = new CustomResponse();
-        customResponse.setMessage("Not support file type");
+        customResponse.setMessage(ex.getMessage());
         customResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
