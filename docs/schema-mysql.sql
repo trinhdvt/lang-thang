@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 8.0.22, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.22, for macos10.15 (x86_64)
 --
--- Host: localhost    Database: doan_langthang
+-- Host: localhost    Database: do-an-lang-thang
 -- ------------------------------------------------------
 -- Server version	8.0.22
 
@@ -24,21 +24,21 @@ DROP TABLE IF EXISTS `account`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `account` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(100) COLLATE utf8_bin NOT NULL,
-  `password` varchar(64) COLLATE utf8_bin NOT NULL,
-  `role` enum('ROLE_MEMBER','ROLE_ADMIN') COLLATE utf8_bin NOT NULL DEFAULT 'ROLE_MEMBER',
-  `name` varchar(45) COLLATE utf8_bin NOT NULL,
-  `avatar_link` varchar(100) COLLATE utf8_bin DEFAULT NULL,
-  `gender` enum('MALE','FEMALE','UNKNOWN') COLLATE utf8_bin DEFAULT 'UNKNOWN',
+  `email` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `password` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `role` enum('ROLE_MEMBER','ROLE_ADMIN') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'ROLE_MEMBER',
+  `name` varchar(45) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `avatar_link` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `gender` enum('MALE','FEMALE','UNKNOWN') CHARACTER SET utf8 COLLATE utf8_bin DEFAULT 'UNKNOWN',
   `date_of_birth` timestamp NULL DEFAULT NULL,
-  `status` tinyint(1) DEFAULT '1',
-  `about` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `occupation` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT '0',
+  `about` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `occupation` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `last_login` timestamp NULL DEFAULT NULL,
   `login_count` int DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,7 +47,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'trinhvideo123@gmail.com','illusion','ROLE_MEMBER','Do Van Trinh',NULL,'MALE',NULL,1,NULL,NULL,NULL,0),(3,'trinhdvtdut@gmail.com','aloaloalo','ROLE_MEMBER','trinhdvt',NULL,'UNKNOWN',NULL,1,NULL,NULL,NULL,NULL),(4,'trinhdvt2@gmail.com','sasdads','ROLE_MEMBER','rinhdvt2',NULL,'UNKNOWN',NULL,1,NULL,NULL,NULL,0);
+INSERT INTO `account` VALUES (1,'trinhvideo123@gmail.com','illusion','ROLE_MEMBER','Do Van Trinh',NULL,'MALE',NULL,1,NULL,NULL,NULL,0),(4,'trinhdvt2@gmail.com','$2y$12$sKFaPa7bJIinQVa2jcjlJuto9a3uefnZkFxLgqmihms497cvP7CMC','ROLE_MEMBER','rinhdvt2',NULL,'UNKNOWN',NULL,1,NULL,NULL,NULL,0),(5,'nguyenthanhdung@gmail.com','$2y$12$xwLxjereG2G/ISludIOE.Ov07dxpP33yodlM3H7F6PTZP1stbZIwW ','ROLE_MEMBER','Nguyễn Thanh Dũng',NULL,'MALE',NULL,1,NULL,NULL,NULL,0),(6,'lecanhkieuoanh@gmail.com','$2y$12$Hx9Ed/e1X5I8lDX5ni5xVuDfiubICcclMS.70KJA1n0AqA48LSbpC','ROLE_MEMBER','Lê Cảnh Kiều Oanh',NULL,'FEMALE',NULL,1,NULL,NULL,NULL,0),(7,'phamvantanh@gmail.com','$2y$12$3Pjh4T74xnMr0.Qmtv9PGeGzpEMOvRjWinDcTILS.lbAnpyYhBfQy','ROLE_MEMBER','Phạm Văn Tánh',NULL,'MALE',NULL,1,NULL,NULL,NULL,0),(14,'congphatoan@gmail.com','$2a$12$M4OvnPo8x96J1dHavefuvOw2rR5FFNekEDI0PnVbae9Rb8PAquKMa','ROLE_MEMBER','Công Phá Toán',NULL,'UNKNOWN',NULL,1,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -76,7 +76,7 @@ CREATE TABLE `bookmarked_post` (
 
 LOCK TABLES `bookmarked_post` WRITE;
 /*!40000 ALTER TABLE `bookmarked_post` DISABLE KEYS */;
-INSERT INTO `bookmarked_post` VALUES (1,1,'2021-04-22 09:46:11'),(3,1,'2021-04-22 17:37:37'),(4,1,'2021-04-22 17:40:58');
+INSERT INTO `bookmarked_post` VALUES (1,1,'2021-04-22 09:46:11'),(4,1,'2021-04-22 17:40:58');
 /*!40000 ALTER TABLE `bookmarked_post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +89,7 @@ DROP TABLE IF EXISTS `category`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(45) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `category_name_UNIQUE` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -115,7 +115,7 @@ CREATE TABLE `comment` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `post_id` int unsigned NOT NULL,
   `account_id` int unsigned NOT NULL,
-  `content` varchar(255) COLLATE utf8_bin NOT NULL,
+  `content` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `comment_date` timestamp NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_comment_idx` (`account_id`),
@@ -131,7 +131,7 @@ CREATE TABLE `comment` (
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-INSERT INTO `comment` VALUES (1,1,1,'Comment 1','2021-04-22 20:53:32'),(2,1,3,'Comment 1 / 3','2021-04-22 20:53:43'),(3,1,1,'Comment 2','2021-04-22 20:53:53');
+INSERT INTO `comment` VALUES (1,1,1,'Comment 1','2021-04-22 20:53:32'),(3,1,1,'Comment 2','2021-04-22 20:53:53');
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,7 +159,7 @@ CREATE TABLE `comment_like` (
 
 LOCK TABLES `comment_like` WRITE;
 /*!40000 ALTER TABLE `comment_like` DISABLE KEYS */;
-INSERT INTO `comment_like` VALUES (1,1),(2,1),(3,1);
+INSERT INTO `comment_like` VALUES (1,1),(3,1);
 /*!40000 ALTER TABLE `comment_like` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,8 +172,8 @@ DROP TABLE IF EXISTS `external_account`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `external_account` (
   `account_id` int unsigned NOT NULL,
-  `fb_link` char(100) COLLATE utf8_bin DEFAULT NULL,
-  `instagram_link` char(100) COLLATE utf8_bin DEFAULT NULL,
+  `fb_link` char(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `instagram_link` char(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`account_id`),
   CONSTRAINT `acc_external_acc` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -213,7 +213,7 @@ CREATE TABLE `following_relationship` (
 
 LOCK TABLES `following_relationship` WRITE;
 /*!40000 ALTER TABLE `following_relationship` DISABLE KEYS */;
-INSERT INTO `following_relationship` VALUES (1,3,'2021-04-17 09:02:53'),(1,4,'2021-04-17 10:14:43');
+INSERT INTO `following_relationship` VALUES (1,4,'2021-04-17 10:14:43');
 /*!40000 ALTER TABLE `following_relationship` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -227,7 +227,7 @@ DROP TABLE IF EXISTS `notify`;
 CREATE TABLE `notify` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `account_id` int unsigned NOT NULL,
-  `content` text COLLATE utf8_bin,
+  `content` text CHARACTER SET utf8 COLLATE utf8_bin,
   `notify_date` timestamp NULL DEFAULT NULL,
   `is_seen` tinyint(1) NOT NULL DEFAULT '0',
   `post_id` int unsigned DEFAULT NULL,
@@ -250,6 +250,34 @@ INSERT INTO `notify` VALUES (1,1,'Day la 1 notify','2021-04-17 16:54:04',0,NULL)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `password_reset_token`
+--
+
+DROP TABLE IF EXISTS `password_reset_token`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `password_reset_token` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `token` text,
+  `account_id` int unsigned DEFAULT NULL,
+  `expire_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `passresetoken_account_idx` (`account_id`),
+  CONSTRAINT `passresetoken_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `password_reset_token`
+--
+
+LOCK TABLES `password_reset_token` WRITE;
+/*!40000 ALTER TABLE `password_reset_token` DISABLE KEYS */;
+INSERT INTO `password_reset_token` VALUES (1,'522f9a3f-6015-4f05-9b16-9bdeab33ad18',14,'2021-05-05 08:42:24');
+/*!40000 ALTER TABLE `password_reset_token` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `post`
 --
 
@@ -259,11 +287,11 @@ DROP TABLE IF EXISTS `post`;
 CREATE TABLE `post` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `account_id` int unsigned NOT NULL,
-  `title` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `content` text COLLATE utf8_bin,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `content` text CHARACTER SET utf8 COLLATE utf8_bin,
   `published_date` timestamp NULL DEFAULT NULL,
   `last_modified` timestamp NULL DEFAULT NULL,
-  `post_thumbnail` char(100) COLLATE utf8_bin DEFAULT NULL,
+  `post_thumbnail` char(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `status` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `user_post_idx` (`account_id`),
@@ -320,9 +348,9 @@ CREATE TABLE `post_report` (
   `account_id` int unsigned NOT NULL,
   `post_id` int unsigned NOT NULL,
   `reported_date` timestamp NULL DEFAULT NULL,
-  `content` text COLLATE utf8_bin,
+  `content` text CHARACTER SET utf8 COLLATE utf8_bin,
   `is_solved` tinyint(1) DEFAULT '0',
-  `decision` text COLLATE utf8_bin,
+  `decision` text CHARACTER SET utf8 COLLATE utf8_bin,
   PRIMARY KEY (`id`),
   KEY `user_report_idx` (`account_id`),
   KEY `posrt_report_idx` (`post_id`),
@@ -395,6 +423,57 @@ INSERT INTO `post_tag` VALUES (1,1),(1,2);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `refresh_token`
+--
+
+DROP TABLE IF EXISTS `refresh_token`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `refresh_token` (
+  `email` varchar(100) NOT NULL,
+  `token` varchar(100) NOT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `refresh_token`
+--
+
+LOCK TABLES `refresh_token` WRITE;
+/*!40000 ALTER TABLE `refresh_token` DISABLE KEYS */;
+INSERT INTO `refresh_token` VALUES ('congphatoan@gmail.com','JQ9va5bbd53V3w=='),('trinhdvt2@gmail.com','Rn7qa1uMXQHVfw==');
+/*!40000 ALTER TABLE `refresh_token` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `register_token`
+--
+
+DROP TABLE IF EXISTS `register_token`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `register_token` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `token` text,
+  `account_id` int unsigned DEFAULT NULL,
+  `expire_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `verify_token_account_idx` (`account_id`),
+  CONSTRAINT `verify_token_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `register_token`
+--
+
+LOCK TABLES `register_token` WRITE;
+/*!40000 ALTER TABLE `register_token` DISABLE KEYS */;
+/*!40000 ALTER TABLE `register_token` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tag`
 --
 
@@ -403,7 +482,7 @@ DROP TABLE IF EXISTS `tag`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tag` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `tag_name` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `tag_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `tag_name_UNIQUE` (`tag_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -428,4 +507,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-04-30 22:37:56
+-- Dump completed on 2021-05-04 20:10:31
