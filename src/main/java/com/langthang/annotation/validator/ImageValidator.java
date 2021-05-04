@@ -1,5 +1,6 @@
-package com.langthang.annotation;
+package com.langthang.annotation.validator;
 
+import com.langthang.annotation.ValidImage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 

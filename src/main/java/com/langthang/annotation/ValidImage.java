@@ -1,5 +1,7 @@
 package com.langthang.annotation;
 
+import com.langthang.annotation.validator.ImageValidator;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.ElementType;
