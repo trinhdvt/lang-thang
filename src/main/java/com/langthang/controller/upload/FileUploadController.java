@@ -1,7 +1,7 @@
 package com.langthang.controller.upload;
 
 import com.langthang.annotation.ValidImage;
-import com.langthang.services.StorageServices;
+import com.langthang.services.IStorageServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 public class FileUploadController {
 
-    private final StorageServices storageServices;
+    private final IStorageServices storageServices;
 
     @Autowired
-    public FileUploadController(StorageServices storageServices) {
-        this.storageServices = storageServices;
+    public FileUploadController(IStorageServices IStorageServices) {
+        this.storageServices = IStorageServices;
     }
 
     /**
