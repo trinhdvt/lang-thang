@@ -13,6 +13,17 @@ spring:
     multipart:
       max-file-size: 3MB
       max-request-size: 3MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 cloud:
   aws:
