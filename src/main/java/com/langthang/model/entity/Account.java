@@ -34,7 +34,8 @@ public class Account {
     @Builder.Default
     private Gender gender = Gender.UNKNOWN;
 
-    private boolean status;
+    @Builder.Default
+    private boolean enabled = false;
 
     private String avatarLink;
 
@@ -96,7 +97,7 @@ public class Account {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", status='" + status + '\'' +
+                ", status='" + enabled + '\'' +
                 ", name='" + name + '\'' +
                 ", role=" + role +
                 ", gender=" + gender +
