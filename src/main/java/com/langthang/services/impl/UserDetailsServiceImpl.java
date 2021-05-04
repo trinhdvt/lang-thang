@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -21,19 +23,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account acc = accRepo.findByEmailAndStatus(email, true);
+        Account acc = accRepo.findByEmail(email);
 
         if (acc == null) {
-            throw new UsernameNotFoundException("User " + email + " not found!");
+            throw new UsernameNotFoundException("Account with " + email + " not found!");
         }
 
-        return User.withUsername(email)
-                .password(acc.getPassword())
-                .authorities(acc.getRole())
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .disabled(false)
-                .build();
+        return new User(acc.getEmail()
+                , acc.getPassword()
+                , acc.isEnabled()
+                , true
+                , true
+                , true,
+                Collections.singleton(acc.getRole()));
     }
 }
