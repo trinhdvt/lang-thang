@@ -1,16 +1,19 @@
 package com.langthang.event.listener;
 
+import com.langthang.event.OnRegisterWithGoogle;
 import com.langthang.event.OnRegistrationEvent;
 import com.langthang.event.OnResetPasswordEvent;
 import com.langthang.model.entity.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class SpringEventListener {
 
     @Autowired
@@ -43,5 +46,14 @@ public class SpringEventListener {
         mailSender.sendResetPasswordEmail(event.getAppUrl()
                 , token
                 , account);
+    }
+
+    @EventListener
+    @Async
+    public void handleRegisterWithGoogle(OnRegisterWithGoogle event) {
+        Account account = event.getAccount();
+        String rawPassword = event.getRawPassword();
+
+        mailSender.sendCreatedAccountEmail(account, rawPassword);
     }
 }
