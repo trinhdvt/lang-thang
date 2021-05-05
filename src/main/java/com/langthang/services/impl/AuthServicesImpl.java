@@ -171,7 +171,47 @@ public class AuthServicesImpl implements IAuthServices {
         accountRepository.save(account);
     }
 
-    private boolean isEmailExist(String email) {
-        return accountRepository.findByEmail(email) != null;
+    @Override
+    public Account saveCreatedGoogleAccount(Account tmpAcc) {
+        tmpAcc.setPassword(passwordEncoder.encode(tmpAcc.getPassword()));
+
+        return accountRepository.save(tmpAcc);
+    }
+
+    @Override
+    public Account createAccountUseGoogleToken(String idToken) {
+        try {
+            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
+            if (googleIdToken != null) {
+                return googleTokenToAccount(googleIdToken);
+            } else {
+                throw new CustomException("Verify Google Token failed"
+                        , HttpStatus.BAD_REQUEST);
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CustomException("Invalid Google Token"
+                    , HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private Account googleTokenToAccount(GoogleIdToken googleIdToken) {
+        Payload payload = googleIdToken.getPayload();
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String avatarLink = (String) payload.get("picture");
+
+        return Account.builder()
+                .email(email)
+                .password(getRandomPassword())
+                .name(name)
+                .avatarLink(avatarLink)
+                .enabled(true)
+                .build();
+    }
+
+    private String getRandomPassword() {
+        byte[] arr = new byte[10];
+        new Random().nextBytes(arr);
+        return Base64.getEncoder().encodeToString(arr);
     }
 }
