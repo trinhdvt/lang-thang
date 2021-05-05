@@ -25,6 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.info("UserDetailService is looking for: " + email);
         Account acc = accRepo.findByEmail(email);
 
         if (acc == null) {
