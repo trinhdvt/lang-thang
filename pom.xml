@@ -25,6 +25,7 @@
         <spring.context.version>5.3.6</spring.context.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
+        <google.api.version>1.31.4</google.api.version>
     </properties>
 
     <dependencies>
@@ -103,6 +104,11 @@
             <version>${jwt.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>${google.api.version}</version>
+        </dependency>
 
     </dependencies>
 
