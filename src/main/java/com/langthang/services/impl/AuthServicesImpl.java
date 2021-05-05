@@ -57,12 +57,20 @@ public class AuthServicesImpl implements IAuthServices {
     private GoogleIdTokenVerifier googleIdTokenVerifier;
 
     @Override
-    public String signIn(String email, String password, HttpServletResponse resp) {
+    public String login(String email, String password, HttpServletResponse resp) {
         try {
-            authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            if (password != null) {
+                authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            }
 
             String jwtToken = jwtTokenServices.createToken(email,
                     accountRepository.findByEmailAndEnabled(email, true).getRole());
+
+            // Password will be null when user log in with Google Account
+            if (password == null) {
+                Authentication auth = jwtTokenServices.getAuthentication(jwtToken);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
 
             jwtTokenServices.addRefreshTokenCookie(email, resp);
 
@@ -92,9 +100,16 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public Account registerNewAccount(UserDTO userDTO) {
-        if (isEmailExist(userDTO.getEmail())) {
-            throw new CustomException("There is an account with that email address: " + userDTO.getEmail()
-                    , HttpStatus.CONFLICT);
+        Account existAcc = accountRepository.findByEmail(userDTO.getEmail());
+
+        if (existAcc != null) {
+            if (existAcc.isEnabled()) {
+                throw new CustomException("There is an account with that email address: " + userDTO.getEmail()
+                        , HttpStatus.CONFLICT);
+            } else if (!existAcc.isEnabled()) {
+                throw new CustomException("Please check your email to verify your account!"
+                        , HttpStatus.UNAUTHORIZED);
+            }
         }
 
         Account account = new Account();
