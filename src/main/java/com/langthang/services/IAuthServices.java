@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface IAuthServices {
-    String signIn(String email, String password, HttpServletResponse resp);
+    String login(String email, String password, HttpServletResponse resp);
 
     String refreshToken(String clientToken, HttpServletRequest req, HttpServletResponse resp);
 
@@ -29,4 +29,8 @@ public interface IAuthServices {
     Account findAccountByPasswordResetToken(String token);
 
     void changeAccountPassword(Account account, String newPassword);
+
+    Account saveCreatedGoogleAccount(Account tmpAcc);
+
+    Account createAccountUseGoogleToken(String googleIdToken);
 }
