@@ -1,5 +1,8 @@
 package com.langthang.services.impl;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.langthang.dto.UserDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
@@ -21,7 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.Calendar;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -45,6 +52,9 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private GoogleIdTokenVerifier googleIdTokenVerifier;
 
     @Override
     public String signIn(String email, String password, HttpServletResponse resp) {
