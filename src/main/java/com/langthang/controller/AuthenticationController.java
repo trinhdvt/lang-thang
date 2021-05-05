@@ -3,11 +3,13 @@ package com.langthang.controller;
 import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.ResetPasswordDTO;
 import com.langthang.dto.UserDTO;
+import com.langthang.event.OnRegisterWithGoogle;
 import com.langthang.event.OnRegistrationEvent;
 import com.langthang.event.OnResetPasswordEvent;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.RegisterToken;
 import com.langthang.services.IAuthServices;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,10 @@ import javax.validation.constraints.NotBlank;
 @Validated
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthenticationController {
+
+    private static final String BASE_URL = "/auth";
 
     @Autowired
     private IAuthServices authServices;
@@ -36,9 +41,43 @@ public class AuthenticationController {
             @RequestParam("email") @ValidEmail String email,
             @RequestParam("password") String password,
             HttpServletResponse resp) {
+        log.info("Begin of login");
 
-        String jwtToken = authServices.signIn(email, password, resp);
+        String jwtToken = authServices.login(email, password, resp);
+
+        log.info("End of login");
         return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<Object> loginWithGoogle(
+            @RequestParam("google_token")
+            @NotBlank String googleToken
+            , HttpServletResponse resp) {
+
+        log.info("Begin validate google token and create an account");
+        Account tmpAcc = authServices.createAccountUseGoogleToken(googleToken);
+
+        log.info("Create account email: " + tmpAcc.getEmail());
+
+        log.info("Checking in database");
+        Account existingAcc = authServices.findAccountByEmail(tmpAcc.getEmail());
+
+        if (existingAcc != null) {
+            log.info("Account is already exist, just login");
+            log.info("Password: " + existingAcc.getPassword());
+            return login(existingAcc.getEmail(), null, resp);
+
+        } else {
+            log.info("Publish an event to sending email");
+            eventPublisher.publishEvent(new OnRegisterWithGoogle(tmpAcc, tmpAcc.getPassword()));
+
+            log.info("Save account to database");
+            Account savedAcc = authServices.saveCreatedGoogleAccount(tmpAcc);
+
+            log.info("Login done!");
+            return login(savedAcc.getEmail(), null, resp);
+        }
     }
 
     @PostMapping("/refreshToken")
@@ -117,7 +156,7 @@ public class AuthenticationController {
 
     /*----------------NON-API----------------*/
     private String getAppUrl(HttpServletRequest req) {
-        return "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
+        return "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + BASE_URL;
     }
 
 }
