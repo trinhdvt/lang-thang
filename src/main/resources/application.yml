@@ -9,6 +9,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  #        generate_statistics: true
   servlet:
     multipart:
       max-file-size: 3MB
@@ -49,4 +50,6 @@ security:
       prefix: Bearer
       secret-key: WeAreBrother
       expire-length: 100000
-
+  oauth2:
+    google:
+      client-id: 545452035521-c4eljpuu1281eml2ci6kaud39s5kc9ct.apps.googleusercontent.com
