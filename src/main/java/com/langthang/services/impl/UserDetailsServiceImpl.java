@@ -2,6 +2,7 @@ package com.langthang.services.impl;
 
 import com.langthang.model.entity.Account;
 import com.langthang.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
+@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final AccountRepository accRepo;
@@ -28,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (acc == null) {
             throw new UsernameNotFoundException("Account with " + email + " not found!");
         }
-
+        log.info("Founded an account: " + acc);
         return new User(acc.getEmail()
                 , acc.getPassword()
                 , acc.isEnabled()
