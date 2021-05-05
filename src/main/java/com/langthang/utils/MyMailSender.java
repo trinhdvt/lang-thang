@@ -33,6 +33,17 @@ public class MyMailSender {
         sendEmail(acc.getEmail(), subject, message);
     }
 
+    public void sendCreatedAccountEmail(Account acc, String rawPassword) {
+        String subject = "Login with Google";
+
+        String message = "We have created a account for you based on your google public info \r\n"
+                + "Please use this account to login and changed your password:\r\n"
+                + "- Email: " + acc.getEmail() + "\r\n"
+                + "- Password: " + rawPassword;
+
+        sendEmail(acc.getEmail(), subject, message);
+    }
+
     private void sendEmail(String recipient, String subject, String message) {
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipient);
