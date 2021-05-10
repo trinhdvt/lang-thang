@@ -76,7 +76,7 @@ Trả về token hợp lệ
 * **Request Params**
 
   | Name         | Type     | Description          |
-  | ----------   |:------:  | ------------         |
+      | ----------   |:------:  | ------------         |
   | `google_token`      | `string` | Google Token của người dùng |
 
 * **Success Response:**
