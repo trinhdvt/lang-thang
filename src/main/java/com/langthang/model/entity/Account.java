@@ -49,13 +49,12 @@ public class Account {
 
     private Integer loginCount;
 
-    @OneToOne(mappedBy = "account"
-            , cascade = CascadeType.ALL
-            , fetch = FetchType.LAZY)
-    private ExternalAccount externalAccount;
+    private String fbLink;
+
+    private String instagramLink;
 
     @OneToMany(mappedBy = "account"
-            , fetch = FetchType.EAGER
+            , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
     private Set<Post> posts;
 
@@ -65,7 +64,7 @@ public class Account {
     private Set<FollowingRelationship> following;
 
     @OneToMany(mappedBy = "account"
-            , fetch = FetchType.EAGER
+            , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
     private Set<Notify> notifies;
 
@@ -74,7 +73,7 @@ public class Account {
     private Set<PostReport> postReports;
 
     @OneToMany(mappedBy = "account"
-            , fetch = FetchType.EAGER)
+            , fetch = FetchType.LAZY)
     private Set<BookmarkedPost> bookmarkedPosts;
 
     @OneToMany(mappedBy = "account"
