@@ -13,6 +13,7 @@ import com.langthang.repository.PasswordResetTokenRepository;
 import com.langthang.repository.RegisterTokenRepository;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.JwtTokenServices;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 public class AuthServicesImpl implements IAuthServices {
 
     @Autowired
@@ -61,24 +63,27 @@ public class AuthServicesImpl implements IAuthServices {
     @Override
     public String login(String email, String password, HttpServletResponse resp) {
         try {
+
             if (password != null) {
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+                log.info("Authenticated with username = {} and password = {}", email, password);
             }
 
             String jwtToken = jwtTokenServices.createToken(email,
                     accountRepository.findByEmailAndEnabled(email, true).getRole());
-
+            log.info("Created token");
             // Password will be null when user log in with Google Account
             if (password == null) {
                 Authentication auth = jwtTokenServices.getAuthentication(jwtToken);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-
             jwtTokenServices.addRefreshTokenCookie(email, resp);
+            log.info("Added refresh-token to Cookie");
 
             return jwtToken;
 
         } catch (AuthenticationException e) {
+            log.info("Exception occurred {}", e.getMessage());
             throw new CustomException(e.getMessage()
                     , HttpStatus.UNPROCESSABLE_ENTITY);
         }
