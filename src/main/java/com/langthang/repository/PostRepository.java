@@ -45,6 +45,13 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "order by count(c.post.id) desc ")
     Page<PostResponseDTO> getPopularPostByCommentCount(Pageable pageable);
 
+    @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
+            "from Post p join BookmarkedPost bp on p.id=bp.post.id " +
+            "join Account a on a.id=bp.account.id " +
+            "where a.email=?1 and p.status=true " +
+            "order by bp.bookmarkedDate desc ")
+    Page<PostResponseDTO> getBookmarkedPostByAccount_Email(String accountEmail, Pageable pageable);
+
     /**
      * SQL query for this method is defined at {@link Post}
      *
