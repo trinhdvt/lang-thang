@@ -3,6 +3,7 @@ package com.langthang.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,12 +41,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/post/*").authenticated()
+                .antMatchers(HttpMethod.PUT, "/post/*").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/post/*").authenticated();
+
 //        http.authorizeRequests()
-//                .antMatchers("/login").permitAll()
+//                .antMatchers("/auth/login").permitAll()
 //                .anyRequest().authenticated();
 
         http.authorizeRequests().anyRequest().permitAll();
 
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
+
 }
