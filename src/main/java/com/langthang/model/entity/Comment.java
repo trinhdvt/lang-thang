@@ -1,9 +1,11 @@
 package com.langthang.model.entity;
 
 import lombok.*;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Builder
@@ -27,10 +29,25 @@ public class Comment {
     private Post post;
 
     @ManyToMany(mappedBy = "likedComments", fetch = FetchType.EAGER)
-    private Set<Account> likedAccounts;
+    private Set<Account> likedAccounts = new HashSet<>();
 
     private String content;
+
     private Date commentDate;
+
+    public Comment(Account account, Post post, String content) {
+        this.account = account;
+        this.post = post;
+        this.content = content;
+        this.commentDate = new Date();
+    }
+
+    @PrePersist
+    @PreUpdate
+    @PostUpdate
+    void encodeContent() {
+        this.content = HtmlUtils.htmlEscape(content);
+    }
 
     @Override
     public String toString() {
