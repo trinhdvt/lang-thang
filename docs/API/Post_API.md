@@ -3,8 +3,10 @@
 ## Table of contents
 
 * [Lấy danh sách các bài viết theo ngày đăng](#Lấy-ra-danh-sách-các-bài-viết-mới-nhất)
+* [Lấy ra danh sách các bài viết nổi bật](#Lấy-ra-danh-sách-các-bài-viết-nổi-bật)
 * [Lấy danh sách các bài viết theo từ khóa](#Tìm-kiếm-các-bài-viết-theo-tiêu-đề-và-nội-dung)
-* [Lấy thông tin chi tiết một bài viết](#Lấy-thông-tin-chi-tiết-của-một-bài-viết)
+* [Lấy thông tin chi tiết một bài viết bằng id](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-id)
+* [Lấy thông tin chi tiết một bài viết bằng slug](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-slug)
 * [Đăng tải bài viết](#Đăng-tải-một-bài-viết-mới-(public-luôn,-không-phải-nháp))
 * [Sửa bài viết](#sửa-bài-viết)
 * [Xóa (ẩn) bài viết](#Xóa-bài-viết-(thực-ra-là-ẩn-đi-thôi))
@@ -18,7 +20,7 @@
 ----
 Trả về 1 danh sách các bài viết được sắp xếp theo ngày đăng - `publishedDate`
 
-* **URL**: `/post/`
+* **URL**: `/post`
 
 * **Method:** `GET`
 
@@ -44,6 +46,7 @@ Trả về 1 danh sách các bài viết được sắp xếp theo ngày đăng 
         "postThumbnail": "https://xxx.yyy.zzz.jpg",
         "bookmarkedCount": 0,
         "commentCount": 0,
+        "slug": "Muc-so-thi-hon-dao-cua-nhung-nguoi-khong-lo-1m8-van-bi-coi-la-nguoi-lun-1620666139010"
     },
     {
         "postId": 26,
@@ -52,6 +55,7 @@ Trả về 1 danh sách các bài viết được sắp xếp theo ngày đăng 
         "postThumbnail": "https://xxx.yyy.zzz.jpg",
         "bookmarkedCount": 0,
         "commentCount": 0,
+        "slug": "Muc-so-thi-hon-dao-cua-nhung-nguoi-khong-lo-1m8-van-bi-coi-la-nguoi-lun-1620666139010"
     },
     {
         "postId": 1,
@@ -60,10 +64,70 @@ Trả về 1 danh sách các bài viết được sắp xếp theo ngày đăng 
         "postThumbnail": "https://xxx.yyy.zzz.jpg",
         "bookmarkedCount": 1,
         "commentCount": 4,
+        "slug": "Muc-so-thi-hon-dao-cua-nhung-nguoi-khong-lo-1m8-van-bi-coi-la-nguoi-lun-1620666139010"
     }]
   ```
 
 * **Error Response:** `Code != 200` là có lỗi
+
+## Lấy ra danh sách các bài viết nổi bật
+
+----
+Trả về 1 danh sách các bài viết được sắp xếp dựa theo số lượng `comment` hoặc số lượng `bookmark`
+
+* **URL**: `/post`
+
+* **Method:** `GET`
+
+* **Request Params**
+
+  | Name                | Type       | Description                                                    |
+  | ----------          |:------:    | ------------                                                   |
+  | `sort`              | `string`   | Tiêu chí để sắp xếp (hiện tại mới có `comment` và `bookmark`   |
+  | `size <optional>`   | `int >= 1` | Số lượng bài viết trả về (mặc định là 5)                       |
+
+* **Success Response:**
+
+    - **Code:** 200 
+      
+      **Content:** 1 danh sách các bài kèm theo các thông tin cơ bản
+
+    * **Example:** `GET /post?sort=bookmark` hoặc `GET /post?sort=bookmark&size=5`
+
+    ```json5
+    [{
+        "postId": 1,
+        "title": "Cảm nhận một xứ Huế dưới góc nhìn “cực chất” của cô nàng Kim Ngân đam mê xê dịch",
+        "slug": "Cam-nhan-mot-xu-Hue-duoi-goc-nhin-cuc-chat-cua-co-nang-Kim-Ngan-dam-me-xe-dich-1620666137954",
+        "publishedDate": "2021-05-06 14:57",
+        "postThumbnail": "https://dulichvietnam.com.vn/vnt_upload/news/05_2021/thumbs/kim_ngan__10.jpg",
+        "bookmarkedCount": 2,
+        "commentCount": 4,
+    },
+    {
+        "postId": 2,
+        "title": "&#039;Ghim&#039; ngay 8 homestay ở miền Trung giá rẻ dịp nghỉ lễ 30/4",
+        "slug": "039-Ghim-039-ngay-8-homestay-o-mien-Trung-gia-re-dip-nghi-le-30-4-1620666138057",
+        "publishedDate": "2021-05-06 14:57",
+        "postThumbnail": "https://dulichvietnam.com.vn/vnt_upload/news/04_2021/thumbs/Homestay_o_mien_Trung_171_1.jpg",
+        "bookmarkedCount": 1,
+        "commentCount": 1,
+    },
+    {
+        "postId": 3,
+        "title": "Bỏ túi 3 điểm đến ở Mũi Né để có ảnh check in &#039;mãn nhãn&#039; như cặp đôi Đồng Nai",
+        "slug": "Bo-tui-3-diem-den-o-Mui-Ne-de-co-anh-check-in-039-man-nhan-039-nhu-cap-doi-ong-Nai-1620666138106",
+        "publishedDate": "2021-05-06 14:57",
+        "postThumbnail": "https://dulichvietnam.com.vn/vnt_upload/news/10_2020/thumbs/du_lich_mui_ne_3_1_1.jpg",
+        "bookmarkedCount": 1,
+        "commentCount": 0,
+    }]
+  ```
+
+* **Error Response:**
+
+    * **Code**: 422 UNPROCESSABLE_ENTITY
+    * **Content**: Không hỗ trợ với thuộc tính này
 
 ## Tìm kiếm các bài viết theo tiêu đề và nội dung
 
@@ -84,7 +148,7 @@ Trả về 1 danh sách các bài viết với tiêu đề hoặc nội dung có
 
 * **Response:** Giống y như phần trên
 
-## Lấy thông tin chi tiết của một bài viết
+## Lấy thông tin chi tiết của một bài viết bằng id
 
 ----
 Trả về thông tin chi tiết của một bài viết
@@ -126,6 +190,7 @@ Trả về thông tin chi tiết của một bài viết
     "about": null,
     "occupation": null
   },
+  "slug": "Muc-so-thi-hon-dao-cua-nhung-nguoi-khong-lo-1m8-van-bi-coi-la-nguoi-lun-1620666139010",
   "content": "abcxyz",
   "bookmarked": true,
   "bookmarkedCount": 1,
@@ -168,13 +233,25 @@ Trả về thông tin chi tiết của một bài viết
   
     * **Code:** 404 NOT FOUND 
 
-    
+## Lấy thông tin chi tiết của một bài viết bằng slug
+
+----
+Trả về thông tin chi tiết của một bài viết
+
+* **URL**: `/post/{slug}`
+
+* **Method:** `GET`
+
+* **Header**: `Authorization: Bearer <token hiện tại hoặc rỗng (nếu như chưa đăng nhập)>`
+
+* **Response:** Xem lại phần trên
+
 ## Đăng tải một bài viết mới (public luôn, không phải nháp)
 
 ----
 Đăng tải một bài viết mới
 
-* **URL**: `/post/`
+* **URL**: `/post`
 
 * **Method:**: `POST`
 
@@ -196,14 +273,10 @@ Trả về thông tin chi tiết của một bài viết
       
 * **Error Response:**
 
-    * **Code:** 401 UNAUTHORIZED 
+    * **Code:** 401 FORBIDDEN 
       
-      **Lý do:** Public một bài viết từ một bản nháp không do mình sở hữu
-
-    * **Code:** 403 FORBIDDEN 
-      
-      **Lý do:** Chưa đăng nhập
-
+      **Lý do:** Chưa đăng nhập / public một bài viết từ một bản nháp không do mình sở hữu
+    
 ## Sửa bài viết
 
 ----
@@ -229,15 +302,10 @@ Sửa bài viết (`admin` không có quyền sửa)
 
 * **Error Response:**
 
-    * **Code:** 401 UNAUTHORIZED
-
-      **Lý do:** Bài viết không thuộc quyền sở hữu hoặc không tồn tại
-
     * **Code:** 403 FORBIDDEN
 
-      **Lý do:** Chưa đăng nhập
-    
-    
+      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
+
 ## Xóa bài viết (thực ra là ẩn đi thôi)
 
 ----
@@ -255,14 +323,14 @@ Sửa bài viết (`admin` không có quyền sửa)
 
 * **Error Response:**
 
-    * **Code:** 401 UNAUTHORIZED
+    * **Code:** 404 NOT_FOUND
 
-      **Lý do:** Bài viết không thuộc quyền sở hữu hoặc không tồn tại
+      **Lý do:** Bản nháp không tồn tại
 
     * **Code:** 403 FORBIDDEN
 
-      **Lý do:** Chưa đăng nhập
-
+      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
+    
 ## Lưu bản nháp
 
 ----
@@ -276,17 +344,16 @@ Lưu một bản nháp mới
 
 * **Request Body:**
 
-| Name         | Type     | Description          |
-| ----------   |:------:  | ------------         |
-| `title`      | `string` | Tên bài viết |
-| `content`      | `string` | Nội dung bài viết |
-| `postThumbnail`   | `string` |  Link ảnh đại diện cho bài viết           |
+| Name              | Type     | Description                        |
+| ----------        |:------:  | ------------                       |
+| `title`           | `string` | Tên bài viết                       |
+| `content`         | `string` | Nội dung bài viết                  |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết     |
 
 * **Success Response:**
 
     * **Code:** 202 ACCEPTED
-
-
+    
 * **Error Response:**
   
     * **Code:** 403 FORBIDDEN
@@ -322,18 +389,14 @@ Lấy ra một bản nháp
 ```
 
 * **Error Response:**
-  
-    * **Code:** 401 UNAUTHORIZED  
 
-      **Lý do:** Bản nháp không thuộc quyền sở hữu
-    
+    * **Code:** 404 NOT_FOUND
+
+      **Lý do:** Bản nháp không tồn tại
+
     * **Code:** 403 FORBIDDEN
 
-      **Lý do:** Chưa đăng nhập
-
-    * **Code:** 404 NOTFOUND
-
-      **Lý do:** Không tồn tại
+      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
 
 ## Sửa bản nháp
 
@@ -360,13 +423,9 @@ Sửa bản nháp của mình (`admin` không có quyền sửa)
 
 * **Error Response:**
 
-    * **Code:** 401 UNAUTHORIZED
-
-      **Lý do:** Bản nháp không thuộc quyền sở hữu hoặc không tồn tại
-
     * **Code:** 403 FORBIDDEN
 
-      **Lý do:** Chưa đăng nhập
+      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
 
     
 ## Xóa bản nháp (hiện tại là ẩn đi thôi, sau này là xóa luôn)
@@ -386,12 +445,12 @@ Xóa đi một bản nháp (`admin` không có quyền)
 
 * **Error Response:**
 
-    * **Code:** 401 UNAUTHORIZED
+    * **Code:** 404 NOT_FOUND
 
-      **Lý do:** Bản nháp không thuộc quyền sở hữu hoặc không tồn tại
+      **Lý do:** Bản nháp không tồn tại
 
     * **Code:** 403 FORBIDDEN
 
-      **Lý do:** Chưa đăng nhập
+      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
     
 
