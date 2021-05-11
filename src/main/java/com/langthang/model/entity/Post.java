@@ -7,6 +7,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -49,23 +50,24 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String title;
+
     private String content;
 
     private String slug;
 
     private Date publishedDate;
+
     private Date lastModified;
+
     private String postThumbnail;
+
+    private boolean status;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
-
-    @OneToOne(mappedBy = "post"
-            , fetch = FetchType.EAGER
-            , cascade = CascadeType.ALL)
-    private PostStats postStats;
 
     @OneToMany(mappedBy = "post"
             , fetch = FetchType.LAZY)
@@ -87,11 +89,19 @@ public class Post {
     )
     private Set<Category> postCategories;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<BookmarkedPost> bookmarkedPosts;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
-    private Set<Comment> comments;
+    @OrderBy("commentDate ASC")
+    private List<Comment> comments;
+
+    @PrePersist
+    @PreUpdate
+    public void encodeContentAndCreateSlug() {
+        content = HtmlUtils.htmlEscape(content);
+        slug = Utils.createSlug(title) + "-" + System.currentTimeMillis();
+    }
 
     @Override
     public String toString() {
@@ -102,7 +112,6 @@ public class Post {
                 ", publishedDate=" + publishedDate +
                 ", lastModified=" + lastModified +
                 ", postThumbnail='" + postThumbnail + '\'' +
-                ", postStats=" + postStats +
                 '}';
     }
 }
