@@ -3,6 +3,7 @@ package com.langthang.model.entity;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.utils.Utils;
 import lombok.*;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -50,6 +51,9 @@ public class Post {
     private Integer id;
     private String title;
     private String content;
+
+    private String slug;
+
     private Date publishedDate;
     private Date lastModified;
     private String postThumbnail;
