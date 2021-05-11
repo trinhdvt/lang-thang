@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Error</title>
+</head>
+<body>
+<h1><!--/*@thymesVar id="message" type="java.lang.String"*/-->
+    <span th:text="${message}"></span></h1>
+<!--/*@thymesVar id="link" type="java.lang.String"*/-->
+<div th:if="${token}">
+    <h4>Click
+        <a th:href="${link} +'?token='+${token}"> here </a>
+        to resend verify link</h4>
+</div>
+</body>
+</html>
