@@ -1,11 +1,14 @@
 package com.langthang.controller;
 
 import com.langthang.annotation.ValidEmail;
+import com.langthang.dto.JwtDTO;
 import com.langthang.dto.ResetPasswordDTO;
 import com.langthang.dto.UserDTO;
 import com.langthang.event.OnRegisterWithGoogle;
 import com.langthang.event.OnRegistrationEvent;
 import com.langthang.event.OnResetPasswordEvent;
+import com.langthang.exception.CustomException;
+import com.langthang.exception.CustomResponse;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.RegisterToken;
 import com.langthang.services.IAuthServices;
@@ -16,11 +19,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.HashMap;
+import java.util.Map;
 
 @Validated
 @RestController
@@ -46,7 +52,7 @@ public class AuthenticationController {
         String jwtToken = authServices.login(email, password, resp);
 
         log.info("End of login");
-        return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+        return ResponseEntity.ok(new JwtDTO(jwtToken));
     }
 
     @PostMapping("/google")
@@ -55,27 +61,17 @@ public class AuthenticationController {
             @NotBlank String googleToken
             , HttpServletResponse resp) {
 
-        log.info("Begin validate google token and create an account");
         Account tmpAcc = authServices.createAccountUseGoogleToken(googleToken);
 
-        log.info("Create account email: " + tmpAcc.getEmail());
-
-        log.info("Checking in database");
         Account existingAcc = authServices.findAccountByEmail(tmpAcc.getEmail());
 
         if (existingAcc != null) {
-            log.info("Account is already exist, just login");
-            log.info("Password: " + existingAcc.getPassword());
             return login(existingAcc.getEmail(), null, resp);
-
         } else {
-            log.info("Publish an event to sending email");
             eventPublisher.publishEvent(new OnRegisterWithGoogle(tmpAcc, tmpAcc.getPassword()));
 
-            log.info("Save account to database");
             Account savedAcc = authServices.saveCreatedGoogleAccount(tmpAcc);
 
-            log.info("Login done!");
             return login(savedAcc.getEmail(), null, resp);
         }
     }
@@ -99,15 +95,27 @@ public class AuthenticationController {
         Account account = authServices.registerNewAccount(userDTO);
         eventPublisher.publishEvent(new OnRegistrationEvent(account, getAppUrl(req)));
 
-        return new ResponseEntity<>("OK", HttpStatus.CREATED);
+        return ResponseEntity.ok(new CustomResponse("OK", HttpStatus.OK.value()));
     }
 
     @GetMapping("/registrationConfirm")
-    public ResponseEntity<Object> confirmRegistration(
-            @RequestParam("token") String token) {
-        authServices.validateRegisterToken(token);
+    public ModelAndView confirmRegistration(
+            @RequestParam("token") String token,
+            HttpServletRequest req) {
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        try {
+            authServices.validateRegisterToken(token);
+        } catch (CustomException ex) {
+            Map<String, String> modelMap = new HashMap<>();
+            modelMap.put("message", ex.getMessage());
+            if (ex.getHttpStatus() == HttpStatus.GONE) {
+                modelMap.put("token", token);
+                modelMap.put("link", getAppUrl(req) + "/resendRegistrationToken");
+            }
+            return new ModelAndView("registration-error", modelMap);
+        }
+
+        return new ModelAndView("registration-done");
     }
 
     @GetMapping("/resendRegistrationToken")
@@ -122,8 +130,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<Object> resetPassword(@RequestParam("email") String email,
-                                                HttpServletRequest req) {
+    public ResponseEntity<Object> resetPassword(
+            @RequestParam("email") @ValidEmail String email,
+            HttpServletRequest req) {
+
         Account account = authServices.findAccountByEmail(email);
 
         if (account == null) {
@@ -131,7 +141,7 @@ public class AuthenticationController {
         }
         eventPublisher.publishEvent(new OnResetPasswordEvent(account, getAppUrl(req)));
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return ResponseEntity.ok(new CustomResponse("OK", HttpStatus.OK.value()));
     }
 
     @GetMapping("/changePassword")
