@@ -25,6 +25,8 @@ public interface IPostServices {
 
     List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size);
 
+    List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, int page, int size);
+
     boolean checkResourceOwner(int postId, String ownerEmail);
 
     void deletePostById(int postId);
