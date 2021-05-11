@@ -1,6 +1,8 @@
 package com.langthang.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -18,6 +20,7 @@ public class Tag {
     private int id;
 
     @ManyToMany(mappedBy = "postTag")
+    @LazyCollection(LazyCollectionOption.EXTRA)
     private Set<Post> postTag;
 
     private String tagName;
