@@ -1,5 +1,8 @@
 package com.langthang.dto;
 
+import lombok.Getter;
+
+@Getter
 public class JwtDTO {
     private final String token;
 
