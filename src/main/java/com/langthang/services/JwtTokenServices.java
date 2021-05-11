@@ -10,6 +10,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.Random;
 
 @Component
+@Slf4j
 public class JwtTokenServices {
 
     @Value("${security.jwt.token.prefix}")
@@ -37,7 +39,7 @@ public class JwtTokenServices {
     private String SECRET_KEY;
 
     @Value("${security.jwt.token.expire-length}")
-    private int EXPIRE_TIME;
+    private int TOKEN_EXPIRE_TIME;
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -59,7 +61,7 @@ public class JwtTokenServices {
         claims.put("auth", new SimpleGrantedAuthority(role.getAuthority()));
 
         Date now = new Date();
-        Date expireTime = new Date(now.getTime() + EXPIRE_TIME);
+        Date expireTime = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -96,7 +98,7 @@ public class JwtTokenServices {
 
         Cookie cookie = new Cookie("refresh-token", refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(EXPIRE_TIME);
+        cookie.setMaxAge(TOKEN_EXPIRE_TIME / 1000); // ms -> s
         cookie.setPath("/");
         resp.addCookie(cookie);
     }
@@ -129,7 +131,7 @@ public class JwtTokenServices {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new CustomException("Invalid or expired JWT Token", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException("Invalid or expired JWT Token", HttpStatus.FORBIDDEN);
         }
     }
 
