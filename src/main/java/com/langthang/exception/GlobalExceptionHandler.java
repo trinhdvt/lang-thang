@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
-import java.io.IOException;
 import java.util.Map;
 
 @ControllerAdvice
@@ -55,7 +53,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CustomException.class)
-    public void handleCustomException(HttpServletResponse res, CustomException ex) throws IOException {
-        res.sendError(ex.getHttpStatus().value(), ex.getMessage());
+    public ResponseEntity<Object> handleCustomException(CustomException ex) {
+        return new ResponseEntity<>(ex.getMessage(), ex.getHttpStatus());
     }
 }
