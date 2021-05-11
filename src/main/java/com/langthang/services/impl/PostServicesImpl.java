@@ -1,10 +1,6 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.PostRequestDTO;
-import com.langthang.dto.BasicAccountDTO;
-import com.langthang.dto.CommentDTO;
-import com.langthang.dto.PostResponseDTO;
-import com.langthang.dto.TagDTO;
+import com.langthang.dto.*;
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Comment;
@@ -130,7 +126,7 @@ public class PostServicesImpl implements IPostServices {
                     responseList = postRepo.getPopularPostByBookmarkCount(pageRequest);
                     break;
 
-                    case COMMENT:
+                case COMMENT:
                     responseList = postRepo.getPopularPostByCommentCount(pageRequest);
                     break;
 
@@ -144,6 +140,14 @@ public class PostServicesImpl implements IPostServices {
                     , HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
+    }
+
+    @Override
+    public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<PostResponseDTO> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageRequest);
+
+        return pageOfPostToListOfPreviewPost(responseList);
     }
 
     @Override
