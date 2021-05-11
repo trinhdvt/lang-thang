@@ -60,18 +60,22 @@ public class AuthenticationController {
             @RequestParam("google_token")
             @NotBlank String googleToken
             , HttpServletResponse resp) {
+        log.info("Begin of login with Google");
 
         Account tmpAcc = authServices.createAccountUseGoogleToken(googleToken);
 
         Account existingAcc = authServices.findAccountByEmail(tmpAcc.getEmail());
 
         if (existingAcc != null) {
+
+            log.info("End of login with Google");
             return login(existingAcc.getEmail(), null, resp);
         } else {
             eventPublisher.publishEvent(new OnRegisterWithGoogle(tmpAcc, tmpAcc.getPassword()));
 
             Account savedAcc = authServices.saveCreatedGoogleAccount(tmpAcc);
 
+            log.info("End of login with Google");
             return login(savedAcc.getEmail(), null, resp);
         }
     }
@@ -82,8 +86,9 @@ public class AuthenticationController {
             @NotBlank String clientToken,
             HttpServletRequest req,
             HttpServletResponse resp) {
-
+        log.info("Begin of refresh token");
         String newJwtToken = authServices.refreshToken(clientToken, req, resp);
+        log.info("End of refresh token");
         return new ResponseEntity<>(newJwtToken, HttpStatus.OK);
     }
 
@@ -91,10 +96,12 @@ public class AuthenticationController {
     public ResponseEntity<Object> register(
             @Valid UserDTO userDTO,
             HttpServletRequest req) {
+        log.info("Begin of registration");
 
         Account account = authServices.registerNewAccount(userDTO);
         eventPublisher.publishEvent(new OnRegistrationEvent(account, getAppUrl(req)));
 
+        log.info("End of registration");
         return ResponseEntity.ok(new CustomResponse("OK", HttpStatus.OK.value()));
     }
 
