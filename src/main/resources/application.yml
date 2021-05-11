@@ -5,10 +5,11 @@ spring:
     username: root
     password: illusion
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false
   #        generate_statistics: true
   servlet:
     multipart:
@@ -25,7 +26,8 @@ spring:
           auth: true
           starttls:
             enable: true
-
+  jackson:
+    date-format: yyyy-MM-dd HH:mm
 cloud:
   aws:
     bucket:
@@ -43,13 +45,24 @@ cloud:
 application:
   image:
     support-type: image/png,image/jpg,image/jpeg
+  broker:
+    prefix: /topic
+    end-point: /socket-server
+    notify:
+      dest: ${application.broker.prefix}/notify
+    post:
+      dest: ${application.broker.prefix}/post
 
 security:
   jwt:
     token:
       prefix: Bearer
       secret-key: WeAreBrother
-      expire-length: 100000
+      expire-length: 600000
   oauth2:
     google:
       client-id: 545452035521-c4eljpuu1281eml2ci6kaud39s5kc9ct.apps.googleusercontent.com
+
+server:
+  compression:
+    enabled: true
