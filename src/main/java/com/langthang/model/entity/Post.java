@@ -1,5 +1,7 @@
 package com.langthang.model.entity;
 
+import com.langthang.dto.PostResponseDTO;
+import com.langthang.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,6 +13,35 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@SqlResultSetMappings({
+        @SqlResultSetMapping(
+                name = "postToPostDTO",
+                classes = {@ConstructorResult(
+                        targetClass = PostResponseDTO.class,
+                        columns = {
+                                @ColumnResult(name = "id", type = Integer.class),
+                                @ColumnResult(name = "title", type = String.class),
+                                @ColumnResult(name = "slug", type = String.class),
+                                @ColumnResult(name = "published_date", type = Date.class),
+                                @ColumnResult(name = "post_thumbnail", type = String.class),
+                        }
+                )}
+        ),
+        @SqlResultSetMapping(name = "postToPostDTO.count", columns = @ColumnResult(name = "cnt"))
+})
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "Post.getPreviewPostByKeyword",
+                query = "select id,title,slug,published_date,post_thumbnail from post where match(title, content) against(?1)",
+                resultSetMapping = "postToPostDTO"
+        ),
+        @NamedNativeQuery(
+                name = "Post.getPreviewPostByKeyword.count",
+                query = "select count(id) as cnt from post where match(title, content) against(?1)",
+                resultSetMapping = "postToPostDTO.count"
+        )
+})
+
 @Entity
 @Table(name = "post")
 public class Post {
