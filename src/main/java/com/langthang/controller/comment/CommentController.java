@@ -34,9 +34,9 @@ public class CommentController {
             Authentication authentication) {
 
         String accEmail = authentication.getName();
-        commentServices.likeOrUnlikeComment(commentId, accEmail);
+        int currentLikeCount = commentServices.likeOrUnlikeComment(commentId, accEmail);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(currentLikeCount);
     }
 
     @PostMapping("/comment/post/{post_id}")
@@ -74,8 +74,8 @@ public class CommentController {
             Authentication authentication) {
 
         String accEmail = authentication.getName();
-        commentServices.deleteComment(commentId, accEmail);
+        int currentPostCommentCount = commentServices.deleteComment(commentId, accEmail);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(currentPostCommentCount);
     }
 }
