@@ -22,6 +22,9 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
     }
 
     private boolean isValidEmail(String email) {
+        if (email == null) {
+            return false;
+        }
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
