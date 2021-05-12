@@ -66,3 +66,22 @@ security:
 server:
   compression:
     enabled: true
+
+management:
+  server:
+    port: 8090
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+    com:
+      langthang: DEBUG
