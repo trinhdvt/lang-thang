@@ -13,7 +13,7 @@
     <groupId>com.langthang</groupId>
     <artifactId>lang-thang</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>lang-thang</name>
 
     <description>Web Project Langthang.com</description>
