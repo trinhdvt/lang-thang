@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8090:8090"
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/do-an-lang-thang?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: illusion
+      SPRING_PROFILES_ACTIVE: docker
+    command: --spring.profiles.active=docker
+    networks:
+      - spring-mysql
+
+  db:
+    image: mysql:8
+    networks:
+      - spring-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: illusion
+      MYSQL_DATABASE: do-an-lang-thang
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
+networks:
+  spring-mysql:
