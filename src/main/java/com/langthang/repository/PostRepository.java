@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
@@ -29,6 +30,10 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
     @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
             "from Post p where p.status=true")
     Page<PostResponseDTO> getPreviewPost(Pageable pageable);
+
+    @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
+            "from Post p where p.status=true and p.account.id=?1")
+    Page<PostResponseDTO> getAllPreviewPostOfUser(int accountId, Pageable pageable);
 
     @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
             "from Post p join BookmarkedPost bp on p.id = bp.post.id " +
