@@ -143,6 +143,19 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
+    public List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, int page, int size) {
+        Account account = accRepo.findById(accountId).orElse(null);
+        if (account == null) {
+            throw new CustomException("Account with id: " + accountId + " not found", HttpStatus.NOT_FOUND);
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<PostResponseDTO> responseList = postRepo.getAllPreviewPostOfUser(accountId, pageRequest);
+
+        return pageOfPostToListOfPreviewPost(responseList);
+    }
+
+    @Override
     public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<PostResponseDTO> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageRequest);
