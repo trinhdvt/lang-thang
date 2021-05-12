@@ -24,11 +24,17 @@ public class FollowingRelationship {
     @Column(name = "following_account_id")
     private Integer followingAccountId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = Account.class, fetch = FetchType.EAGER)
     @MapsId(value = "accountId")
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
     private Date followingDate;
+
+    public FollowingRelationship(Integer accountId, Integer followingAccountId) {
+        this.accountId = accountId;
+        this.followingAccountId = followingAccountId;
+        this.followingDate = new Date();
+    }
 }
 
