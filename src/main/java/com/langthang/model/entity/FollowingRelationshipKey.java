@@ -9,7 +9,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-class FollowingRelationshipKey implements Serializable {
+public class FollowingRelationshipKey implements Serializable {
     private Integer accountId;
     private Integer followingAccountId;
 }
