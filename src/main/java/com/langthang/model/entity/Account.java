@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -56,7 +57,8 @@ public class Account {
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
-    private Set<Post> posts;
+    @OrderBy("publishedDate DESC")
+    private List<Post> posts;
 
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY
@@ -66,11 +68,13 @@ public class Account {
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
-    private Set<Notify> notifies;
+    @OrderBy("notifyDate DESC ")
+    private List<Notify> notifies;
 
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY)
-    private Set<PostReport> postReports;
+    @OrderBy("reportDate DESC")
+    private List<PostReport> postReports;
 
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY)
