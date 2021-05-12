@@ -58,7 +58,6 @@ public class LoggingAspectConfig {
             }
             return result;
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
             log.error("Illegal argument: {} in {}.{}()",
                     Arrays.toString(joinPoint.getArgs()),
                     joinPoint.getSignature().getDeclaringTypeName(),
