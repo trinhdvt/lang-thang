@@ -68,7 +68,7 @@ public class CommentServicesImpl implements ICommentServices {
     }
 
     @Override
-    public void deleteComment(int commentId, String accEmail) {
+    public int deleteComment(int commentId, String accEmail) {
         Comment existingComment = commentRepo.findById(commentId).orElse(null);
 
         if (existingComment == null) {
@@ -80,6 +80,7 @@ public class CommentServicesImpl implements ICommentServices {
         }
 
         commentRepo.delete(existingComment);
+        return commentRepo.countCommentInPost(existingComment.getPost().getId());
     }
 
     @Override
@@ -97,7 +98,7 @@ public class CommentServicesImpl implements ICommentServices {
     }
 
     @Override
-    public void likeOrUnlikeComment(int commentId, String accEmail) {
+    public int likeOrUnlikeComment(int commentId, String accEmail) {
         Comment comment = commentRepo.findById(commentId).orElse(null);
 
         if (comment == null) {
@@ -111,7 +112,9 @@ public class CommentServicesImpl implements ICommentServices {
             account.getLikedComments().add(comment);
         }
 
-        accRepo.save(account);
+        accRepo.saveAndFlush(account);
+
+        return commentRepo.countCommentLike(commentId);
     }
 
     private CommentDTO toCommentDTO(Comment savedComment, String currentEmail) {

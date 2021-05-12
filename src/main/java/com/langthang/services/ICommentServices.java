@@ -10,9 +10,9 @@ public interface ICommentServices {
 
     CommentDTO modifyComment(int commentId, String content, String accEmail);
 
-    void deleteComment(int commentId, String accEmail);
+    int deleteComment(int commentId, String accEmail);
 
     List<CommentDTO> getAllCommentOfPost(int postId, String accEmail);
 
-    void likeOrUnlikeComment(int commentId, String accEmail);
+    int likeOrUnlikeComment(int commentId, String accEmail);
 }
