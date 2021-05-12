@@ -70,7 +70,7 @@ public class AuthServicesImpl implements IAuthServices {
             }
 
             String jwtToken = jwtTokenServices.createToken(email,
-                    accountRepository.findByEmailAndEnabled(email, true).getRole());
+                    accountRepository.findAccountByEmailAndEnabled(email, true).getRole());
             log.info("Created token");
             // Password will be null when user log in with Google Account
             if (password == null) {
