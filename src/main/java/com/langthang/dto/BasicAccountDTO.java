@@ -20,13 +20,17 @@ public class BasicAccountDTO {
 
     private int followCount;
 
+    private int bookmarkOnOwnPostCount;
+
+    private int commentOnOwnPostCount;
+
+    private String fbLink;
+
+    private String instagramLink;
+
     private String avatarLink;
 
     private String about;
 
     private String occupation;
-
-    public BasicAccountDTO(int accountId) {
-        this.accountId = accountId;
-    }
 }
