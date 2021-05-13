@@ -6,10 +6,14 @@ import lombok.Getter;
 public class JwtDTO {
     private final String token;
 
-    private final int duration = 600000;
+    private int duration = 600000;
 
     public JwtDTO(String token) {
         this.token = token;
     }
 
+    public JwtDTO(String token, int duration) {
+        this.token = token;
+        this.duration = duration;
+    }
 }
