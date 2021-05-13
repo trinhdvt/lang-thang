@@ -1,6 +1,6 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.entity.Account;
+import com.langthang.model.entity.AccountMetadata;
 import com.langthang.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("UserDetailService is looking for: " + email);
-        Account acc = accRepo.findByEmail(email);
+        AccountMetadata acc = accRepo.getAccountByEmail(email);
 
         if (acc == null) {
             throw new UsernameNotFoundException("Account with " + email + " not found!");
         }
-        log.info("Founded an account: " + acc);
+
         return new User(acc.getEmail()
                 , acc.getPassword()
                 , acc.isEnabled()

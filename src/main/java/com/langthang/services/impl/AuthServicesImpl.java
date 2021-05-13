@@ -66,24 +66,22 @@ public class AuthServicesImpl implements IAuthServices {
 
             if (password != null) {
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-                log.info("Authenticated with username = {} and password = {}", email, password);
             }
 
             String jwtToken = jwtTokenServices.createToken(email,
-                    accountRepository.findAccountByEmailAndEnabled(email, true).getRole());
-            log.info("Created token");
+                    accountRepository.getAccountByEmailAndEnabled(email, true).getRole());
+
             // Password will be null when user log in with Google Account
             if (password == null) {
                 Authentication auth = jwtTokenServices.getAuthentication(jwtToken);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
+
             jwtTokenServices.addRefreshTokenCookie(email, resp);
-            log.info("Added refresh-token to Cookie");
 
             return jwtToken;
 
         } catch (AuthenticationException e) {
-            log.info("Exception occurred {}", e.getMessage());
             throw new CustomException(e.getMessage()
                     , HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -166,7 +164,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public Account findAccountByEmail(String email) {
-        return accountRepository.findByEmail(email);
+        return accountRepository.findAccountByEmailAndEnabled(email, true);
     }
 
     @Override

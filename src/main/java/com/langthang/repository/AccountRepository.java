@@ -1,10 +1,15 @@
 package com.langthang.repository;
 
 import com.langthang.model.entity.Account;
+import com.langthang.model.entity.AccountMetadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface AccountRepository extends JpaRepository<Account, Integer> {
+
+    AccountMetadata getAccountByEmail(String email);
+
+    AccountMetadata getAccountByEmailAndEnabled(String email, boolean enabled);
 
     Account findByEmail(String email);
 
