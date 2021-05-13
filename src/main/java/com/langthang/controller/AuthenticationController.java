@@ -100,12 +100,13 @@ public class AuthenticationController {
         }
 
         Account account = authServices.registerNewAccount(userDTO);
-        eventPublisher.publishEvent(new OnRegistrationEvent(account, getAppUrl(req)));
+        eventPublisher.publishEvent(new OnRegistrationEvent(account,
+                getAppUrl(req) + "/registrationConfirm?token="));
 
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/registrationConfirm",params = {"token"})
+    @GetMapping(value = "/registrationConfirm", params = {"token"})
     public ModelAndView confirmRegistration(
             @RequestParam("token") String token,
             HttpServletRequest req) {
@@ -154,7 +155,7 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/changePassword",params = {"token"})
+    @GetMapping(value = "/changePassword", params = {"token"})
     public ResponseEntity<Object> verifyResetPasswordToken(
             @RequestParam("token") String token) {
 
