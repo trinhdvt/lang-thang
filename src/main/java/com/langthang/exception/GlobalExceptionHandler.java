@@ -36,24 +36,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Object> handleMaxUploadSizeExceed() {
-        CustomResponse customResponse = new CustomResponse();
-        customResponse.setMessage("File size cannot exceed " + maxFileSize);
-        customResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-
-        return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("File size cannot exceed " + maxFileSize, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
-        CustomResponse customResponse = new CustomResponse();
-        customResponse.setMessage(ex.getMessage());
-        customResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-
-        return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<Object> handleCustomException(CustomException ex) {
         return new ResponseEntity<>(ex.getMessage(), ex.getHttpStatus());
     }
+
+//
+//    @ExceptionHandler(Throwable.class)
+//    public ResponseEntity<Object> handleThrowable(Throwable ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 }
