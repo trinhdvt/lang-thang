@@ -12,9 +12,9 @@ public class MyMailSender {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendRegisterTokenEmail(String contextPath, String verifyToken, Account account) {
+    public void sendRegisterTokenEmail(String endpoint, String verifyToken, Account account) {
         String subject = "Registration Confirmation";
-        String url = contextPath + "/registrationConfirm?token=" + verifyToken;
+        String url = endpoint + verifyToken;
         String message = "Please follow this link to verify your account!"
                 + "\r\n"
                 + url;
@@ -22,10 +22,10 @@ public class MyMailSender {
         sendEmail(account.getEmail(), subject, message);
     }
 
-    public void sendResetPasswordEmail(String contextPath, String token, Account acc) {
+    public void sendResetPasswordEmail(String endpoint, String token, Account acc) {
         String subject = "Reset Password";
 
-        String url = contextPath + "/changePassword?token=" + token;
+        String url = endpoint + token;
         String message = "Please follow this link to reset your password"
                 + "\r\n"
                 + url;
