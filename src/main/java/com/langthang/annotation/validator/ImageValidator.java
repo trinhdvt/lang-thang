@@ -19,13 +19,7 @@ public class ImageValidator implements ConstraintValidator<ValidImage, Multipart
     @Override
     public boolean isValid(MultipartFile multipartFile, ConstraintValidatorContext context) {
         String contentType = multipartFile.getContentType();
-        if (!isSupportedContentType(contentType)) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Not support type")
-                    .addConstraintViolation();
-            return false;
-        }
-        return true;
+        return isSupportedContentType(contentType);
     }
 
     private boolean isSupportedContentType(String contentType) {
