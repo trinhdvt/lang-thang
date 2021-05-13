@@ -17,7 +17,7 @@ Trả về token hợp lệ
 
 * **Method:** `POST`
 
-* **Request Params**
+* **Request Params** `Content-Type: multipart/form-data`
 
   | Name         | Type     | Description          |
   | ----------   |:------:  | ------------         |
@@ -26,28 +26,27 @@ Trả về token hợp lệ
 
 * **Success Response:**
 
-    - **Code:** 200 <br />
+    - **Code:** 200 
+      
       **Content:** `chuỗi token` kèm theo cookie được gắn vào
 
     * **Example:**
+
     ```json5
     {
     'token': 'asdasdas21312$#...',
-    'status': 200,
     'duration': '10000 - hạn sử dụng của token tính bằng ms'
     }
   ```
 
-
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST <br />
-      **Content:** `{ error : "Email không đúng định dạng" }`
-
-    * **Code:** 422 UNPROCESSABLE_ENTITY <br />
-      **Content:** `{ error : "Sai email hoặc mật khẩu" }`
+    * **Code:** 400 BAD REQUEST - Email hoặc password không hợp lệ
+    
+    * **Code:** 422 UNPROCESSABLE_ENTITY - Sai email hoặc password
 
     * **Example:**
+
     ```json5
     {
     "timestamp": "2021-05-06T07:50:25.212+00:00",
@@ -73,23 +72,23 @@ Trả về token hợp lệ
 
 * **Method:** `POST`
 
-* **Request Params**
+* **Request Params** `Content-Type: multipart/form-data`
 
-  | Name         | Type     | Description          |
-      | ----------   |:------:  | ------------         |
-  | `google_token`      | `string` | Google Token của người dùng |
+  | Name          | Type     | Description                 |
+  | ----------    |:------:  | ------------                |
+  | `google_token`| `string` | Google Token của người dùng |
 
 * **Success Response:**
 
-    * **Code:** 200 <br />
+    * **Code:** 200 
+      
       **Content:** `chuỗi token` kèm theo cookie được gắn vào
     
     * **Example**: xem lại ở phần [Đăng nhập](#đăng-nhập)
 
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST <br />
-      **Content:** `{ message : "Google token không hợp lệ" }`
+    * **Code:** 400 BAD REQUEST - Google token không hợp lệ
 
 ## Lấy lại Token mới
 
@@ -106,21 +105,19 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
 * **Success Response:**
 
-    * **Code:** 200 <br />
+    * **Code:** 200 
+      
       **Content:** `chuỗi token mới` kèm theo cookie mới được gắn vào
         
     * **Example**: xem lại ở phần [Đăng nhập](#đăng-nhập)
 
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST <br />
-      **Content:** `{ message : "Google token không hợp lệ" }`
+    * **Code:** 400 BAD REQUEST - Cookie rỗng
+      
+    * **Code:** 403 FORBIDDEN - Chưa đăng nhập      
 
-    * **Code:** 403 ACCESS_DENIED <br />
-      **Content:** `{ message : "chưa có chuỗi token trong header" }`
-
-    * **Code:** 422 UNPROCESSABLE_ENTITY <br />
-      **Content:** `{ message : "refresh-token đã hết hạn hoặc không hợp lệ" }`
+    * **Code:** 422 UNPROCESSABLE_ENTITY - `Refresh-token` không hợp lệ    
 
 ## Đăng ký
 
@@ -131,39 +128,26 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
 * **Method:**: `POST`
 
-* **URL Params**
+* **Request Params** `Content-Type: multipart/form-data`
 
-| Name         | Type     | Description          |
-| ----------   |:------:  | ------------         |
-| `name`      | `string` | Tên hiển thị |
-| `email`      | `string` | Email của người dùng |
-| `password`   | `string` |   Mật khẩu           |
-| `matchedPassword`   | `string` |   Mật khẩu nhập lại lần 2 |
+| Name                | Type     | Description                                   |
+| ----------          |:------:  | ------------                                  |
+| `name`              | `string` | Tên hiển thị                                  |
+| `email`             | `string` | Email của người dùng (đúng định dạng email)   |
+| `password`          | `string` | Mật khẩu (ít nhất 6 ký tự)                    |
+| `matchedPassword`   | `string` | Mật khẩu nhập lại lần 2                       |
 
 * **Success Response:**
 
-    * **Code:** 200 <br />
-      **Content:** `"OK"`
-
-    * **Example**:
-    ```json5
-    {
-     'message': "OK",
-     'status': 200,
-     "timestamp": "2021-05-06T07:50:25.212+00:00",
-    }
-  ```
-
+    * **Code:** 202 ACCEPTED - 1 link active sẽ được gửi vào email
+    
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST <br />
-      **Content:** `{ error : "Email không đúng định dạng / Mật khẩu trên dưới không khớp nhau" }`
+    * **Code:** 400 BAD REQUEST - Dữ liệu đầu vào không hợp lệ
 
-    * **Code:** 409 CONFLICT <br />
-      **Content:** `{ error : "Email đã được sử dụng" }`
+    * **Code:** 409 CONFLICT - Email đã tồn tại
 
-    * **Code:** 401 UNAUTHORIZED <br />
-      **Content:** `{ error : "Email đã đăng ký nhưng chưa kích hoạt " }`
+    * **Code:** 401 UNAUTHORIZED - Email đã đăng ký nhưng chưa kích hoạt
 
 ## Quên mật khẩu
 
@@ -174,7 +158,7 @@ Thay đổi mật khẩu mới khi quên mật khẩu
 
 * **Method:**: `POST`
 
-* **URL Params**
+* **Request Params** `Content-Type: multipart/form-data`
 
 | Name         | Type     | Description          |
 | ----------   |:------:  | ------------         |
@@ -182,15 +166,10 @@ Thay đổi mật khẩu mới khi quên mật khẩu
 
 * **Success Response:**
 
-    * **Code:** 200 <br />
-      **Content:** `"OK"`
-
-    * **Example**: xem lại ở phần [Đăng ký](#đăng-ký)
+    * **Code:** 202 ACCEPTED - 1 link reset password sẽ được gửi vào email
     
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST <br />
-      **Content:** `{ message : "Email không đúng định dạng" }`
+    * **Code:** 400 BAD REQUEST - Email không đúng định dạng
 
-    * **Code:** 403 FORBIDDEN <br />
-      **Content:** `{ error : "Email không tồn tại" }`
+    * **Code:** 403 FORBIDDEN - Email không tồn tại
