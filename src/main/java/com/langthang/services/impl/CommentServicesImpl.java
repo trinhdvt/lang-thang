@@ -1,7 +1,8 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.BasicAccountDTO;
+import com.langthang.dto.AccountDTO;
 import com.langthang.dto.CommentDTO;
+import com.langthang.dto.NotificationDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Comment;
@@ -10,6 +11,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CommentRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
+import com.langthang.services.INotificationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,22 +33,26 @@ public class CommentServicesImpl implements ICommentServices {
     @Autowired
     private PostRepository postRepo;
 
+    @Autowired
+    private INotificationServices notificationServices;
+
     @Override
-    public CommentDTO addNewComment(int postId, String content, String accEmail) {
+    public CommentDTO addNewComment(int postId, String content, String commenterEmail) {
         Post post = postRepo.findPostByIdAndStatus(postId, true);
 
         if (post == null) {
             throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        Account commenter = accRepo.findByEmail(accEmail);
+        Account commenter = accRepo.findAccountByEmail(commenterEmail);
         Comment comment = new Comment(commenter, post, content);
+
+        notificationServices.createNotification(commenter, post.getAccount(), post, NotificationDTO.TYPE.COMMENT);
 
         Comment savedComment = commentRepo.save(comment);
 
-        return toCommentDTO(savedComment, accEmail);
+        return toCommentDTO(savedComment, commenterEmail);
     }
-
 
     @Override
     public CommentDTO modifyComment(int commentId, String content, String accEmail) {
@@ -98,38 +104,42 @@ public class CommentServicesImpl implements ICommentServices {
     }
 
     @Override
-    public int likeOrUnlikeComment(int commentId, String accEmail) {
+    public int likeOrUnlikeComment(int commentId, String currentEmail) {
         Comment comment = commentRepo.findById(commentId).orElse(null);
 
         if (comment == null) {
             throw new CustomException("Comment not found", HttpStatus.NOT_FOUND);
         }
 
-        Account account = accRepo.findByEmail(accEmail);
-        boolean isLiked = account.getLikedComments().removeIf(cm -> cm.getId() == commentId);
+        Account currentAcc = accRepo.findAccountByEmail(currentEmail);
+        boolean isLiked = currentAcc.getLikedComments().removeIf(cm -> cm.getId() == commentId);
 
         if (!isLiked) {
-            account.getLikedComments().add(comment);
+            currentAcc.getLikedComments().add(comment);
+
+            notificationServices.createNotification(currentAcc,
+                    comment.getAccount(),
+                    comment.getPost(),
+                    NotificationDTO.TYPE.LIKE);
         }
 
-        accRepo.saveAndFlush(account);
+        accRepo.saveAndFlush(currentAcc);
 
         return commentRepo.countCommentLike(commentId);
     }
 
     private CommentDTO toCommentDTO(Comment savedComment, String currentEmail) {
         Account commenter = savedComment.getAccount();
+
+        AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
+
         return CommentDTO.builder()
-                .commenter(BasicAccountDTO.builder()
-                        .accountId(commenter.getId())
-                        .name(commenter.getName())
-                        .avatarLink(commenter.getAvatarLink())
-                        .email(commenter.getEmail())
-                        .build())
+                .commenter(commenterDTO)
+                .postId(savedComment.getPost().getId())
                 .commentId(savedComment.getId())
                 .commentDate(savedComment.getCommentDate())
                 .content(savedComment.getContent())
-                .isMyComment(true)
+                .isMyComment(commenter.getEmail().equals(currentEmail))
                 .likeCount(savedComment.getLikedAccounts().size())
                 .isLiked(savedComment.getLikedAccounts().stream().anyMatch(a -> a.getEmail().equals(currentEmail)))
                 .build();
