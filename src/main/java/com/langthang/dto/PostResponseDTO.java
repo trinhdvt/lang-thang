@@ -20,7 +20,7 @@ public class PostResponseDTO {
 
     private String title;
 
-    private BasicAccountDTO author;
+    private AccountDTO author;
 
     private String content;
 

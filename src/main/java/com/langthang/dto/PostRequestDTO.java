@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
@@ -18,11 +19,14 @@ public class PostRequestDTO {
     private Integer postId;
 
     @NotNull
+    @NotBlank
     private String title;
 
     @NotNull
+    @NotBlank
     private String content;
 
     @NotNull
+    @NotBlank(message = "A post should have a thumbnail")
     private String postThumbnail;
 }
