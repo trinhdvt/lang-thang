@@ -6,7 +6,8 @@
 * [Đăng nhập với Google](#đăng-nhập-bằng-tài-khoản-Google)
 * [Lấy lại Token mới](#Lấy-lại-Token-mới)
 * [Đăng ký](#Đăng-ký)
-* [Quên mật khẩu](#Quên-mật-khẩu)
+* [Yêu cầu quên mật khẩu](#Quên-mật-khẩu)
+* [Xác thực mật khẩu mới](#thay-đổi-mật-khẩu)
 
 ## Đăng nhập
 
@@ -43,16 +44,16 @@ Trả về token hợp lệ
 
     * **Code:** 400 BAD REQUEST - Email hoặc password không hợp lệ
     
-    * **Code:** 422 UNPROCESSABLE_ENTITY - Sai email hoặc password
+    * **Code:** 401 UNAUTHORIZED - Sai email hoặc password
 
     * **Example:**
 
     ```json5
     {
     "timestamp": "2021-05-06T07:50:25.212+00:00",
-    "status": 422,
-    "error": "Unprocessable Entity",
-    "message": "Bad credentials",
+    "status": 401,
+    "error": "Unauthorized",
+    "message": "Invalid email / password",
     "path": "/auth/login"
     }
   ```
@@ -107,7 +108,7 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
     * **Code:** 200 
       
-      **Content:** `chuỗi token mới` kèm theo cookie mới được gắn vào
+      **Content:** `chuỗi token mới` kèm theo cookie mới được gắn vào header
         
     * **Example**: xem lại ở phần [Đăng nhập](#đăng-nhập)
 
@@ -117,7 +118,7 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
       
     * **Code:** 403 FORBIDDEN - Chưa đăng nhập      
 
-    * **Code:** 422 UNPROCESSABLE_ENTITY - `Refresh-token` không hợp lệ    
+    * **Code:** 401 UNAUTHORIZED - `Refresh-token` không hợp lệ    
 
 ## Đăng ký
 
@@ -166,10 +167,39 @@ Thay đổi mật khẩu mới khi quên mật khẩu
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED - 1 link reset password sẽ được gửi vào email
+    * **Code:** 202 ACCEPTED - 1 link reset password (có kèm `token`) sẽ được gửi vào email
     
 * **Error Response:**
 
     * **Code:** 400 BAD REQUEST - Email không đúng định dạng
 
     * **Code:** 403 FORBIDDEN - Email không tồn tại
+  
+## Thay đổi mật khẩu
+
+---
+Thay đổi mật khẩu trong trường hợp bị quên
+
+* **URL**: `/auth/savePassword`
+
+* **Method:**: `PUT`
+
+* **Request Params** `Content-Type: multipart/form-data`
+
+| Name              | Type     | Description             |
+| ----------        |:------:  | ------------            |
+| `token`           | `string` | Token để reset password |
+| `password`        | `string` | Mật khẩu mới            |
+| `matchedPassword` | `string` | Nhập lại mật khẩu       |
+
+* **Success Response:**
+
+  * **Code:** 202 ACCEPTED - thay đổi mật khẩu thành công
+
+* **Error Response:**
+
+  * **Code:** 400 BAD REQUEST - Mật khẩu không đủ 6 kí tự / thiếu tham số
+
+  * **Code:** 403 FORBIDDEN - Token không hợp lệ  
+  
+  * **Code:** 410 GONE - Token hết hạn
