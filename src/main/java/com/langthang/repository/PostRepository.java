@@ -1,22 +1,16 @@
 package com.langthang.repository;
 
 import com.langthang.dto.PostResponseDTO;
+import com.langthang.model.entity.Category;
 import com.langthang.model.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.Path;
-import java.util.Set;
-
-public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
-    Set<Post> findAllByAccount_Email(String email);
-
-    @Query("select p from Post p where p.account.id= ?1")
-    Set<Post> findAllByAccount_Id(int id);
+public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Post findPostByIdAndStatus(int id, boolean status);
 
@@ -35,20 +29,24 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Integer
             "from Post p where p.status=true and p.account.id=?1")
     Page<PostResponseDTO> getAllPreviewPostOfUser(int accountId, Pageable pageable);
 
+
+    @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
+            "from Post p join p.postCategories pc where pc=?1")
+    Page<PostResponseDTO> findPostByCategories(Category category, Pageable pageable);
+
     @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
             "from Post p join BookmarkedPost bp on p.id = bp.post.id " +
             "where p.status = true " +
             "group by bp.post.id " +
             "order by count(bp.post.id) desc ")
-    Page<PostResponseDTO> getPopularPostByBookmarkCount(Pageable pageable);
-
+    Page<PostResponseDTO> getListOfPopularPostByBookmarkCount(Pageable pageable);
 
     @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
             "from Post p join Comment c on p.id = c.post.id " +
             "where p.status = true " +
             "group by c.post.id " +
             "order by count(c.post.id) desc ")
-    Page<PostResponseDTO> getPopularPostByCommentCount(Pageable pageable);
+    Page<PostResponseDTO> getListOfPopularPostByCommentCount(Pageable pageable);
 
     @Query("select new com.langthang.dto.PostResponseDTO(p.id,p.title,p.slug,p.publishedDate,p.postThumbnail) " +
             "from Post p join BookmarkedPost bp on p.id=bp.post.id " +
