@@ -3,7 +3,7 @@ package com.langthang.services.impl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.langthang.dto.UserDTO;
+import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.PasswordResetToken;
@@ -82,8 +82,8 @@ public class AuthServicesImpl implements IAuthServices {
             return jwtToken;
 
         } catch (AuthenticationException e) {
-            throw new CustomException(e.getMessage()
-                    , HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("Invalid email / password"
+                    , HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -96,20 +96,20 @@ public class AuthServicesImpl implements IAuthServices {
             jwtTokenServices.addRefreshTokenCookie(email, resp);
 
             return jwtTokenServices.createToken(email,
-                    accountRepository.findByEmail(email).getRole());
+                    accountRepository.findAccountByEmail(email).getRole());
         } else {
             throw new CustomException("Invalid refresh token!"
-                    , HttpStatus.UNPROCESSABLE_ENTITY);
+                    , HttpStatus.UNAUTHORIZED);
         }
     }
 
     @Override
-    public Account registerNewAccount(UserDTO userDTO) {
-        Account existAcc = accountRepository.findByEmail(userDTO.getEmail());
+    public Account registerNewAccount(AccountRegisterDTO accountRegisterDTO) {
+        Account existAcc = accountRepository.findAccountByEmail(accountRegisterDTO.getEmail());
 
         if (existAcc != null) {
             if (existAcc.isEnabled()) {
-                throw new CustomException("There is an account with that email address: " + userDTO.getEmail()
+                throw new CustomException("There is an account with that email address: " + accountRegisterDTO.getEmail()
                         , HttpStatus.CONFLICT);
             } else if (!existAcc.isEnabled()) {
                 throw new CustomException("Please check your email to verify your account!"
@@ -118,9 +118,9 @@ public class AuthServicesImpl implements IAuthServices {
         }
 
         Account account = new Account();
-        account.setName(userDTO.getName());
-        account.setEmail(userDTO.getEmail());
-        account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        account.setName(accountRegisterDTO.getName());
+        account.setEmail(accountRegisterDTO.getEmail());
+        account.setPassword(passwordEncoder.encode(accountRegisterDTO.getPassword()));
 
         return accountRepository.save(account);
     }
