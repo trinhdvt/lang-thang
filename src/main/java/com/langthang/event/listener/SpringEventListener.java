@@ -1,9 +1,10 @@
 package com.langthang.event.listener;
 
-import com.langthang.event.OnNewNotifyEvent;
-import com.langthang.event.OnRegisterWithGoogle;
-import com.langthang.event.OnRegistrationEvent;
-import com.langthang.event.OnResetPasswordEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.langthang.dto.CommentDTO;
+import com.langthang.dto.NotificationDTO;
+import com.langthang.event.*;
 import com.langthang.model.entity.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
@@ -25,50 +26,71 @@ public class SpringEventListener {
     @Autowired
     private MyMailSender mailSender;
 
-//    @Autowired
+    @Autowired
+    private ObjectMapper jacksonMapper;
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @Value("${application.broker.notify.dest}")
-    private String broadcastNotifyEndpoint;
+    @Value("${application.broker.notify.prefix}")
+    private String onNewNotifyPrefix;
+
+    @Value("${application.broker.post.prefix}")
+    private String onNewCommentPrefix;
 
     @EventListener
     @Async
     public void handleConfirmRegistration(OnRegistrationEvent event) {
-        Account account = event.getAccount();
+        Account destAccount = event.getAccount();
         String token = event.getToken();
 
         if (token == null) {
-            token = authServices.createVerifyToken(account);
+            token = authServices.createVerifyToken(destAccount);
         }
 
         mailSender.sendRegisterTokenEmail(event.getAppUrl()
                 , token
-                , account);
+                , destAccount);
     }
 
     @EventListener
     @Async
     public void handleResetPassword(OnResetPasswordEvent event) {
-        Account account = event.getAccount();
-        String token = authServices.createPasswordResetToken(account);
+        Account destAccount = event.getAccount();
+        String token = authServices.createPasswordResetToken(destAccount);
 
         mailSender.sendResetPasswordEmail(event.getAppUrl()
                 , token
-                , account);
+                , destAccount);
     }
 
     @EventListener
     @Async
     public void handleRegisterWithGoogle(OnRegisterWithGoogle event) {
-        Account account = event.getAccount();
+        Account destAccount = event.getAccount();
         String rawPassword = event.getRawPassword();
 
-        mailSender.sendCreatedAccountEmail(account, rawPassword);
+        mailSender.sendCreatedAccountEmail(destAccount, rawPassword);
     }
 
     @EventListener
     @Async
-    public void handleNewNotify(OnNewNotifyEvent event) {
-        messagingTemplate.convertAndSend(broadcastNotifyEndpoint, event);
+    public void handleNewNotify(OnNewNotificationEvent event) throws JsonProcessingException {
+        NotificationDTO notification = event.getNotification();
+
+        String dest = onNewNotifyPrefix + "/" + notification.getDestEmail();
+
+        messagingTemplate.convertAndSend(dest, jacksonMapper.writeValueAsString(notification));
+    }
+
+    @EventListener
+    @Async
+    public void handleNewComment(OnNewCommentEvent event) throws JsonProcessingException {
+        CommentDTO newComment = event.getNewComment();
+        newComment.setMyComment(false);
+
+        String dest = onNewCommentPrefix + "/" + newComment.getPostId();
+
+        messagingTemplate.convertAndSend(dest, jacksonMapper.writeValueAsString(newComment));
     }
 }
