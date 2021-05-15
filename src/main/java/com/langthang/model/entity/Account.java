@@ -3,7 +3,6 @@ package com.langthang.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -31,24 +30,14 @@ public class Account {
     @Builder.Default
     private Role role = Role.ROLE_MEMBER;
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private Gender gender = Gender.UNKNOWN;
-
     @Builder.Default
     private boolean enabled = false;
 
     private String avatarLink;
 
-    private Date dateOfBirth;
-
     private String about;
 
     private String occupation;
-
-    private Date lastLogin;
-
-    private Integer loginCount;
 
     private String fbLink;
 
@@ -73,7 +62,7 @@ public class Account {
 
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY)
-    @OrderBy("reportDate DESC")
+    @OrderBy("reportedDate DESC")
     private List<PostReport> postReports;
 
     @OneToMany(mappedBy = "account"
@@ -103,13 +92,9 @@ public class Account {
                 ", status='" + enabled + '\'' +
                 ", name='" + name + '\'' +
                 ", role=" + role +
-                ", gender=" + gender +
                 ", avatarLink='" + avatarLink + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
                 ", about='" + about + '\'' +
                 ", occupation='" + occupation + '\'' +
-                ", lastLogin=" + lastLogin +
-                ", loginCount=" + loginCount +
                 '}';
     }
 }
