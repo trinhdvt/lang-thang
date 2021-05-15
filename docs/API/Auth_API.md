@@ -6,6 +6,7 @@
 * [Đăng nhập với Google](#đăng-nhập-bằng-tài-khoản-Google)
 * [Lấy lại Token mới](#Lấy-lại-Token-mới)
 * [Đăng ký](#Đăng-ký)
+* [Xác thực đăng ký](#Xác-thực-đăng-ký)
 * [Yêu cầu quên mật khẩu](#Quên-mật-khẩu)
 * [Xác thực mật khẩu mới](#thay-đổi-mật-khẩu)
 
@@ -140,7 +141,7 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED - 1 link active sẽ được gửi vào email
+    * **Code:** 202 ACCEPTED - 1 link active (kèm `token`) sẽ được gửi vào email
     
 * **Error Response:**
 
@@ -149,6 +150,31 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
     * **Code:** 409 CONFLICT - Email đã tồn tại
 
     * **Code:** 401 UNAUTHORIZED - Email đã đăng ký nhưng chưa kích hoạt
+
+## Xác thực đăng ký
+
+----
+Xác thực đăng ký với hệ thống bằng token đã được gửi trong email
+
+* **URL**: `/auth/registrationConfirm`
+
+* **Method:**: `POST`
+
+* **Request Params** `Content-Type: multipart/form-data`
+
+| Name      | Type     | Description                     |
+| ----------|:------:  | ------------                    |
+| `token`   | `string` | Token dùng để xác nhận đăng ký  |
+
+* **Success Response:**
+
+  * **Code:** 202 ACCEPTED - Xác nhận đăng ký thành công
+
+* **Error Response:**
+
+  * **Code:** 403 FORBIDDEN - Token không hợp lệ
+
+  * **Code:** 410 GONE - Token hết hạn
 
 ## Quên mật khẩu
 
