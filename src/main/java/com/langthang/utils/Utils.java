@@ -11,6 +11,7 @@ public class Utils {
         String temp = Normalizer.normalize(input, Normalizer.Form.NFD);
         return vietnameseNormPattern.matcher(temp)
                 .replaceAll("")
+                .toLowerCase()
                 .replaceAll("đ", "d")
                 .replaceAll("(?!-)\\W", "-")
                 .replaceAll("^-*|-*$", "")
