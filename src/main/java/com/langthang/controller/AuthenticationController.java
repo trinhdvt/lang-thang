@@ -1,13 +1,13 @@
 package com.langthang.controller;
 
+import com.langthang.annotation.PasswordMatches;
 import com.langthang.annotation.ValidEmail;
-import com.langthang.dto.JwtDTO;
+import com.langthang.dto.AccountRegisterDTO;
+import com.langthang.dto.JwtTokenDTO;
 import com.langthang.dto.ResetPasswordDTO;
-import com.langthang.dto.UserDTO;
 import com.langthang.event.OnRegisterWithGoogle;
 import com.langthang.event.OnRegistrationEvent;
 import com.langthang.event.OnResetPasswordEvent;
-import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.RegisterToken;
 import com.langthang.services.IAuthServices;
@@ -19,22 +19,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.HashMap;
-import java.util.Map;
 
 @Validated
 @RestController
-@RequestMapping("/auth")
-@CrossOrigin(originPatterns = "*")
 public class AuthenticationController {
 
-    private static final String BASE_URL = "/auth";
+    private static final String CLIENT_BASE_URL = "http://localhost:3000";
 
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
@@ -45,7 +40,7 @@ public class AuthenticationController {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<Object> login(
             @RequestParam("email") @ValidEmail String email,
             @RequestParam("password") String password,
@@ -53,10 +48,10 @@ public class AuthenticationController {
 
         String jwtToken = authServices.login(email, password, resp);
 
-        return ResponseEntity.ok(new JwtDTO(jwtToken, TOKEN_EXPIRE_TIME));
+        return ResponseEntity.ok(new JwtTokenDTO(jwtToken, TOKEN_EXPIRE_TIME));
     }
 
-    @PostMapping("/google")
+    @PostMapping("/auth/google")
     public ResponseEntity<Object> loginWithGoogle(
             @RequestParam("google_token")
             @NotBlank String googleToken
@@ -77,7 +72,7 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/refreshToken")
+    @PostMapping("/auth/refreshToken")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> refreshToken(
             @CookieValue(name = "refresh-token", defaultValue = "")
@@ -87,46 +82,31 @@ public class AuthenticationController {
 
         String newJwtToken = authServices.refreshToken(clientToken, req, resp);
 
-        return ResponseEntity.ok(new JwtDTO(newJwtToken, TOKEN_EXPIRE_TIME));
+        return ResponseEntity.ok(new JwtTokenDTO(newJwtToken, TOKEN_EXPIRE_TIME));
     }
 
-    @PostMapping("/registration")
+    @PostMapping("/auth/registration")
     public ResponseEntity<Object> register(
-            @Valid UserDTO userDTO,
-            HttpServletRequest req) {
+            @Valid @PasswordMatches AccountRegisterDTO accountRegisterDTO) {
 
-        if (!userDTO.getPassword().equals(userDTO.getMatchedPassword())) {
-            return ResponseEntity.badRequest().body("Password don't match");
-        }
+        Account account = authServices.registerNewAccount(accountRegisterDTO);
 
-        Account account = authServices.registerNewAccount(userDTO);
-        eventPublisher.publishEvent(new OnRegistrationEvent(account,
-                getAppUrl(req) + "/registrationConfirm?token="));
+        String registrationUrl = CLIENT_BASE_URL + "/auth/active/";
+        eventPublisher.publishEvent(new OnRegistrationEvent(account, registrationUrl));
 
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/registrationConfirm", params = {"token"})
-    public ModelAndView confirmRegistration(
-            @RequestParam("token") String token,
-            HttpServletRequest req) {
+    @PostMapping(value = "/auth/registrationConfirm")
+    public ResponseEntity<Object> confirmRegistration(
+            @RequestParam("token") String token) {
 
-        try {
-            authServices.validateRegisterToken(token);
-        } catch (CustomException ex) {
-            Map<String, String> modelMap = new HashMap<>();
-            modelMap.put("message", ex.getMessage());
-            if (ex.getHttpStatus() == HttpStatus.GONE) {
-                modelMap.put("token", token);
-                modelMap.put("link", getAppUrl(req) + "/resendRegistrationToken");
-            }
-            return new ModelAndView("registration-error", modelMap);
-        }
+        authServices.validateRegisterToken(token);
 
-        return new ModelAndView("registration-done");
+        return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/resendRegistrationToken", params = {"token"})
+    @GetMapping(value = "/auth/resendRegistrationToken", params = {"token"})
     public ResponseEntity<Object> resendRegistrationToken(
             @RequestParam("token") String existToken,
             HttpServletRequest req) {
@@ -139,23 +119,24 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/resetPassword")
+    @PostMapping("/auth/resetPassword")
     public ResponseEntity<Object> resetPassword(
-            @RequestParam("email") @ValidEmail String email,
-            HttpServletRequest req) {
+            @RequestParam("email") @ValidEmail String email) {
 
         Account account = authServices.findAccountByEmail(email);
 
         if (account == null) {
             return new ResponseEntity<>("Email not found", HttpStatus.NOT_FOUND);
         }
-        eventPublisher.publishEvent(new OnResetPasswordEvent(account
-                , getAppUrl(req) + "/changePassword?token="));
+
+        String resetPasswordUrl = CLIENT_BASE_URL + "/auth/resetPassword/";
+
+        eventPublisher.publishEvent(new OnResetPasswordEvent(account, resetPasswordUrl));
 
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/changePassword", params = {"token"})
+    @GetMapping(value = "/auth/changePassword", params = {"token"})
     public ResponseEntity<Object> verifyResetPasswordToken(
             @RequestParam("token") String token) {
 
@@ -164,13 +145,9 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
-    @PutMapping("/savePassword")
+    @PutMapping("/auth/savePassword")
     public ResponseEntity<Object> savePassword(
-            @Valid ResetPasswordDTO resetPasswordDTO) {
-
-        if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getMatchedPassword())) {
-            return ResponseEntity.badRequest().body("Password doesn't match");
-        }
+            @Valid @PasswordMatches ResetPasswordDTO resetPasswordDTO) {
 
         authServices.validatePasswordResetToken(resetPasswordDTO.getToken());
 
@@ -180,13 +157,14 @@ public class AuthenticationController {
             return new ResponseEntity<>("Account not found", HttpStatus.FORBIDDEN);
         }
 
-        authServices.changeAccountPassword(account, resetPasswordDTO.getNewPassword());
-        return ResponseEntity.noContent().build();
+        authServices.changeAccountPassword(account, resetPasswordDTO.getPassword());
+
+        return ResponseEntity.accepted().build();
     }
 
     /*----------------NON-API----------------*/
     private String getAppUrl(HttpServletRequest req) {
-        return "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath() + BASE_URL;
+        return "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
     }
 
 }
