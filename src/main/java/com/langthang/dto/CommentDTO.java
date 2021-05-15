@@ -9,7 +9,8 @@ import java.util.Date;
 @Builder
 public class CommentDTO {
     private int commentId;
-    private BasicAccountDTO commenter;
+    private AccountDTO commenter;
+    private int postId;
     private boolean isMyComment;
     private Date commentDate;
     private String content;
