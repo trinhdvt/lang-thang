@@ -2,16 +2,12 @@ package com.langthang.services;
 
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.model.entity.Post;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface IPostServices {
-    Post addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft);
-
-    Post findPostById(int postId);
-
-    boolean isPostNotFound(int postId);
+    PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft);
 
     PostResponseDTO getPostDetailById(int postId);
 
@@ -19,22 +15,23 @@ public interface IPostServices {
 
     PostResponseDTO getDraftById(int postId);
 
-    List<PostResponseDTO> getPreviewPost(int page, int size);
+    List<PostResponseDTO> getPreviewPost(Pageable pageable);
 
-    List<PostResponseDTO> getPreviewPost(int page, int size, String keyword);
+    List<PostResponseDTO> getPreviewPostByKeyword(String keyword, Pageable pageable);
 
     List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size);
 
-    List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, int page, int size);
+    List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, Pageable pageable);
 
     List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, int page, int size);
 
-    boolean checkResourceOwner(int postId, String ownerEmail);
+    void checkResourceExistAnOwner(int postId, String ownerEmail);
 
     void deletePostById(int postId);
 
-    Post updatePostById(int postId, PostRequestDTO postRequestDTO);
+    void updatePostById(int postId, PostRequestDTO postRequestDTO);
 
-    Post updateAndPublicDraft(PostRequestDTO postRequestDTO, Integer postId);
+    PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO);
 
+    List<PostResponseDTO> getAllPreviewPostOfCategory(int categoryId, Pageable pageable);
 }
