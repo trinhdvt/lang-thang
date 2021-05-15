@@ -2,12 +2,12 @@ package com.langthang.controller.post;
 
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.exception.CustomException;
-import com.langthang.model.entity.Post;
 import com.langthang.model.entity.Role;
 import com.langthang.services.IPostServices;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,13 +16,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import java.net.URI;
 import java.util.List;
 
 @RestController
 @Validated
-@Slf4j
 public class PostController {
 
     @Autowired
@@ -34,10 +31,6 @@ public class PostController {
 
         PostResponseDTO responseDTO = postServices.getPostDetailById(id);
 
-        if (responseDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -47,79 +40,69 @@ public class PostController {
 
         PostResponseDTO responseDTO = postServices.getPostDetailBySlug(slug);
 
-        if (responseDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping(value = "/post", params = {"size", "page"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponseDTO> getPreviewPost(
-            @RequestParam @Min(value = 0, message = "Page must greater than 0") int page,
-            @RequestParam @Min(value = 0, message = "Size must greater than 0") int size) {
+            @PageableDefault(sort = {"publishedDate"},
+                    direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return postServices.getPreviewPost(page, size);
+        return postServices.getPreviewPost(pageable);
     }
 
     @GetMapping(value = "/post", params = {"keyword", "page", "size"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponseDTO> searchPostByKeyword(
             @RequestParam("keyword") String keyword,
-            @RequestParam @Min(value = 0, message = "Page must greater than 0") int page,
-            @RequestParam @Min(value = 0, message = "Size must greater than 0") int size) {
+            @PageableDefault Pageable pageable) {
 
-        return postServices.getPreviewPost(page, size, keyword);
+        return postServices.getPreviewPostByKeyword(keyword, pageable);
     }
 
-    @GetMapping(value = "/post", params = {"sort"})
+    @GetMapping(value = "/post", params = {"prop"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponseDTO> getPopularPostByProperty(
-            @RequestParam("sort") String propertyName,
-            @RequestParam(value = "size", defaultValue = "5", required = false)
-            @Min(value = 1, message = "Size must greater than 1") int size) {
+            @RequestParam("prop") String propertyName,
+            @PageableDefault Pageable pageable) {
 
-        return postServices.getPopularPostByProperty(propertyName, size);
+        return postServices.getPopularPostByProperty(propertyName, pageable.getPageSize());
     }
 
     @PostMapping("/post")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> addPost(
-            @RequestBody @Valid PostRequestDTO postRequestDTO,
+            @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
+
         String authorEmail = authentication.getName();
-        Post savedPost;
+        PostResponseDTO savedPost;
 
         if (postRequestDTO.getPostId() != null) {
-            Integer postId = postRequestDTO.getPostId();
+            int postId = postRequestDTO.getPostId();
 
-            boolean isOwner = postServices.checkResourceOwner(postId, authorEmail);
-            if (!isOwner) {
-                throw new CustomException("You cannot public other people's post", HttpStatus.FORBIDDEN);
-            }
-            savedPost = postServices.updateAndPublicDraft(postRequestDTO, postId);
+            postServices.checkResourceExistAnOwner(postId, authorEmail);
+
+            savedPost = postServices.updateAndPublicDraft(postRequestDTO);
 
         } else {
             savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
         }
 
-        return ResponseEntity.created(URI.create("/post/" + savedPost.getId())).build();
+        return ResponseEntity.ok("/post/" + savedPost.getSlug());
     }
 
     @PutMapping(value = "/post/{id}")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> modifyPost(
             @PathVariable("id") int postId,
-            @RequestBody @Valid PostRequestDTO postRequestDTO,
+            @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
 
-        String ownerEmail = authentication.getName();
+        String authorEmail = authentication.getName();
 
-        boolean isOwner = postServices.checkResourceOwner(postId, ownerEmail);
-        if (!isOwner) {
-            throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
-        }
+        postServices.checkResourceExistAnOwner(postId, authorEmail);
 
         postServices.updatePostById(postId, postRequestDTO);
 
@@ -127,22 +110,15 @@ public class PostController {
     }
 
     @DeleteMapping(value = "/post/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> deletePost(
             @PathVariable("id") int postId,
             Authentication authentication) {
 
-        if (postServices.isPostNotFound(postId)) {
-            return ResponseEntity.notFound().build();
-        }
-
         if (authentication.getAuthorities().contains(Role.ROLE_MEMBER)) {
-            String ownerEmail = authentication.getName();
-            boolean isOwner = postServices.checkResourceOwner(postId, ownerEmail);
-            if (!isOwner) {
-                throw new CustomException("Forbidden"
-                        , HttpStatus.FORBIDDEN);
-            }
+            String authorEmail = authentication.getName();
+
+            postServices.checkResourceExistAnOwner(postId, authorEmail);
         }
 
         postServices.deletePostById(postId);
@@ -155,6 +131,7 @@ public class PostController {
     public ResponseEntity<Object> saveTemporaryPost(
             @RequestBody @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
+
         String authorEmail = authentication.getName();
 
         postServices.addNewPostOrDraft(postRequestDTO, authorEmail, true);
@@ -168,20 +145,11 @@ public class PostController {
             @PathVariable("id") int postId,
             Authentication authentication) {
 
-        if (postServices.isPostNotFound(postId)) {
-            return ResponseEntity.notFound().build();
-        }
+        String authorEmail = authentication.getName();
 
-        String ownerEmail = authentication.getName();
-        boolean isOwner = postServices.checkResourceOwner(postId, ownerEmail);
-        if (!isOwner) {
-            throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
-        }
+        postServices.checkResourceExistAnOwner(postId, authorEmail);
+
         PostResponseDTO postResponseDTO = postServices.getDraftById(postId);
-
-        if (postResponseDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
 
         return ResponseEntity.ok(postResponseDTO);
     }
@@ -190,14 +158,13 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> updateDraft(
             @PathVariable("id") int postId,
-            @RequestBody @Valid PostRequestDTO postRequestDTO,
+            @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
 
         String authorEmail = authentication.getName();
-        boolean isOwner = postServices.checkResourceOwner(postId, authorEmail);
-        if (!isOwner) {
-            throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
-        }
+
+        postServices.checkResourceExistAnOwner(postId, authorEmail);
+
         // update existing draft
         postServices.updatePostById(postRequestDTO.getPostId(), postRequestDTO);
 
@@ -210,16 +177,10 @@ public class PostController {
             @PathVariable("id") int postId,
             Authentication authentication) {
 
-        if (postServices.isPostNotFound(postId)) {
-            return ResponseEntity.notFound().build();
-        }
+        String authorEmail = authentication.getName();
 
-        String ownerEmail = authentication.getName();
-        boolean isOwner = postServices.checkResourceOwner(postId, ownerEmail);
-        if (!isOwner) {
-            throw new CustomException("Forbidden"
-                    , HttpStatus.FORBIDDEN);
-        }
+        postServices.checkResourceExistAnOwner(postId, authorEmail);
+
         postServices.deletePostById(postId);
 
         return ResponseEntity.noContent().build();
