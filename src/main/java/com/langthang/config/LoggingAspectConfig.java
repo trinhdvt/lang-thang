@@ -1,6 +1,5 @@
 package com.langthang.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -40,7 +39,6 @@ public class LoggingAspectConfig {
 
     @Around("applicationPointCut() && springBeanPointCut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        ObjectMapper jackson = new ObjectMapper();
         if (log.isDebugEnabled()) {
             log.debug("Enter: {}.{}() with arguments[s] = {}",
                     joinPoint.getSignature().getDeclaringTypeName(),
@@ -54,7 +52,7 @@ public class LoggingAspectConfig {
                 log.debug("Exit: {}.{}() with result = {}",
                         joinPoint.getSignature().getDeclaringTypeName(),
                         joinPoint.getSignature().getName(),
-                        jackson.writeValueAsString(result));
+                        result);
             }
             return result;
         } catch (Throwable throwable) {
