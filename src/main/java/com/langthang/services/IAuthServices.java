@@ -1,6 +1,6 @@
 package com.langthang.services;
 
-import com.langthang.dto.UserDTO;
+import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.RegisterToken;
 
@@ -12,7 +12,7 @@ public interface IAuthServices {
 
     String refreshToken(String clientToken, HttpServletRequest req, HttpServletResponse resp);
 
-    Account registerNewAccount(UserDTO userDTO);
+    Account registerNewAccount(AccountRegisterDTO accountRegisterDTO);
 
     String createVerifyToken(Account account);
 
