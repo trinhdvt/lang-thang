@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class AccountRegisterDTO {
     @NotNull
     @NotEmpty
     private String name;
