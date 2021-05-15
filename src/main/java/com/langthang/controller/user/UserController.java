@@ -1,18 +1,21 @@
 package com.langthang.controller.user;
 
 import com.langthang.annotation.ValidEmail;
-import com.langthang.dto.BasicAccountDTO;
+import com.langthang.dto.AccountDTO;
+import com.langthang.dto.AccountInfoDTO;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Min;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,7 +32,7 @@ public class UserController {
     public ResponseEntity<Object> getInformationOfUser(
             @PathVariable("account_id") int accountId) {
 
-        BasicAccountDTO accountDTO = userServices.getDetailInformation(accountId);
+        AccountDTO accountDTO = userServices.getDetailInformation(accountId);
 
         return ResponseEntity.ok(accountDTO);
     }
@@ -38,7 +41,7 @@ public class UserController {
     public ResponseEntity<Object> getInformationOfUser(
             @RequestParam("email") @ValidEmail String email) {
 
-        BasicAccountDTO accountDTO = userServices.getDetailInformation(email);
+        AccountDTO accountDTO = userServices.getDetailInformation(email);
 
         return ResponseEntity.ok(accountDTO);
     }
@@ -46,12 +49,9 @@ public class UserController {
     @GetMapping("/user/posts/{account_id}")
     public ResponseEntity<Object> getAllPostsOfUser(
             @PathVariable("account_id") int accountId,
-            @RequestParam(value = "page", required = false, defaultValue = "0")
-            @Min(value = 0, message = "Page must >= 0") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "5")
-            @Min(value = 1, message = "Size must >= 1") int size) {
+            @PageableDefault(sort = {"publishedDate"}) Pageable pageable) {
 
-        List<PostResponseDTO> responseList = postServices.getAllPreviewPostOfUser(accountId, page, size);
+        List<PostResponseDTO> responseList = postServices.getAllPreviewPostOfUser(accountId, pageable);
 
         return ResponseEntity.ok(responseList);
     }
@@ -67,5 +67,18 @@ public class UserController {
         int currentFollowCount = userServices.followOrUnfollow(currentAccount, accountId);
 
         return ResponseEntity.accepted().body(currentFollowCount);
+    }
+
+    @PutMapping("/user/update")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> updateUserBasicInfo(
+            @Valid AccountInfoDTO newInfo,
+            Authentication authentication) {
+
+        String currentEmail = authentication.getName();
+
+        AccountDTO updated = userServices.updateBasicInfo(currentEmail, newInfo);
+
+        return ResponseEntity.accepted().body(updated);
     }
 }
