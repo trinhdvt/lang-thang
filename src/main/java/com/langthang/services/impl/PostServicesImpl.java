@@ -2,17 +2,15 @@ package com.langthang.services.impl;
 
 import com.langthang.dto.*;
 import com.langthang.exception.CustomException;
-import com.langthang.model.entity.Account;
-import com.langthang.model.entity.Comment;
-import com.langthang.model.entity.Post;
-import com.langthang.model.entity.Tag;
+import com.langthang.model.entity.*;
 import com.langthang.repository.AccountRepository;
+import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IPostServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,25 +37,37 @@ public class PostServicesImpl implements IPostServices {
     @Autowired
     private AccountRepository accRepo;
 
+    @Autowired
+    private CategoryRepository categoryRepo;
+
     @Override
-    public Post addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft) {
+    public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft) {
         Post post = dtoToEntity(postRequestDTO);
-        post.setAccount(accRepo.findByEmail(authorEmail));
+        post.setAccount(accRepo.findAccountByEmail(authorEmail));
         post.setStatus(!isDraft);
         post.setPublishedDate(new Date());
-        post.setLastModified(new Date());
 
-        return postRepo.save(post);
+        Post savedPost = postRepo.saveAndFlush(post);
+        return PostResponseDTO.builder()
+                .postId(savedPost.getId())
+                .slug(savedPost.getSlug())
+                .build();
     }
 
     @Override
-    public Post findPostById(int postId) {
-        return null;
-    }
+    public PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO) {
+        Post existingPost = postRepo.findPostById(postRequestDTO.getPostId());
+        existingPost.setTitle(postRequestDTO.getTitle());
+        existingPost.setContent(postRequestDTO.getContent());
+        existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
+        existingPost.setPublishedDate(new Date());
+        existingPost.setStatus(true);
 
-    @Override
-    public boolean isPostNotFound(int postId) {
-        return !postRepo.existsById(postId);
+        Post savedPost = postRepo.save(existingPost);
+        return PostResponseDTO.builder()
+                .postId(savedPost.getId())
+                .slug(savedPost.getSlug())
+                .build();
     }
 
     @Override
@@ -65,7 +75,7 @@ public class PostServicesImpl implements IPostServices {
         Post post = postRepo.findPostByIdAndStatus(postId, true);
 
         if (post == null) {
-            return null;
+            throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
         }
 
         return entityToDTO(post);
@@ -76,7 +86,7 @@ public class PostServicesImpl implements IPostServices {
         Post post = postRepo.findPostBySlugAndStatus(slug, true);
 
         if (post == null) {
-            return null;
+            throw new CustomException("Post " + slug + " not found", HttpStatus.NOT_FOUND);
         }
 
         return entityToDTO(post);
@@ -86,8 +96,9 @@ public class PostServicesImpl implements IPostServices {
     public PostResponseDTO getDraftById(int postId) {
         Post post = postRepo.findPostByIdAndStatus(postId, false);
 
-        if (post == null)
-            return null;
+        if (post == null) {
+            throw new CustomException("Draft with id " + postId + " not found", HttpStatus.NOT_FOUND);
+        }
 
         return PostResponseDTO.builder()
                 .postId(postId)
@@ -98,18 +109,14 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> getPreviewPost(int page, int size) {
-        Page<PostResponseDTO> postResp = postRepo.getPreviewPost(PageRequest.of(page, size
-                , Sort.by(Sort.Direction.DESC, "publishedDate")));
-
+    public List<PostResponseDTO> getPreviewPost(Pageable pageable) {
+        Page<PostResponseDTO> postResp = postRepo.getPreviewPost(pageable);
         return pageOfPostToListOfPreviewPost(postResp);
     }
 
-
     @Override
-    public List<PostResponseDTO> getPreviewPost(int page, int size, String keyword) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<PostResponseDTO> postResp = postRepo.getPreviewPostByKeyword(keyword, pageRequest);
+    public List<PostResponseDTO> getPreviewPostByKeyword(String keyword, Pageable pageable) {
+        Page<PostResponseDTO> postResp = postRepo.getPreviewPostByKeyword(keyword, pageable);
 
         return pageOfPostToListOfPreviewPost(postResp);
     }
@@ -123,11 +130,11 @@ public class PostServicesImpl implements IPostServices {
         try {
             switch (SORT_TYPE.valueOf(propertyName.toUpperCase())) {
                 case BOOKMARK:
-                    responseList = postRepo.getPopularPostByBookmarkCount(pageRequest);
+                    responseList = postRepo.getListOfPopularPostByBookmarkCount(pageRequest);
                     break;
 
                 case COMMENT:
-                    responseList = postRepo.getPopularPostByCommentCount(pageRequest);
+                    responseList = postRepo.getListOfPopularPostByCommentCount(pageRequest);
                     break;
 
                 default:
@@ -143,14 +150,13 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, int page, int size) {
+    public List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, Pageable pageable) {
         Account account = accRepo.findById(accountId).orElse(null);
         if (account == null) {
             throw new CustomException("Account with id: " + accountId + " not found", HttpStatus.NOT_FOUND);
         }
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<PostResponseDTO> responseList = postRepo.getAllPreviewPostOfUser(accountId, pageRequest);
+        Page<PostResponseDTO> responseList = postRepo.getAllPreviewPostOfUser(accountId, pageable);
 
         return pageOfPostToListOfPreviewPost(responseList);
     }
@@ -164,8 +170,16 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public boolean checkResourceOwner(int postId, String ownerEmail) {
-        return postRepo.existsByIdAndAccount_Email(postId, ownerEmail);
+    public void checkResourceExistAnOwner(int postId, String ownerEmail) {
+
+        if (!postRepo.existsById(postId)) {
+            throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (!postRepo.existsByIdAndAccount_Email(postId, ownerEmail)) {
+            throw new CustomException("Access Denied", HttpStatus.FORBIDDEN);
+        }
+
     }
 
     @Override
@@ -174,27 +188,27 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public Post updatePostById(int postId, PostRequestDTO postRequestDTO) {
+    public void updatePostById(int postId, PostRequestDTO postRequestDTO) {
         Post oldPost = postRepo.findPostById(postId);
         oldPost.setLastModified(new Date());
         oldPost.setTitle(postRequestDTO.getTitle());
         oldPost.setContent(postRequestDTO.getContent());
         oldPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
 
-        return postRepo.save(oldPost);
+        postRepo.save(oldPost);
     }
 
     @Override
-    public Post updateAndPublicDraft(PostRequestDTO postRequestDTO, Integer postId) {
-        Post existingPost = postRepo.findPostById(postId);
-        existingPost.setTitle(postRequestDTO.getTitle());
-        existingPost.setContent(postRequestDTO.getContent());
-        existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
-        existingPost.setLastModified(new Date());
-        existingPost.setPublishedDate(new Date());
-        existingPost.setStatus(true);
+    public List<PostResponseDTO> getAllPreviewPostOfCategory(int categoryId, Pageable pageable) {
+        Category category = categoryRepo.findById(categoryId).orElse(null);
 
-        return postRepo.save(existingPost);
+        if (category == null) {
+            throw new CustomException("Category with id: " + categoryId + " not found", HttpStatus.NOT_FOUND);
+        }
+
+        Page<PostResponseDTO> responseList = postRepo.findPostByCategories(category, pageable);
+
+        return pageOfPostToListOfPreviewPost(responseList);
     }
 
     private List<PostResponseDTO> pageOfPostToListOfPreviewPost(Page<PostResponseDTO> postResp) {
@@ -214,27 +228,17 @@ public class PostServicesImpl implements IPostServices {
     }
 
     private PostResponseDTO entityToDTO(Post post) {
-        BasicAccountDTO author = toAccountDTO(post.getAccount());
+        Account author = post.getAccount();
+
+        AccountDTO authorDTO = AccountDTO.toBasicAccount(author);
+        authorDTO.setPostCount(postRepo.countByAccount_Id(author.getId()));
+        authorDTO.setFollowCount(accRepo.countFollowing(author.getId()));
 
         PostResponseDTO postResponse = toPostResponseDTO(post);
-        postResponse.setAuthor(author);
+        postResponse.setAuthor(authorDTO);
         postResponse.setOwner(author.getEmail().equals(getCurrentAccEmail()));
 
         return postResponse;
-    }
-
-    private BasicAccountDTO toAccountDTO(Account account) {
-
-        return BasicAccountDTO.builder()
-                .accountId(account.getId())
-                .email(account.getEmail())
-                .name(account.getName())
-                .avatarLink(account.getAvatarLink())
-                .about(account.getAbout())
-                .occupation(account.getOccupation())
-                .postCount(postRepo.countByAccount_Id(account.getId()))
-                .followCount(accRepo.countFollowing(account.getId()))
-                .build();
     }
 
     private PostResponseDTO toPostResponseDTO(Post post) {
@@ -265,12 +269,7 @@ public class PostServicesImpl implements IPostServices {
     private CommentDTO commentMapper(Comment comment) {
         Account commenter = comment.getAccount();
 
-        BasicAccountDTO commenterDTO = BasicAccountDTO.builder()
-                .accountId(commenter.getId())
-                .name(commenter.getName())
-                .email(commenter.getEmail())
-                .avatarLink(commenter.getAvatarLink())
-                .build();
+        AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
 
         return CommentDTO.builder()
                 .commentId(comment.getId())
