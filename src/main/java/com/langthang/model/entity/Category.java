@@ -1,9 +1,12 @@
 package com.langthang.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -15,11 +18,13 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @NonNull
     private String name;
 
     @ManyToMany(mappedBy = "postCategories")
-    private Set<Post> postCategories;
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    private List<Post> postCategories = new ArrayList<>();
 
     @Override
     public String toString() {

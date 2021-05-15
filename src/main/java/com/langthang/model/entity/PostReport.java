@@ -17,26 +17,35 @@ public class PostReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    private Date reportDate;
+    private Date reportedDate;
+
     private String content;
+
     private boolean isSolved;
+
     private String decision;
+
+    public PostReport(Account account, Post post, String content) {
+        this.account = account;
+        this.post = post;
+        this.content = content;
+        this.isSolved = false;
+        this.reportedDate = new Date();
+    }
 
     @Override
     public String toString() {
         return "PostReport{" +
                 "id=" + id +
-                ", account_email=" + account.getEmail() +
-                ", post_id=" + post.getId() +
-                ", reportDate=" + reportDate +
+                ", reportedDate=" + reportedDate +
                 ", content='" + content + '\'' +
                 ", isSolved=" + isSolved +
                 ", decision='" + decision + '\'' +
