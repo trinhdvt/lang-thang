@@ -65,7 +65,7 @@ public class Post {
 
     private boolean status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -73,7 +73,7 @@ public class Post {
             , fetch = FetchType.LAZY)
     private Set<PostReport> postReports;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "post_tag",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -81,7 +81,7 @@ public class Post {
     )
     private Set<Tag> postTag;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "post_category",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -92,7 +92,7 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private Set<BookmarkedPost> bookmarkedPosts;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     @OrderBy("commentDate ASC")
     private List<Comment> comments;
 
@@ -101,6 +101,7 @@ public class Post {
     public void encodeContentAndCreateSlug() {
         content = HtmlUtils.htmlEscape(content);
         slug = Utils.createSlug(title) + "-" + System.currentTimeMillis();
+        lastModified = new Date();
     }
 
     @Override
