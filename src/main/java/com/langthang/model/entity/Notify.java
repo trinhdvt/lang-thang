@@ -17,7 +17,7 @@ public class Notify {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
@@ -25,20 +25,33 @@ public class Notify {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_account_id")
+    private Account sourceAccount;
+
     private String content;
 
     private Date notifyDate;
 
-    private boolean isSeen;
+    @Column(name = "is_seen")
+    private boolean seen;
+
+    public Notify(Account account, Post post, Account sourceAccount, String content) {
+        this.account = account;
+        this.post = post;
+        this.sourceAccount = sourceAccount;
+        this.content = content;
+        this.notifyDate = new Date();
+        this.seen = false;
+    }
 
     @Override
     public String toString() {
         return "Notify{" +
                 "id=" + id +
-                ", post=" + (post != null ? post.getId() : "null") +
                 ", content='" + content + '\'' +
                 ", notifyDate=" + notifyDate +
-                ", isSeen=" + isSeen +
+                ", isSeen=" + seen +
                 '}';
     }
 }
