@@ -1,12 +1,22 @@
 package com.langthang.services;
 
-import com.langthang.dto.BasicAccountDTO;
+import com.langthang.dto.AccountDTO;
+import com.langthang.dto.AccountInfoDTO;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface IUserServices {
 
-    BasicAccountDTO getDetailInformation(int accountId);
+    AccountDTO getDetailInformation(int accountId);
 
-    BasicAccountDTO getDetailInformation(String email);
+    AccountDTO getDetailInformation(String email);
 
     int followOrUnfollow(String currentAccEmail, int accountId);
+
+    List<AccountDTO> getTopFollowUser(int num);
+
+    List<AccountDTO> getListOfUserInSystem(Pageable pageable);
+
+    AccountDTO updateBasicInfo(String currentEmail, AccountInfoDTO newInfo);
 }
