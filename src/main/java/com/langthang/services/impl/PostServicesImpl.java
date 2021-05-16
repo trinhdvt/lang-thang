@@ -57,6 +57,11 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO) {
         Post existingPost = postRepo.findPostById(postRequestDTO.getPostId());
+        if (existingPost == null) {
+            throw new CustomException("Draft with id: " + postRequestDTO.getPostId() + "not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
         existingPost.setTitle(postRequestDTO.getTitle());
         existingPost.setContent(postRequestDTO.getContent());
         existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
@@ -162,9 +167,8 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<PostResponseDTO> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageRequest);
+    public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable) {
+        Page<PostResponseDTO> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable);
 
         return pageOfPostToListOfPreviewPost(responseList);
     }
