@@ -36,6 +36,20 @@ Trả về thông tin chi tiết của một User
 
     * **Code**: `404 NOT_FOUND` - User không tồn tại
 
+## Lấy ra thông tin chi tiết của User hiện tại
+
+----
+Trả về thông tin chi tiết của User hiện tại
+
+* **URL**: `/whoami`
+
+* **Method:** `GET`
+
+* **Success Response:** : Như trên
+* **Error Response:**
+
+    * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
+
 ## Lấy ra các bài viết của một User
 
 ----
