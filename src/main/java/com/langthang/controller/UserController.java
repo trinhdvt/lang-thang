@@ -48,6 +48,18 @@ public class UserController {
         return ResponseEntity.ok(accountDTO);
     }
 
+    @GetMapping("/whoami")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> getCurrentUserInfo(
+            Authentication authentication){
+
+        String currentEmail = authentication.getName();
+
+        AccountDTO accountDTO = userServices.getDetailInformation(currentEmail);
+
+        return ResponseEntity.ok(accountDTO);
+    }
+
     @GetMapping("/user/posts/{account_id}")
     public ResponseEntity<Object> getAllPostsOfUser(
             @PathVariable("account_id") int accountId,
