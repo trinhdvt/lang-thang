@@ -45,6 +45,7 @@ public class AccountDTO {
                 .accountId(entity.getId())
                 .name(entity.getName())
                 .email(entity.getEmail())
+                .role(entity.getRole() != Role.ROLE_ADMIN ? null : entity.getRole())
                 .avatarLink(entity.getAvatarLink())
                 .fbLink(entity.getFbLink())
                 .instagramLink(entity.getInstagramLink())
