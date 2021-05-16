@@ -21,8 +21,4 @@ public class ResetPasswordDTO {
     @NotEmpty
     @Size(min = 6, message = "Password must contain at least 6 character")
     private String matchedPassword;
-
-    @NonNull
-    @NotEmpty
-    private String token;
 }
