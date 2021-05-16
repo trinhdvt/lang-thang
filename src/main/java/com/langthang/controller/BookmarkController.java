@@ -39,7 +39,7 @@ public class BookmarkController {
     @PostMapping("/bookmark")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> bookmarkPost(
-            @RequestParam("post_id") int postId,
+            @RequestParam("postId") int postId,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
@@ -51,7 +51,7 @@ public class BookmarkController {
     @DeleteMapping("/bookmark")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> deleteBookmark(
-            @RequestParam("post_id") int postId,
+            @RequestParam("postId") int postId,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
