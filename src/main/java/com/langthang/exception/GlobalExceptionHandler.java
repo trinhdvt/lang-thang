@@ -1,5 +1,6 @@
 package com.langthang.exception;
 
+import org.hibernate.QueryException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
@@ -49,9 +50,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), ex.getHttpStatus());
     }
 
-//
-//    @ExceptionHandler(Throwable.class)
-//    public ResponseEntity<Object> handleThrowable(Throwable ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+
+    @ExceptionHandler(QueryException.class)
+    public ResponseEntity<Object> handleQueryException(QueryException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
