@@ -1,5 +1,6 @@
 package com.langthang.model.entity;
 
+import com.langthang.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,6 +40,13 @@ public class PostReport {
         this.content = content;
         this.isSolved = false;
         this.reportedDate = new Date();
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void escapeHtml(){
+        this.content = Utils.escapeHtml(content);
+        this.decision = Utils.escapeHtml(decision);
     }
 
     @Override

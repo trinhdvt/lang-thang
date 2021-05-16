@@ -1,5 +1,6 @@
 package com.langthang.model.entity;
 
+import com.langthang.utils.Utils;
 import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -25,6 +26,12 @@ public class Category {
     @ManyToMany(mappedBy = "postCategories")
     @LazyCollection(LazyCollectionOption.EXTRA)
     private List<Post> postCategories = new ArrayList<>();
+
+    @PrePersist
+    @PreUpdate
+    public void escapeHtml() {
+        this.name = Utils.escapeHtml(name);
+    }
 
     @Override
     public String toString() {

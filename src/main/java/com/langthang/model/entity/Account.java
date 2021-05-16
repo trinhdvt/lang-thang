@@ -1,5 +1,6 @@
 package com.langthang.model.entity;
 
+import com.langthang.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
@@ -89,6 +90,12 @@ public class Account {
         if (this.avatarLink == null || this.avatarLink.isEmpty()) {
             this.avatarLink = "https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png";
         }
+        this.name = Utils.escapeHtml(name);
+        this.about = Utils.escapeHtml(about);
+        this.avatarLink = Utils.escapeHtml(avatarLink);
+        this.occupation = Utils.escapeHtml(occupation);
+        this.fbLink = Utils.escapeHtml(fbLink);
+        this.instagramLink = Utils.escapeHtml(instagramLink);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.langthang.model.entity;
 
+import com.langthang.utils.Utils;
 import lombok.*;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -46,7 +46,7 @@ public class Comment {
     @PreUpdate
     @PostUpdate
     void encodeContent() {
-        this.content = HtmlUtils.htmlEscape(content);
+        this.content = Utils.escapeHtml(content);
     }
 
     @Override

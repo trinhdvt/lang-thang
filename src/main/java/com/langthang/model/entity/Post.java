@@ -3,7 +3,6 @@ package com.langthang.model.entity;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.utils.Utils;
 import lombok.*;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -99,8 +98,10 @@ public class Post {
     @PrePersist
     @PreUpdate
     public void encodeContentAndCreateSlug() {
-        content = HtmlUtils.htmlEscape(content);
         slug = Utils.createSlug(title) + "-" + System.currentTimeMillis();
+        content = Utils.escapeHtml(content);
+        title = Utils.escapeHtml(title);
+        postThumbnail = Utils.escapeHtml(postThumbnail);
         lastModified = new Date();
     }
 

@@ -1,5 +1,6 @@
 package com.langthang.model.entity;
 
+import com.langthang.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
@@ -43,6 +44,12 @@ public class Notify {
         this.content = content;
         this.notifyDate = new Date();
         this.seen = false;
+    }
+
+    @PreUpdate
+    @PrePersist
+    public void escapeHtml() {
+        this.content = Utils.escapeHtml(content);
     }
 
     @Override
