@@ -5,7 +5,6 @@ import com.langthang.dto.AccountInfoDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.FollowingRelationship;
-import com.langthang.model.entity.Role;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.FollowRelationshipRepo;
 import com.langthang.services.IUserServices;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +29,9 @@ public class UserServicesImpl implements IUserServices {
 
     @Autowired
     private FollowRelationshipRepo followRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public AccountDTO getDetailInformation(int accountId) {
@@ -105,21 +108,33 @@ public class UserServicesImpl implements IUserServices {
         return AccountDTO.toBasicAccount(savedAccount);
     }
 
+    @Override
+    public void checkEmailAndPassword(String currentEmail, String oldPassword) {
+        Account account = accRepo.findAccountByEmail(currentEmail);
+
+        String currentPassword = account.getPassword();
+        if (!currentPassword.equals(passwordEncoder.encode(oldPassword))) {
+            throw new CustomException("Wrong old password", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+    }
+
+    @Override
+    public void updatePassword(String currentEmail, String newPassword) {
+        Account account = accRepo.findAccountByEmail(currentEmail);
+
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accRepo.saveAndFlush(account);
+    }
+
     private AccountDTO toDetailAccountDTO(Account account) {
-        return AccountDTO.builder()
-                .accountId(account.getId())
-                .name(account.getName())
-                .email(account.getEmail())
-                .role(account.getRole() != Role.ROLE_ADMIN ? null : account.getRole())
-                .avatarLink(account.getAvatarLink())
-                .fbLink(account.getFbLink())
-                .instagramLink(account.getInstagramLink())
-                .about(account.getAbout())
-                .occupation(account.getOccupation())
-                .followCount(accRepo.countFollowing(account.getId()))
-                .postCount(accRepo.countPublishedPost(account.getId()))
-                .bookmarkOnOwnPostCount(accRepo.countBookmarkOnMyPost(account.getId()))
-                .commentOnOwnPostCount(accRepo.countCommentOnMyPost(account.getId()))
-                .build();
+        AccountDTO basicAccountDTO = AccountDTO.toBasicAccount(account);
+
+        basicAccountDTO.setFollowCount(accRepo.countFollowing(account.getId()));
+        basicAccountDTO.setPostCount(accRepo.countPublishedPost(account.getId()));
+        basicAccountDTO.setBookmarkOnOwnPostCount(accRepo.countBookmarkOnMyPost(account.getId()));
+        basicAccountDTO.setCommentOnOwnPostCount(accRepo.countCommentOnMyPost(account.getId()));
+
+        return basicAccountDTO;
     }
 }
