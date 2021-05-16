@@ -19,4 +19,8 @@ public interface IUserServices {
     List<AccountDTO> getListOfUserInSystem(Pageable pageable);
 
     AccountDTO updateBasicInfo(String currentEmail, AccountInfoDTO newInfo);
+
+    void checkEmailAndPassword(String currentEmail, String oldPassword);
+
+    void updatePassword(String currentEmail, String password);
 }
