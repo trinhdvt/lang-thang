@@ -83,6 +83,14 @@ public class Account {
     )
     private Set<Comment> likedComments;
 
+    @PrePersist
+    @PreUpdate
+    public void setAvatarLink() {
+        if (this.avatarLink == null || this.avatarLink.isEmpty()) {
+            this.avatarLink = "https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png";
+        }
+    }
+
     @Override
     public String toString() {
         return "Account{" +
