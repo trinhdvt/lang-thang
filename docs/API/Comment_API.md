@@ -11,9 +11,7 @@ Trả về 1 danh sách các comment của một bài viết
 
 * **Success Response:**
 
-    - **Code:** 200 
-      
-      **Content:** 1 danh sách các comment
+    - **Code:** 200 OK - Kèm 1 danh sách các Comment thuộc bài viết đó
 
     * **Example:** `GET /comment/post/3`
     
@@ -81,18 +79,16 @@ Thêm 1 comment vào bài viết
 
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Params**
+* **Request Body** `Content-Type: multipart/form-data`
 
-  | Name                | Type       | Description            |
-  | ----------          |:------:    | ------------           |
-  | `content`           | `string`   | Nội dung của comment   |
+  | Name       | Type       | Description            |
+  | ---------- |:------:    | ------------           |
+  | `content`  | `string`   | Nội dung của comment   |
 
 * **Success Response:**
 
-    * **Code:** 200 
-      
-      **Content:** thông tin của comment vừa được thêm
-    
+    * **Code:** 200 - Kèm thông tin của Comment vừa được thêm
+  
     * **Example**:
     
 ```json5
@@ -125,7 +121,7 @@ Thêm 1 comment vào bài viết
     * **Code**: 422 UNPROCESSABLE_ENTITY - bài viết không tồn tại
 
     * **Code**: 403 FORBIDDEN - chưa đăng nhập
-    
+
 ## Sửa một comment
 
 ----
@@ -137,11 +133,11 @@ Sửa nội dung của một comment
   
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Params**
+* **Request Body** `Content-Type: multipart/form-data`
 
-  | Name        | Type       | Description                      |
-  | ----------  |:------:    | ------------                     |
-  | `content`   | `string`   | Nội dung mới                     |
+  | Name        | Type       | Description  |
+  | ----------  |:------:    | ------------ |
+  | `content`   | `string`   | Nội dung mới |
 
 * **Response:** Giống y như phần trên
 
@@ -158,10 +154,8 @@ Xoá một comment
 
 * **Success Response:**
 
-    * **Code:** 200
-      
-      **Content:** số lượng comment của bài viết hiện tại
-
+    * **Code:** 200 - Xoá thành công kèm theo số lượng comment của bài viết hiện tại
+  
 * **Error Response:**
 
     * **Code**: 422 UNPROCESSABLE_ENTITY - comment không tồn tại
@@ -181,12 +175,10 @@ Like / Unlike comment, nếu đã like thì sẽ trở thành unlike và ngượ
 
 * **Success Response:**
 
-    * **Code:** 200
-
-      **Content:** số lượng like của comment vừa rồi
-
+    * **Code:** 200 - Kèm theo số lượng like của comment vừa rồi
+  
 * **Error Response:**
 
     * **Code**: 422 UNPROCESSABLE_ENTITY - comment không tồn tại
 
-    * **Code**: 403 FORBIDDEN - chưa đăng nhập / không sở hữu
+    * **Code**: 403 FORBIDDEN - Chưa đăng nhập / không sở hữu
