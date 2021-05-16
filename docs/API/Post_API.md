@@ -26,17 +26,18 @@ Trả về 1 danh sách các bài viết được sắp xếp theo ngày đăng 
 
 * **Request Params**
 
-  | Name         | Type       | Description                     |
-  | ----------   |:------:    | ------------                    |
-  | `page`       | `int >= 0` | Số lượng bài viết muốn lấy về   |
-  | `size`       | `int >= 0` | Index của trang                 |
+  | Name         | Type       | Description                     | Default |
+  | ----------   |:------:    | ------------                    | ------- |
+  | `size`       | `int >= 0` | Số lượng bài viết muốn lấy về   | 10      |
+  | `page`       | `int >= 0` | Index của trang                 | 0       |
 
 * **Success Response:**
 
-    - **Code:** 200 <br />
+    * **Code:** `200 OK`
+      
       **Content:** 1 danh sách các bài kèm theo các thông tin cơ bản
 
-    * **Example:** `GET /post?page=0&size=3`
+    * **Example:** `GET /post?page=0&size=3` hoặc `GET /post`
   
     ```json5
     [{
@@ -81,18 +82,19 @@ Trả về 1 danh sách các bài viết được sắp xếp dựa theo số l�
 
 * **Request Params**
 
-  | Name                | Type       | Description                                                    |
-  | ----------          |:------:    | ------------                                                   |
-  | `sort`              | `string`   | Tiêu chí để sắp xếp (hiện tại mới có `comment` và `bookmark`   |
-  | `size <optional>`   | `int >= 1` | Số lượng bài viết trả về (mặc định là 5)                       |
+  | Name     | Type       | Description                                                    | Default |
+  | -------- |:------:    | ------------                                                   | ------- |
+  | `prop`   | `string`   | Tiêu chí để sắp xếp (hiện tại mới có `comment` và `bookmark`   |         |
+  | `page`   | `int >= 1` | Index của page                                                 | 0       |
+  | `size`   | `int >= 1` | Số lượng bài viết trả về                                       | 10      | 
 
 * **Success Response:**
 
-    - **Code:** 200 
+    - **Code:** `200 OK`
       
       **Content:** 1 danh sách các bài kèm theo các thông tin cơ bản
 
-    * **Example:** `GET /post?sort=bookmark` hoặc `GET /post?sort=bookmark&size=5`
+    * **Example:** `GET /post?prop=bookmark` hoặc `GET /post?prop=bookmark&size=5`
 
     ```json5
     [{
@@ -126,7 +128,8 @@ Trả về 1 danh sách các bài viết được sắp xếp dựa theo số l�
 
 * **Error Response:**
 
-    * **Code**: 422 UNPROCESSABLE_ENTITY
+    * **Code**: `422 UNPROCESSABLE_ENTITY`
+      
     * **Content**: Không hỗ trợ với thuộc tính này
 
 ## Tìm kiếm các bài viết theo tiêu đề và nội dung
@@ -134,17 +137,17 @@ Trả về 1 danh sách các bài viết được sắp xếp dựa theo số l�
 ----
 Trả về 1 danh sách các bài viết với tiêu đề hoặc nội dung có liên quan tới từ khóa
 
-* **URL**: `/post/`
+* **URL**: `/post`
 
 * **Method:** `GET`
 
 * **Request Params**
 
-  | Name        | Type       | Description                      |
-  | ----------  |:------:    | ------------                     |
-  | `keyword`   | `string`   | Từ khóa cần tìm                  |
-  | `page`      | `int >= 0` | Số lượng bài viết muốn lấy về    |
-  | `size`      | `int >= 0` | Index của trang                  |
+  | Name        | Type       | Description                      | Default |
+  | ----------  |:------:    | ------------                     | ------- |
+  | `keyword`   | `string`   | Từ khóa cần tìm                  |         |
+  | `size`      | `int >= 0` | Số lượng bài viết muốn lấy về    | 10      |
+  | `page`      | `int >= 0` | Index của trang                  | 0       |
 
 * **Response:** Giống y như phần trên
 
@@ -161,7 +164,7 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Success Response:**
 
-    * **Code:** 200
+    * **Code:** `200 OK`
       
       **Content:** một loạt thông tin về bài viết
       
@@ -170,7 +173,7 @@ Trả về thông tin chi tiết của một bài viết
         - `bookmarked = true` - `tôi` đã bookmark bài viết này
         - `myComment = true` - đây là comment của `tôi`
         - `liked = true` - `tôi` đã like comment này
-        - nếu chưa đăng nhập thì mặc định là false hết
+        - nếu chưa đăng nhập thì mặc định là `false` hết
     
     * **Example**: `GET /post/1`
   
@@ -229,20 +232,26 @@ Trả về thông tin chi tiết của một bài viết
 }
 ```
 
-* **Error Response:** `Code != 200` là có lỗi hết
+* **Error Response:**
   
-    * **Code:** 404 NOT FOUND 
+    * **Code:** `404 NOT FOUND` - Không tồn tại
 
 ## Lấy thông tin chi tiết của một bài viết bằng slug
 
 ----
 Trả về thông tin chi tiết của một bài viết
 
-* **URL**: `/post/{slug}`
+* **URL**: `/post`
 
 * **Method:** `GET`
 
 * **Header**: `Authorization: Bearer <token hiện tại hoặc rỗng (nếu như chưa đăng nhập)>`
+
+* **Request Param:**
+
+  | Name     | Type       | Description         | Default |
+  | -------- |:------:    | ------------        | ------- |
+  | `slug`   | `string`   | `slug` của bài viết |         |
 
 * **Response:** Xem lại phần trên
 
@@ -257,7 +266,7 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Body:**
+* **Request Body:** `Content-Type: multipart/form-data`
 
 | Name              | Type     | Description                        |
 | ----------        |:------:  | ------------                       |
@@ -267,20 +276,18 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Success Response:**
 
-    * **Code:** 201 CREATED 
-      
-      **Content:** `Location: /post/{saved_post_id}` được gắn vào trong `request_header`
-      
+    * **Code:** `200 OK` - Kèm theo thông tin cơ bản của bài viết vừa đăng 
+    
 * **Error Response:**
 
-    * **Code:** 401 FORBIDDEN 
-      
-      **Lý do:** Chưa đăng nhập / public một bài viết từ một bản nháp không do mình sở hữu
-    
+    * **Code:** `400 BAD REQUEST` - Param của request không hợp lệ
+
+    * **Code:** `401 FORBIDDEN` - Chưa đăng nhập / public một bài viết từ một bản nháp không do mình sở hữu
+
 ## Sửa bài viết
 
 ----
-Sửa bài viết (`admin` không có quyền sửa)
+Sửa bài viết (bài của ai người đó sửa)
 
 * **URL**: `/post/{id}`
 
@@ -288,7 +295,7 @@ Sửa bài viết (`admin` không có quyền sửa)
   
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Body:**
+* **Request Body:** `Content-Type: multipart/form-data`
 
 | Name              | Type     | Description                    |
 | ----------        |:------:  | ------------                   |
@@ -298,13 +305,11 @@ Sửa bài viết (`admin` không có quyền sửa)
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED
+    * **Code:** `202 ACCEPTED` - Sửa thành công
 
 * **Error Response:**
 
-    * **Code:** 403 FORBIDDEN
-
-      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu) 
 
 ## Xóa bài viết (thực ra là ẩn đi thôi)
 
@@ -319,18 +324,14 @@ Sửa bài viết (`admin` không có quyền sửa)
 
 * **Success Response:**
 
-    * **Code:** 204 NO_CONTENT
+    * **Code:** `204 NO_CONTENT` - Xoá thành công
 
 * **Error Response:**
 
-    * **Code:** 404 NOT_FOUND
+    * **Code:** `404 NOT_FOUND` - Bài viết không tồn tại
 
-      **Lý do:** Bản nháp không tồn tại
+    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu)
 
-    * **Code:** 403 FORBIDDEN
-
-      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
-    
 ## Lưu bản nháp
 
 ----
@@ -342,7 +343,7 @@ Lưu một bản nháp mới
 
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Body:**
+* **Request Body:** `Content-Type: multipart/form-data`
 
 | Name              | Type     | Description                        |
 | ----------        |:------:  | ------------                       |
@@ -352,13 +353,11 @@ Lưu một bản nháp mới
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED
+    * **Code:** `202 ACCEPTED` - Lưu thành công
     
 * **Error Response:**
   
-    * **Code:** 403 FORBIDDEN
-
-      **Lý do:** Chưa đăng nhập
+    * **Code:** `403 FORBIDDEN` - Chưa đăng nhập
 
 ## Lấy ra một bản nháp
 
@@ -373,7 +372,7 @@ Lấy ra một bản nháp
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED
+    * **Code:** `202 ACCEPTED` - Kèm theo thông tin của bản nháp
     
     * **Example**:
     
@@ -390,18 +389,14 @@ Lấy ra một bản nháp
 
 * **Error Response:**
 
-    * **Code:** 404 NOT_FOUND
-
-      **Lý do:** Bản nháp không tồn tại
-
-    * **Code:** 403 FORBIDDEN
-
-      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `404 NOT_FOUND` - Bản nháp không tồn tại
+    
+    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu)
 
 ## Sửa bản nháp
 
 ----
-Sửa bản nháp của mình (`admin` không có quyền sửa)
+Sửa bản nháp của mình (của ai người đó sửa)
 
 * **URL**: `/post/draft/{id}`
 
@@ -409,29 +404,28 @@ Sửa bản nháp của mình (`admin` không có quyền sửa)
 
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Body:**
+* **Request Body:** `Content-Type: multipart/form-data`
 
 | Name              | Type     | Description                        |
 | ----------        |:------:  | ------------                       |
 | `title`           | `string` | Tên bài viết                       |
 | `content`         | `string` | Nội dung bài viết                  |
-| `postThumbnail`   | `string` |  Link ảnh đại diện cho bài viết    |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết    |
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED
+    * **Code:** `202 ACCEPTED` - Sửa thành công
 
 * **Error Response:**
 
-    * **Code:** 403 FORBIDDEN
+    * **Cdoe:** `404 NOT_FOUND` - Bản nháp không tồn tại
 
-      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `403 FORBIDDEN` - Không có quyền
 
-    
 ## Xóa bản nháp (hiện tại là ẩn đi thôi, sau này là xóa luôn)
 
 ----
-Xóa đi một bản nháp (`admin` không có quyền)
+Xóa đi một bản nháp (của ai người đó xoá)
 
 * **URL**: `/post/draft/{id}`
 
@@ -441,16 +435,10 @@ Xóa đi một bản nháp (`admin` không có quyền)
 
 * **Success Response:**
 
-    * **Code:** 204 NO_CONTENT
+    * **Code:** `204 NO_CONTENT` - Xoá thành công
 
 * **Error Response:**
 
-    * **Code:** 404 NOT_FOUND
-
-      **Lý do:** Bản nháp không tồn tại
-
-    * **Code:** 403 FORBIDDEN
-
-      **Lý do:** Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `404 NOT_FOUND` - Bản nháp không tồn tại
     
-
+    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu)
