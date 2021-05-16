@@ -1,5 +1,7 @@
 package com.langthang.utils;
 
+import org.springframework.web.util.HtmlUtils;
+
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
@@ -16,5 +18,9 @@ public class Utils {
                 .replaceAll("(?!-)\\W", "-")
                 .replaceAll("^-*|-*$", "")
                 .replaceAll("-{2,}", "-");
+    }
+
+    public static String escapeHtml(String html) {
+        return HtmlUtils.htmlEscape(HtmlUtils.htmlUnescape(html));
     }
 }
