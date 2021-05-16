@@ -1,4 +1,4 @@
-package com.langthang.controller.post;
+package com.langthang.controller;
 
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
@@ -43,7 +43,7 @@ public class PostController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping(value = "/post", params = {"size", "page"})
+    @GetMapping(value = "/post")
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponseDTO> getPreviewPost(
             @PageableDefault(sort = {"publishedDate"},
@@ -52,7 +52,7 @@ public class PostController {
         return postServices.getPreviewPost(pageable);
     }
 
-    @GetMapping(value = "/post", params = {"keyword", "page", "size"})
+    @GetMapping(value = "/post", params = {"keyword"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponseDTO> searchPostByKeyword(
             @RequestParam("keyword") String keyword,
@@ -90,7 +90,7 @@ public class PostController {
             savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
         }
 
-        return ResponseEntity.ok("/post/" + savedPost.getSlug());
+        return ResponseEntity.ok(savedPost);
     }
 
     @PutMapping(value = "/post/{id}")

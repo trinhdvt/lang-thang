@@ -1,4 +1,4 @@
-package com.langthang.controller.upload;
+package com.langthang.controller;
 
 import com.langthang.annotation.ValidImage;
 import com.langthang.services.IStorageServices;

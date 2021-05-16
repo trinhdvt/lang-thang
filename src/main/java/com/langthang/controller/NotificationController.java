@@ -1,4 +1,4 @@
-package com.langthang.controller.notify;
+package com.langthang.controller;
 
 import com.langthang.dto.NotificationDTO;
 import com.langthang.services.INotificationServices;

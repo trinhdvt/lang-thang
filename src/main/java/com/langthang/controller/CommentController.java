@@ -1,4 +1,4 @@
-package com.langthang.controller.comment;
+package com.langthang.controller;
 
 import com.langthang.dto.CommentDTO;
 import com.langthang.event.OnNewCommentEvent;
@@ -82,8 +82,9 @@ public class CommentController {
             @PathVariable("comment_id") int commentId,
             Authentication authentication) {
 
-        String accEmail = authentication.getName();
-        int currentPostCommentCount = commentServices.deleteComment(commentId, accEmail);
+        String currentEmail = authentication.getName();
+
+        int currentPostCommentCount = commentServices.deleteComment(commentId, currentEmail);
 
         return ResponseEntity.ok(currentPostCommentCount);
     }

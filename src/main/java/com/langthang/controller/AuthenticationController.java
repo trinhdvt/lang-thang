@@ -147,11 +147,12 @@ public class AuthenticationController {
 
     @PutMapping("/auth/savePassword")
     public ResponseEntity<Object> savePassword(
+            @RequestParam("token") @NotBlank String token,
             @Valid @PasswordMatches ResetPasswordDTO resetPasswordDTO) {
 
-        authServices.validatePasswordResetToken(resetPasswordDTO.getToken());
+        authServices.validatePasswordResetToken(token);
 
-        Account account = authServices.findAccountByPasswordResetToken(resetPasswordDTO.getToken());
+        Account account = authServices.findAccountByPasswordResetToken(token);
 
         if (account == null) {
             return new ResponseEntity<>("Account not found", HttpStatus.FORBIDDEN);
