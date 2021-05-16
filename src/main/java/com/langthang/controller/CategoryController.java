@@ -1,4 +1,4 @@
-package com.langthang.controller.category;
+package com.langthang.controller;
 
 import com.langthang.dto.CategoryDTO;
 import com.langthang.dto.PostResponseDTO;
