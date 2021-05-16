@@ -49,9 +49,14 @@ application:
     prefix: /topic
     end-point: /socket-server
     notify:
-      dest: ${application.broker.prefix}/notify
+      prefix: ${application.broker.prefix}/notify
     post:
-      dest: ${application.broker.prefix}/post
+      prefix: ${application.broker.prefix}/post
+  notify-template:
+    like-comment: "<b>{0}</b> đã thích bình luận của bạn trong bài viết <b>{1}</b>"
+    comment-post: "<b>{0}</b> đã bình luận về bài viết <b>{1}</b> của bạn"
+    bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b> của bạn"
+    following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
 
 security:
   jwt:
@@ -66,17 +71,6 @@ security:
 server:
   compression:
     enabled: true
-
-management:
-  server:
-    port: 8090
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    shutdown:
-      enabled: true
 
 logging:
   level:
