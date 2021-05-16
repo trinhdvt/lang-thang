@@ -29,7 +29,7 @@ CREATE TABLE `account` (
   `password` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `role` enum('ROLE_MEMBER','ROLE_ADMIN') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'ROLE_MEMBER',
   `name` varchar(45) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `avatar_link` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `avatar_link` varchar(255) COLLATE utf8_bin DEFAULT NULL,
   `gender` enum('MALE','FEMALE','UNKNOWN') CHARACTER SET utf8 COLLATE utf8_bin DEFAULT 'UNKNOWN',
   `date_of_birth` timestamp NULL DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT '0',
@@ -50,7 +50,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'trinhvideo123@gmail.com','$2y$12$sKFaPa7bJIinQVa2jcjlJuto9a3uefnZkFxLgqmihms497cvP7CMC','ROLE_ADMIN','Do Van Trinh','https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c','MALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(4,'trinhdvt2@gmail.com','$2y$12$sKFaPa7bJIinQVa2jcjlJuto9a3uefnZkFxLgqmihms497cvP7CMC','ROLE_ADMIN','Trinhdvt2','https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c','UNKNOWN',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(5,'nguyenthanhdung@gmail.com','$2y$12$xwLxjereG2G/ISludIOE.Ov07dxpP33yodlM3H7F6PTZP1stbZIwW ','ROLE_MEMBER','Nguyễn Thanh Dũng','https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c','MALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(6,'lecanhkieuoanh@gmail.com','$2y$12$Hx9Ed/e1X5I8lDX5ni5xVuDfiubICcclMS.70KJA1n0AqA48LSbpC','ROLE_MEMBER','Lê Cảnh Kiều Oanh','https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c','FEMALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(7,'phamvantanh@gmail.com','$2y$12$3Pjh4T74xnMr0.Qmtv9PGeGzpEMOvRjWinDcTILS.lbAnpyYhBfQy','ROLE_MEMBER','Phạm Văn Tánh','https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c','MALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(26,'congphatoan@gmail.com','$2a$12$.I2f1WcmxH8zUmGQ7XSqY.VcaIuZHZYZWR7ZhcfoFCsKJs2NPTjaS','ROLE_MEMBER','Đỗ Trình','https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c','UNKNOWN',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,NULL,NULL,NULL),(32,'loveya227@gmail.com','$2a$12$J9E/bLmZ.HTVOX9CUAB3s.SNvt7IZKP3x3e23k4rjNPd3S2jcElQO','ROLE_MEMBER','oanhpro',NULL,'UNKNOWN',NULL,1,NULL,NULL,NULL,0,NULL,NULL);
+INSERT INTO `account` VALUES (1,'trinhvideo123@gmail.com','$2y$12$UcJ8OLhb5LvVZjZTOibybOmkcp9Xke1AkdLpTDdBRk7wZlu1811U','ROLE_ADMIN','Do Van Trinh','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','MALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(4,'trinhdvt2@gmail.com','$2y$12$UcJ8OLhb5LvVZjZTOibybOmkcp9Xke1AkdLpTDdBRk7wZlu1811U','ROLE_ADMIN','Trinhdvt2','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','UNKNOWN',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(5,'nguyenthanhdung@gmail.com','$2y$12$xwLxjereG2G/ISludIOE.Ov07dxpP33yodlM3H7F6PTZP1stbZIwW ','ROLE_ADMIN','Nguyễn Thanh Dũng','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','MALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(6,'lecanhkieuoanh@gmail.com','$2y$12$Hx9Ed/e1X5I8lDX5ni5xVuDfiubICcclMS.70KJA1n0AqA48LSbpC','ROLE_MEMBER','Lê Cảnh Kiều Oanh','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','FEMALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(7,'phamvantanh@gmail.com','$2y$12$3Pjh4T74xnMr0.Qmtv9PGeGzpEMOvRjWinDcTILS.lbAnpyYhBfQy','ROLE_MEMBER','Phạm Văn Tánh','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','MALE',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,0,NULL,NULL),(26,'congphatoan@gmail.com','$2a$12$.I2f1WcmxH8zUmGQ7XSqY.VcaIuZHZYZWR7ZhcfoFCsKJs2NPTjaS','ROLE_MEMBER','Đỗ Trình','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','UNKNOWN',NULL,1,'Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu','Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ',NULL,NULL,NULL,NULL),(32,'loveya227@gmail.com','$2a$12$J9E/bLmZ.HTVOX9CUAB3s.SNvt7IZKP3x3e23k4rjNPd3S2jcElQO','ROLE_ADMIN','oanhpro','https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png','UNKNOWN',NULL,1,NULL,NULL,NULL,0,NULL,NULL);
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -401,7 +401,7 @@ CREATE TABLE `refresh_token` (
 
 LOCK TABLES `refresh_token` WRITE;
 /*!40000 ALTER TABLE `refresh_token` DISABLE KEYS */;
-INSERT INTO `refresh_token` VALUES ('phamvantanh@gmail.com','WAGJ7CpK16BCnQ=='),('trinhdvt2@gmail.com','cn4+wOP8wdJVCA=='),('trinhvideo123@gmail.com','pfNPDMqOjiPikg==');
+INSERT INTO `refresh_token` VALUES ('phamvantanh@gmail.com','WAGJ7CpK16BCnQ=='),('trinhdvt2@gmail.com','cn4+wOP8wdJVCA=='),('trinhvideo123@gmail.com','gCJqdiUjPUR35g==');
 /*!40000 ALTER TABLE `refresh_token` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -466,4 +466,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-16 11:26:34
+-- Dump completed on 2021-05-16 14:35:33
