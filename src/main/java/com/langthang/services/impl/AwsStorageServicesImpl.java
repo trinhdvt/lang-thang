@@ -1,11 +1,15 @@
 package com.langthang.services.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.langthang.exception.CustomException;
 import com.langthang.services.IStorageServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,9 +40,9 @@ public class AwsStorageServicesImpl implements IStorageServices {
         File uploadFile = convertToFile(multipartFile);
         String filename = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
 
-//        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, filename, uploadFile);
-//        objectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
-//        s3Client.putObject(objectRequest);
+        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, filename, uploadFile);
+        objectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+        s3Client.putObject(objectRequest);
 
         uploadFile.delete();
         return basePublicURL + "/" + filename;
@@ -66,9 +70,11 @@ public class AwsStorageServicesImpl implements IStorageServices {
                 fos.write(multipartFile.getBytes());
                 return convertedFile;
             } catch (IOException ex) {
-                ex.printStackTrace();
+                throw new CustomException("Cannot upload this file: " + ex.getMessage(),
+                        HttpStatus.UNPROCESSABLE_ENTITY);
             }
+        } else {
+            throw new CustomException("File name is null", HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 }
