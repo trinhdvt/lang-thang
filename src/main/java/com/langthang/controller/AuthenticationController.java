@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,16 +72,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/auth/refreshToken")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> refreshToken(
             @CookieValue(name = "refresh-token", defaultValue = "")
-            @NotBlank String clientToken,
+            @NotBlank String refreshToken,
             HttpServletRequest req,
             HttpServletResponse resp) {
 
-        String newJwtToken = authServices.refreshToken(clientToken, req, resp);
+        String newAccessToken = authServices.refreshToken(refreshToken, req, resp);
 
-        return ResponseEntity.ok(new JwtTokenDTO(newJwtToken, TOKEN_EXPIRE_TIME));
+        return ResponseEntity.ok(new JwtTokenDTO(newAccessToken, TOKEN_EXPIRE_TIME));
     }
 
     @PostMapping("/auth/registration")
