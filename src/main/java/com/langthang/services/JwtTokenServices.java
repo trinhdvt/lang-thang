@@ -3,22 +3,17 @@ package com.langthang.services;
 
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.RefreshToken;
-import com.langthang.model.entity.Role;
 import com.langthang.repository.RefreshTokenRepository;
 import com.langthang.services.impl.UserDetailsServiceImpl;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.extern.slf4j.Slf4j;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
@@ -29,7 +24,7 @@ import java.util.Date;
 import java.util.Random;
 
 @Component
-@Slf4j
+@Transactional
 public class JwtTokenServices {
 
     @Value("${security.jwt.token.prefix}")
@@ -40,6 +35,12 @@ public class JwtTokenServices {
 
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
+
+    @Value("${security.jwt.refresh-token.cookie-name}")
+    private String REFRESH_TOKEN_COOKIE_NAME;
+
+    @Value("${security.jwt.refresh-token.cookie-length}")
+    private int REFRESH_TOKEN_COOKIE_LENGTH;
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -56,9 +57,8 @@ public class JwtTokenServices {
         SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
     }
 
-    public String createToken(String username, Role role) {
+    public String createAccessToken(String username) {
         Claims claims = Jwts.claims().setSubject(username);
-        claims.put("auth", new SimpleGrantedAuthority(role.getAuthority()));
 
         Date now = new Date();
         Date expireTime = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
@@ -78,34 +78,45 @@ public class JwtTokenServices {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    private String createRefreshToken(String email) {
+    private String createRefreshToken() {
         byte[] rfToken = new byte[10];
         new Random().nextBytes(rfToken);
-        String refreshToken = Base64.getEncoder().encodeToString(rfToken);
 
-        RefreshToken currentToken = refreshTokenRepo.findByEmail(email);
-        if (currentToken == null) {
-            currentToken = new RefreshToken(email, refreshToken);
-        } else {
-            currentToken.setToken(refreshToken);
-        }
-        refreshTokenRepo.save(currentToken);
-        return refreshToken;
+        return Base64.getEncoder().encodeToString(rfToken);
     }
 
-    public void addRefreshTokenCookie(String email, HttpServletResponse resp) {
-        String refreshToken = createRefreshToken(email);
+    public void saveRefreshToken(String email, String accessToken, String refreshToken) {
+        RefreshToken rf = refreshTokenRepo.findByEmail(email);
 
-        Cookie cookie = new Cookie("refresh-token", refreshToken);
+        if (rf == null) {
+            rf = new RefreshToken(email, refreshToken, accessToken);
+        } else {
+            rf.setRefreshToken(refreshToken);
+            rf.setAccessToken(accessToken);
+        }
+
+        refreshTokenRepo.saveAndFlush(rf);
+    }
+
+    public void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
+        String refreshToken = createRefreshToken();
+
+        saveRefreshToken(email, accessToken, refreshToken);
+
+        // add refresh token cookie to response
+        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(TOKEN_EXPIRE_TIME / 1000); // ms -> s
+        cookie.setMaxAge(REFRESH_TOKEN_COOKIE_LENGTH); // ms -> s
         cookie.setPath("/");
         resp.addCookie(cookie);
     }
 
-    public boolean isValidRefreshToken(String email, String clientToken) {
+    public boolean isValidToCreateNewAccessToken(String email, String refreshToken, String accessToken) {
         RefreshToken rfTokenInDB = refreshTokenRepo.findByEmail(email);
-        return (rfTokenInDB != null && rfTokenInDB.getToken().equals(clientToken));
+
+        return (rfTokenInDB != null
+                && rfTokenInDB.getRefreshToken().equals(refreshToken)
+                && rfTokenInDB.getAccessToken().equals(accessToken));
     }
 
     public String getUserName(String token) {
@@ -121,7 +132,7 @@ public class JwtTokenServices {
         }
     }
 
-    public String resolveToken(HttpServletRequest req) {
+    public String getAccessToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX + " ")) {
             return bearerToken.replace(TOKEN_PREFIX + " ", "");
@@ -138,7 +149,7 @@ public class JwtTokenServices {
         } catch (ExpiredJwtException e) {
             return false;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new CustomException("Invalid or expired JWT Token", HttpStatus.FORBIDDEN);
+            throw new CustomException("Invalid JWT Token", HttpStatus.FORBIDDEN);
         }
     }
 
