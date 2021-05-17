@@ -109,11 +109,16 @@ public class JwtTokenServices {
     }
 
     public String getUserName(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
     public String resolveToken(HttpServletRequest req) {
