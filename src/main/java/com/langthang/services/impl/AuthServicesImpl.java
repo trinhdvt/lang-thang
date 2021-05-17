@@ -68,18 +68,17 @@ public class AuthServicesImpl implements IAuthServices {
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
             }
 
-            String jwtToken = jwtTokenServices.createToken(email,
-                    accountRepository.getAccountByEmailAndEnabled(email, true).getRole());
+            String accessToken = jwtTokenServices.createAccessToken(email);
 
             // Password will be null when user log in with Google Account
             if (password == null) {
-                Authentication auth = jwtTokenServices.getAuthentication(jwtToken);
+                Authentication auth = jwtTokenServices.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
 
-            jwtTokenServices.addRefreshTokenCookie(email, resp);
+            jwtTokenServices.addRefreshTokenCookie(email, accessToken, resp);
 
-            return jwtToken;
+            return accessToken;
 
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid email / password"
@@ -89,17 +88,19 @@ public class AuthServicesImpl implements IAuthServices {
 
 
     @Override
-    public String refreshToken(String clientToken, HttpServletRequest req, HttpServletResponse resp) {
-        String email = req.getRemoteUser();
+    public String refreshToken(String refreshToken, HttpServletRequest req, HttpServletResponse resp) {
+        String accessToken = jwtTokenServices.getAccessToken(req);
+        String email = jwtTokenServices.getUserName(accessToken);
 
-        if (jwtTokenServices.isValidRefreshToken(email, clientToken)) {
-            jwtTokenServices.addRefreshTokenCookie(email, resp);
+        if (jwtTokenServices.isValidToCreateNewAccessToken(email, refreshToken, accessToken)) {
+            String newAccessToken = jwtTokenServices.createAccessToken(email);
 
-            return jwtTokenServices.createToken(email,
-                    accountRepository.findAccountByEmail(email).getRole());
+            jwtTokenServices.addRefreshTokenCookie(email, newAccessToken, resp);
+
+            return newAccessToken;
         } else {
-            throw new CustomException("Invalid refresh token!"
-                    , HttpStatus.UNAUTHORIZED);
+            throw new CustomException("Unable to create new access token"
+                    , HttpStatus.FORBIDDEN);
         }
     }
 
