@@ -93,6 +93,8 @@ Trả về 1 danh sách các bài viết được sắp xếp dựa theo số l�
     - **Code:** `200 OK`
       
       **Content:** 1 danh sách các bài kèm theo các thông tin cơ bản
+  
+      **Lưu ý**: Với những bài viết có số lượng `bookmark` hoặc `comment` bằng `0` thì sẽ không được trả về 
 
     * **Example:** `GET /post?prop=bookmark` hoặc `GET /post?prop=bookmark&size=5`
 
