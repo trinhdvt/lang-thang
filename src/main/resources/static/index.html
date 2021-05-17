@@ -1,10 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Testing</title>
+    <title>Hello WebSocket</title>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <!--    <script src="app.js"></script>-->
 </head>
 <body>
-<h1>Amen</h1>
+
+<button id="connect-btn" onclick="connect()">Connect Socket</button>
+<button id="login-btn" onclick="login()">Login</button>
+<button id="subscribe-notify-btn" onclick="subscribe_notify()">Subscribe Notify</button>
+<button id="subscribe-post-btn" onclick="subscribe_post()">Subscribe Post</button>
+<button id="disconnect" onclick="disconnect()">Disconnect</button>
+<script type="text/javascript">
+    let ws = null;
+    let email = 'trinhvideo123@gmail.com';
+    let password = 'trinhvideo123';
+    let token = null;
+
+    function connect() {
+
+        const socket = new SockJS("http://localhost:8080/socket-server");
+
+        ws = Stomp.over(socket);
+
+        ws.connect({}, function (frame) {
+            console.log(frame);
+        }, function (error) {
+            console.log(error);
+        });
+    }
+
+    function login() {
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8080/auth/login',
+            data: {
+                'email': email,
+                'password': password
+            },
+            dataType: 'json',
+        }).done(function (data) {
+            token = data['token'];
+            console.log(data);
+        }).fail(function (error) {
+            console.log(error);
+        })
+    }
+
+    function subscribe_notify() {
+        if (ws != null) {
+            ws.subscribe(`/topic/notify/${email}`, function (message) {
+                console.log(message.body);
+            }, {'Authorization': `Bearer ${token}`});
+        }
+    }
+
+    function subscribe_post() {
+        if (ws != null) {
+            ws.subscribe("/topic/post/1", function (message) {
+                console.log(message.body);
+            })
+        }
+    }
+
+    function disconnect() {
+        if (ws != null) {
+            ws.disconnect();
+        }
+
+    }
+</script>
 </body>
 </html>
