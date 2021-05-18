@@ -34,7 +34,7 @@ public class LoggingAspectConfig {
         log.error("Exception in {}.{} with cause = {}",
                 joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName(),
-                e.getCause() != null ? e.getCause() : "NULL");
+                e.getMessage());
     }
 
     @Around("applicationPointCut() && springBeanPointCut()")
