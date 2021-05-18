@@ -1,5 +1,8 @@
 package com.langthang.utils;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.util.HtmlUtils;
 
 import java.text.Normalizer;
@@ -22,5 +25,15 @@ public class Utils {
 
     public static String escapeHtml(String html) {
         return HtmlUtils.htmlEscape(HtmlUtils.htmlUnescape(html));
+    }
+
+
+    public static String getCurrentAccEmail() {
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (currentAuth instanceof AnonymousAuthenticationToken) {
+            return null;
+        } else {
+            return currentAuth.getName();
+        }
     }
 }
