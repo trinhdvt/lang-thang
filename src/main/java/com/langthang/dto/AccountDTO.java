@@ -40,6 +40,8 @@ public class AccountDTO {
 
     private Role role = null;
 
+    private boolean isFollowed = false;
+
     public static AccountDTO toBasicAccount(Account entity) {
         return AccountDTO.builder()
                 .accountId(entity.getId())
