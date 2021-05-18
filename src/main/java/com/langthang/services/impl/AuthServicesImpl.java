@@ -13,7 +13,6 @@ import com.langthang.repository.PasswordResetTokenRepository;
 import com.langthang.repository.RegisterTokenRepository;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.JwtTokenServices;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +35,6 @@ import java.util.UUID;
 
 @Service
 @Transactional
-@Slf4j
 public class AuthServicesImpl implements IAuthServices {
 
     @Autowired
@@ -110,7 +108,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         if (existAcc != null) {
             if (existAcc.isEnabled()) {
-                throw new CustomException("There is an account with that email address: " + accountRegisterDTO.getEmail()
+                throw new CustomException("There is an account with email: " + accountRegisterDTO.getEmail()
                         , HttpStatus.CONFLICT);
             } else if (!existAcc.isEnabled()) {
                 throw new CustomException("Please check your email to verify your account!"
@@ -165,7 +163,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public Account findAccountByEmail(String email) {
-        return accountRepository.findAccountByEmailAndEnabled(email, true);
+        return accountRepository.findAccountByEmail(email);
     }
 
     @Override
@@ -206,7 +204,7 @@ public class AuthServicesImpl implements IAuthServices {
     public Account saveCreatedGoogleAccount(Account tmpAcc) {
         tmpAcc.setPassword(passwordEncoder.encode(tmpAcc.getPassword()));
 
-        return accountRepository.save(tmpAcc);
+        return accountRepository.saveAndFlush(tmpAcc);
     }
 
     @Override
