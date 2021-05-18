@@ -61,7 +61,11 @@ public class AuthenticationController {
         Account existingAcc = authServices.findAccountByEmail(tmpAcc.getEmail());
 
         if (existingAcc != null) {
-            return login(existingAcc.getEmail(), null, resp);
+            if (!existingAcc.isEnabled()) {
+                return new ResponseEntity<>("Please check your email to verify your account!",
+                        HttpStatus.UNAUTHORIZED);
+            } else
+                return login(existingAcc.getEmail(), null, resp);
         } else {
             eventPublisher.publishEvent(new OnRegisterWithGoogle(tmpAcc, tmpAcc.getPassword()));
 
