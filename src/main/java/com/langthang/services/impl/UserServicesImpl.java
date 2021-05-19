@@ -139,7 +139,7 @@ public class UserServicesImpl implements IUserServices {
         String currentAccEmail = Utils.getCurrentAccEmail();
         if (currentAccEmail != null) {
             Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
-            boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(account.getId(), currentAcc.getId());
+            boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());
             basicAccountDTO.setFollowed(isFollowed);
         }
 
