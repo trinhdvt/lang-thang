@@ -1,20 +1,24 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.*;
+import com.langthang.dto.AccountDTO;
+import com.langthang.dto.PostRequestDTO;
+import com.langthang.dto.PostResponseDTO;
+import com.langthang.dto.TagDTO;
 import com.langthang.exception.CustomException;
-import com.langthang.model.entity.*;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.Category;
+import com.langthang.model.entity.Post;
+import com.langthang.model.entity.Tag;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IPostServices;
+import com.langthang.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -169,6 +173,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable) {
         Page<PostResponseDTO> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable);
+        responseList.forEach(p -> p.setBookmarked(true));
 
         return pageOfPostToListOfPreviewPost(responseList);
     }
@@ -240,7 +245,7 @@ public class PostServicesImpl implements IPostServices {
 
         PostResponseDTO postResponse = toPostResponseDTO(post);
         postResponse.setAuthor(authorDTO);
-        postResponse.setOwner(author.getEmail().equals(getCurrentAccEmail()));
+        postResponse.setOwner(author.getEmail().equals(Utils.getCurrentAccEmail()));
 
         return postResponse;
     }
@@ -254,11 +259,11 @@ public class PostServicesImpl implements IPostServices {
                 .content(post.getContent())
                 .postThumbnail(post.getPostThumbnail())
                 .publishedDate(post.getPublishedDate())
-                .isBookmarked(post.getBookmarkedPosts().stream().anyMatch(bp -> bp.getAccount().getEmail().equals(getCurrentAccEmail())))
+                .isBookmarked(post.getBookmarkedPosts().stream()
+                        .anyMatch(bp -> bp.getAccount().getEmail().equals(Utils.getCurrentAccEmail())))
                 .bookmarkedCount(post.getBookmarkedPosts().size())
                 .commentCount(post.getComments().size())
                 .tags(post.getPostTag().stream().map(this::tagMapper).collect(Collectors.toSet()))
-                .comments(post.getComments().stream().map(this::commentMapper).collect(Collectors.toList()))
                 .build();
     }
 
@@ -270,28 +275,4 @@ public class PostServicesImpl implements IPostServices {
                 .build();
     }
 
-    private CommentDTO commentMapper(Comment comment) {
-        Account commenter = comment.getAccount();
-
-        AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
-
-        return CommentDTO.builder()
-                .commentId(comment.getId())
-                .content(comment.getContent())
-                .commentDate(comment.getCommentDate())
-                .commenter(commenterDTO)
-                .isMyComment(commenter.getEmail().equals(getCurrentAccEmail()))
-                .likeCount(comment.getLikedAccounts().size())
-                .isLiked(comment.getLikedAccounts().stream().anyMatch(a -> a.getEmail().equals(getCurrentAccEmail())))
-                .build();
-    }
-
-    private String getCurrentAccEmail() {
-        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (currentAuth instanceof AnonymousAuthenticationToken) {
-            return null;
-        } else {
-            return currentAuth.getName();
-        }
-    }
 }

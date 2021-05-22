@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -35,8 +34,6 @@ public class PostResponseDTO {
     private String postThumbnail;
 
     private int bookmarkedCount;
-
-    private List<CommentDTO> comments;
 
     private int commentCount;
 
