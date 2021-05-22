@@ -77,6 +77,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     boolean existsById(int postId);
 
+    boolean existsByIdAndStatus(int postId, boolean status);
+
     @Transactional
     @Modifying
     @Query("update Post p set p.status=false where p.id=?1")
