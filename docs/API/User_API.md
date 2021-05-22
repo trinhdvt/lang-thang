@@ -28,7 +28,7 @@ Trả về thông tin chi tiết của một User
   "instagramLink": null,
   "avatarLink": "https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c",
   "about": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu",
-  "occupation": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch"
+  "followed": true // nếu chưa đăng nhập thì mặc định là false
 }
 ```
 
@@ -45,7 +45,10 @@ Trả về thông tin chi tiết của User hiện tại
 
 * **Method:** `GET`
 
+* **Headers:** `Authorization: Bearer <token hiện tại>`
+
 * **Success Response:** : Như trên
+  
 * **Error Response:**
 
     * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
@@ -115,7 +118,6 @@ Thay đổi các thông tin cơ bản của một User
   | `fbLink`       | `string` | Link fb mới         |
   | `instagramLink`| `string` | Link instagram mới  |
   | `about`        | `string` | About mới           |
-  | `occupation`   | `string` | Occupation mới      |
 
 * **Success Response:**
 

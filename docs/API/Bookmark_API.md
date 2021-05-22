@@ -42,7 +42,7 @@ Bookmark một bài viết
 
   | Name       | Type       | Description                     |
   | ---------- |:------:    | ------------                    |
-  | `postId`  | `string`   | Id của bài viết muốn Bookmark   |
+  | `postId`   | `string`   | Id của bài viết muốn Bookmark   |
 
 * **Success Response:**
 
@@ -61,16 +61,18 @@ Bookmark một bài viết
 ----
 Xoá bài viết ra khỏi danh sách các bài đã bookmark
 
-* **URL**: `/bookmark`
+* **URL**: `/bookmark/{post_id}`
 
 * **Method:** `DELETE`
 
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Request Body** `Content-Type: multipart/form-data`
+* **Success Response:**
 
-  | Name       | Type       | Description                     |
-  | ---------- |:------:    | ------------                    |
-  | `postId`  | `string`   | Id của bài viết muốn Bookmark   |
+  * **Code:** `202 ACCEPTED` - Kèm số lượng bookmark của bài viết đó
+  
+* **Error Response:**
 
-* **Response:** Giống y như phần trên
+  * **Code**: `404 NOT_FOUND` - Chưa bookmark bài viết đó
+
+  * **Code**: `403 FORBIDDEN` - chưa đăng nhập

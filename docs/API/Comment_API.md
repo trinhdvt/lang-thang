@@ -3,15 +3,22 @@
 ## Lấy ra danh sách các comment của một bài viết
 
 ----
-Trả về 1 danh sách các comment của một bài viết
+Trả về 1 danh sách các comment của một bài viết (được sắp xếp tăng dần theo ngày comment)
 
 * **URL**: `/comment/post/{post_id}`
 
 * **Method:** `GET`
 
+* **Request Params:**
+
+  | Name     | Type  | Description             | Default |
+  | -------- |:----: | ------------            | ------- |
+  | `page`   | `int` | Index của page          | 0       |
+  | `size`   | `int` | Số lượng comment trả về | 10      | 
+
 * **Success Response:**
 
-    - **Code:** 200 OK - Kèm 1 danh sách các Comment thuộc bài viết đó
+    - **Code:** `200 OK` - Kèm 1 danh sách các Comment thuộc bài viết đó
 
     * **Example:** `GET /comment/post/3`
     
@@ -66,7 +73,7 @@ Trả về 1 danh sách các comment của một bài viết
 
 * **Error Response:**
 
-    * **Code**: 404 NOT_FOUND - không tìm bài viết
+    * **Code**: `404 NOT_FOUND` - không tìm bài viết
 
 ## Thêm một comment
 
@@ -87,7 +94,7 @@ Thêm 1 comment vào bài viết
 
 * **Success Response:**
 
-    * **Code:** 200 - Kèm thông tin của Comment vừa được thêm
+    * **Code:** `200 OK` - Kèm thông tin của Comment vừa được thêm
   
     * **Example**:
     
@@ -118,9 +125,9 @@ Thêm 1 comment vào bài viết
     
 * **Error Response:**
 
-    * **Code**: 422 UNPROCESSABLE_ENTITY - bài viết không tồn tại
+    * **Code**: `422 UNPROCESSABLE_ENTITY` - bài viết không tồn tại
 
-    * **Code**: 403 FORBIDDEN - chưa đăng nhập
+    * **Code**: `403 FORBIDDEN` - chưa đăng nhập
 
 ## Sửa một comment
 
@@ -154,13 +161,13 @@ Xoá một comment
 
 * **Success Response:**
 
-    * **Code:** 200 - Xoá thành công kèm theo số lượng comment của bài viết hiện tại
+    * **Code:** `200 OK` - Xoá thành công kèm theo số lượng comment của bài viết hiện tại
   
 * **Error Response:**
 
-    * **Code**: 422 UNPROCESSABLE_ENTITY - comment không tồn tại
+    * **Code**: `422 UNPROCESSABLE_ENTITY` - comment không tồn tại
 
-    * **Code**: 403 FORBIDDEN - chưa đăng nhập / không sở hữu
+    * **Code**: `403 FORBIDDEN` - chưa đăng nhập / không sở hữu
 
 ## Like / Unlike comment
 
@@ -175,10 +182,10 @@ Like / Unlike comment, nếu đã like thì sẽ trở thành unlike và ngượ
 
 * **Success Response:**
 
-    * **Code:** 200 - Kèm theo số lượng like của comment vừa rồi
+    * **Code:** `200 OK` - Kèm theo số lượng like của comment vừa rồi
   
 * **Error Response:**
 
-    * **Code**: 422 UNPROCESSABLE_ENTITY - comment không tồn tại
+    * **Code**: `422 UNPROCESSABLE_ENTITY` - comment không tồn tại
 
-    * **Code**: 403 FORBIDDEN - Chưa đăng nhập / không sở hữu
+    * **Code**: `403 FORBIDDEN` - Chưa đăng nhập / không sở hữu

@@ -200,36 +200,6 @@ Trả về thông tin chi tiết của một bài viết
   "bookmarked": true,
   "bookmarkedCount": 1,
   "commentCount": 2,
-  "comments": [
-    {
-      "commentId": 4,
-      "commenter": {
-        "accountId": 1,
-        "name": "Do Van Trinh",
-        "email": "trinhvideo123@gmail.com",
-        "avatarLink": null
-      },
-      "commentDate": "2021-05-06 15:25",
-      "content": "Đẹp ghê á bạn ơi, cho mình xin nick fb với",
-      "likeCount": 1,
-      "myComment": false,
-      "liked": false
-    },
-    {
-      "commentId": 5,
-      "commenter": {
-        "accountId": 4,
-        "name": "Trinhdvt2",
-        "email": "trinhdvt2@gmail.com",
-        "avatarLink": null,
-      },
-      "commentDate": "2021-05-06 15:26",
-      "content": "きれい！どこですか？教えてください。",
-      "likeCount": 1,
-      "myComment": false,
-      "liked": false
-    }
-  ],
   "owner": false
 }
 ```
