@@ -59,7 +59,7 @@ public class BookmarkServiceImpl implements IBookmarkServices {
         BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, accEmail);
 
         if (existingBookmark == null) {
-            throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
+            throw new CustomException("Post with id: " + postId + " not bookmarked!", HttpStatus.NOT_FOUND);
         }
         bookmarkRepo.delete(existingBookmark);
 
