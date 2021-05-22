@@ -12,13 +12,14 @@ import com.langthang.repository.CommentRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
 import com.langthang.services.INotificationServices;
+import com.langthang.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -51,7 +52,7 @@ public class CommentServicesImpl implements ICommentServices {
 
         Comment savedComment = commentRepo.save(comment);
 
-        return toCommentDTO(savedComment, commenterEmail);
+        return toCommentDTO(savedComment);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class CommentServicesImpl implements ICommentServices {
         oldComment.setContent(content);
         Comment newComment = commentRepo.save(oldComment);
 
-        return toCommentDTO(newComment, accEmail);
+        return toCommentDTO(newComment);
     }
 
     @Override
@@ -90,17 +91,15 @@ public class CommentServicesImpl implements ICommentServices {
     }
 
     @Override
-    public List<CommentDTO> getAllCommentOfPost(int postId, String accEmail) {
-        Post post = postRepo.findPostByIdAndStatus(postId, true);
+    public List<CommentDTO> getAllCommentOfPost(int postId, Pageable pageable) {
 
-        if (post == null) {
+        if (!postRepo.existsByIdAndStatus(postId, true)) {
             throw new CustomException("Not found", HttpStatus.NOT_FOUND);
         }
 
-        return post.getComments().stream()
-                .map(c -> toCommentDTO(c, accEmail))
-                .collect(Collectors.toList());
-
+        return commentRepo.getCommentsByPost_Id(postId, pageable)
+                .map(this::toCommentDTO)
+                .getContent();
     }
 
     @Override
@@ -128,7 +127,7 @@ public class CommentServicesImpl implements ICommentServices {
         return commentRepo.countCommentLike(commentId);
     }
 
-    private CommentDTO toCommentDTO(Comment savedComment, String currentEmail) {
+    private CommentDTO toCommentDTO(Comment savedComment) {
         Account commenter = savedComment.getAccount();
 
         AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
@@ -139,9 +138,10 @@ public class CommentServicesImpl implements ICommentServices {
                 .commentId(savedComment.getId())
                 .commentDate(savedComment.getCommentDate())
                 .content(savedComment.getContent())
-                .isMyComment(commenter.getEmail().equals(currentEmail))
+                .isMyComment(commenter.getEmail().equals(Utils.getCurrentAccEmail()))
                 .likeCount(savedComment.getLikedAccounts().size())
-                .isLiked(savedComment.getLikedAccounts().stream().anyMatch(a -> a.getEmail().equals(currentEmail)))
+                .isLiked(savedComment.getLikedAccounts().stream()
+                        .anyMatch(a -> a.getEmail().equals(Utils.getCurrentAccEmail())))
                 .build();
     }
 }

@@ -5,6 +5,9 @@ import com.langthang.event.OnNewCommentEvent;
 import com.langthang.services.ICommentServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,11 +27,10 @@ public class CommentController {
     @GetMapping("/comment/post/{post_id}")
     public ResponseEntity<Object> getCommentOfPost(
             @PathVariable("post_id") int postId,
-            Authentication authentication) {
+            @PageableDefault(sort = {"commentDate"},
+                    direction = Sort.Direction.DESC) Pageable pageable) {
 
-        String currentEmail = authentication != null ? authentication.getName() : null;
-
-        List<CommentDTO> commentList = commentServices.getAllCommentOfPost(postId, currentEmail);
+        List<CommentDTO> commentList = commentServices.getAllCommentOfPost(postId, pageable);
 
         return ResponseEntity.ok(commentList);
     }

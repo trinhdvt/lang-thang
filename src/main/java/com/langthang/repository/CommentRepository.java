@@ -1,10 +1,14 @@
 package com.langthang.repository;
 
 import com.langthang.model.entity.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CommentRepository extends CrudRepository<Comment, Integer> {
+
+    Page<Comment> getCommentsByPost_Id(int postId, Pageable pageable);
 
     @Query(value = "select count(account_id) " +
             "from comment_like " +
