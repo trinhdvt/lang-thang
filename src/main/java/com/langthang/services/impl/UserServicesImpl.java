@@ -102,7 +102,6 @@ public class UserServicesImpl implements IUserServices {
         account.setAbout(newInfo.getAbout());
         account.setFbLink(newInfo.getFbLink());
         account.setAvatarLink(newInfo.getAvatarLink());
-        account.setOccupation(newInfo.getOccupation());
 
         Account savedAccount = accRepo.saveAndFlush(account);
 
