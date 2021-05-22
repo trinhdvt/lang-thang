@@ -48,10 +48,10 @@ public class BookmarkController {
         return ResponseEntity.accepted().body(bookmarkCount);
     }
 
-    @DeleteMapping("/bookmark")
+    @DeleteMapping("/bookmark/{post_id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> deleteBookmark(
-            @RequestParam("postId") int postId,
+            @PathVariable("post_id") int postId,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
