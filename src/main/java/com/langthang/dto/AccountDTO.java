@@ -36,8 +36,6 @@ public class AccountDTO {
 
     private String about;
 
-    private String occupation;
-
     private Role role = null;
 
     private boolean isFollowed = false;
@@ -52,7 +50,6 @@ public class AccountDTO {
                 .fbLink(entity.getFbLink())
                 .instagramLink(entity.getInstagramLink())
                 .about(entity.getAbout())
-                .occupation(entity.getOccupation())
                 .build();
     }
 }
