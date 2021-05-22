@@ -15,5 +15,4 @@ public class AccountInfoDTO {
     private String fbLink;
     private String instagramLink;
     private String about;
-    private String occupation;
 }
