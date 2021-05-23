@@ -8,6 +8,7 @@ import com.langthang.event.*;
 import com.langthang.model.entity.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
+import com.langthang.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,7 +88,7 @@ public class SpringEventListener {
     @Async
     public void handleNewComment(OnNewCommentEvent event) throws JsonProcessingException {
         CommentDTO newComment = event.getNewComment();
-        newComment.setMyComment(false);
+        newComment.setMyComment(newComment.getCommenter().getEmail().equals(Utils.getCurrentAccEmail()));
 
         String dest = onNewCommentPrefix + "/" + newComment.getPostId();
 
