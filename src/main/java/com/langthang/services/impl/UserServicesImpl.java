@@ -113,7 +113,7 @@ public class UserServicesImpl implements IUserServices {
         Account account = accRepo.findAccountByEmail(currentEmail);
 
         String currentPassword = account.getPassword();
-        if (!currentPassword.equals(passwordEncoder.encode(oldPassword))) {
+        if (!passwordEncoder.matches(oldPassword, currentPassword)) {
             throw new CustomException("Wrong old password", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
