@@ -24,6 +24,8 @@ public class Utils {
     }
 
     public static String escapeHtml(String html) {
+        if (html == null)
+            return "";
         return HtmlUtils.htmlEscape(HtmlUtils.htmlUnescape(html));
     }
 
