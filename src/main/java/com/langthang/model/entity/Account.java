@@ -108,7 +108,6 @@ public class Account {
                 ", role=" + role +
                 ", avatarLink='" + avatarLink + '\'' +
                 ", about='" + about + '\'' +
-                ", occupation='" + occupation + '\'' +
                 '}';
     }
 }

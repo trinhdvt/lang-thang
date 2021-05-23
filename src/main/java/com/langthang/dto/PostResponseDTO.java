@@ -1,6 +1,8 @@
 package com.langthang.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.langthang.model.entity.Post;
+import com.langthang.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -47,4 +50,19 @@ public class PostResponseDTO {
         this.slug = slug;
     }
 
+    public static PostResponseDTO toPostResponseDTO(Post entity){
+        return PostResponseDTO.builder()
+                .postId(entity.getId())
+                .title(entity.getTitle())
+                .slug(entity.getSlug())
+                .content(entity.getContent())
+                .postThumbnail(entity.getPostThumbnail())
+                .publishedDate(entity.getPublishedDate())
+                .isBookmarked(entity.getBookmarkedPosts().stream()
+                        .anyMatch(bp -> bp.getAccount().getEmail().equals(Utils.getCurrentAccEmail())))
+                .bookmarkedCount(entity.getBookmarkedPosts().size())
+                .commentCount(entity.getComments().size())
+                .categories(entity.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
+                .build();
+    }
 }

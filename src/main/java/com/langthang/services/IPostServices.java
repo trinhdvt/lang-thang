@@ -17,11 +17,11 @@ public interface IPostServices {
 
     List<PostResponseDTO> getPreviewPost(Pageable pageable);
 
-    List<PostResponseDTO> getPreviewPostByKeyword(String keyword, Pageable pageable);
+    List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable);
 
     List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size);
 
-    List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, Pageable pageable);
+    List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable);
 
     List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable);
 
@@ -33,5 +33,5 @@ public interface IPostServices {
 
     PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO);
 
-    List<PostResponseDTO> getAllPreviewPostOfCategory(int categoryId, Pageable pageable);
+    List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable);
 }

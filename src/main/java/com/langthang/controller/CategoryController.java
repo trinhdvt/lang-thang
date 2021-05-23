@@ -39,7 +39,7 @@ public class CategoryController {
             @PathVariable("category_id") int categoryId,
             @PageableDefault Pageable pageable) {
 
-        List<PostResponseDTO> postOfCategories = postServices.getAllPreviewPostOfCategory(categoryId, pageable);
+        List<PostResponseDTO> postOfCategories = postServices.getAllPostOfCategory(categoryId, pageable);
 
         return ResponseEntity.ok(postOfCategories);
     }

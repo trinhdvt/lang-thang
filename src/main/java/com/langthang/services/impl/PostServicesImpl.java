@@ -1,7 +1,6 @@
 package com.langthang.services.impl;
 
 import com.langthang.dto.AccountDTO;
-import com.langthang.dto.CategoryDTO;
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.exception.CustomException;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -118,20 +116,22 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> getPreviewPost(Pageable pageable) {
-        Page<PostResponseDTO> postResp = postRepo.getPreviewPost(pageable);
-        return pageOfPostToListOfPreviewPost(postResp);
+        Page<Post> postResponse = postRepo.findByAccountNotNullAndStatusIsTrue(pageable);
+
+        return postResponse.map(this::entityToDTO).getContent();
     }
 
     @Override
-    public List<PostResponseDTO> getPreviewPostByKeyword(String keyword, Pageable pageable) {
-        Page<PostResponseDTO> postResp = postRepo.getPreviewPostByKeyword(keyword, pageable);
+    public List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable) {
+        Page<Post> postResp = postRepo.findPostByKeyword(keyword, pageable);
 
-        return pageOfPostToListOfPreviewPost(postResp);
+        return postResp.map(this::entityToDTO).getContent();
     }
+
 
     @Override
     public List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size) {
-        Page<PostResponseDTO> responseList;
+        Page<Post> responseList;
         PageRequest pageRequest = PageRequest.of(0, size);
 
 
@@ -149,7 +149,7 @@ public class PostServicesImpl implements IPostServices {
                     return Collections.emptyList();
             }
 
-            return pageOfPostToListOfPreviewPost(responseList);
+            return responseList.map(this::entityToDTO).getContent();
         } catch (IllegalArgumentException e) {
             throw new CustomException("Sort by " + propertyName + " is not support!"
                     , HttpStatus.UNPROCESSABLE_ENTITY);
@@ -158,23 +158,26 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> getAllPreviewPostOfUser(int accountId, Pageable pageable) {
+    public List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable) {
         Account account = accRepo.findById(accountId).orElse(null);
         if (account == null) {
             throw new CustomException("Account with id: " + accountId + " not found", HttpStatus.NOT_FOUND);
         }
 
-        Page<PostResponseDTO> responseList = postRepo.getAllPreviewPostOfUser(accountId, pageable);
+        Page<Post> allPostOfUser = postRepo.findByAccount_IdAndStatusIsTrue(accountId, pageable);
 
-        return pageOfPostToListOfPreviewPost(responseList);
+        return allPostOfUser.map(this::entityToDTO).getContent();
     }
 
     @Override
     public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable) {
-        Page<PostResponseDTO> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable);
-        responseList.forEach(p -> p.setBookmarked(true));
+        Page<Post> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable);
 
-        return pageOfPostToListOfPreviewPost(responseList);
+        return responseList.map(p -> {
+            PostResponseDTO dto = entityToDTO(p);
+            dto.setBookmarked(true);
+            return dto;
+        }).getContent();
     }
 
     @Override
@@ -198,7 +201,6 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public void updatePostById(int postId, PostRequestDTO postRequestDTO) {
         Post oldPost = postRepo.findPostById(postId);
-        oldPost.setLastModified(new Date());
         oldPost.setTitle(postRequestDTO.getTitle());
         oldPost.setContent(postRequestDTO.getContent());
         oldPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
@@ -207,24 +209,16 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> getAllPreviewPostOfCategory(int categoryId, Pageable pageable) {
+    public List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable) {
         Category category = categoryRepo.findById(categoryId).orElse(null);
 
         if (category == null) {
             throw new CustomException("Category with id: " + categoryId + " not found", HttpStatus.NOT_FOUND);
         }
 
-        Page<PostResponseDTO> responseList = postRepo.findPostByCategories(category, pageable);
+        Page<Post> responseList = postRepo.findPostByCategories(category, pageable);
 
-        return pageOfPostToListOfPreviewPost(responseList);
-    }
-
-    private List<PostResponseDTO> pageOfPostToListOfPreviewPost(Page<PostResponseDTO> postResp) {
-        return postResp.stream()
-                .peek(dto -> {
-                    dto.setBookmarkedCount(postRepo.countBookmarks(dto.getPostId()));
-                    dto.setCommentCount(postRepo.countComments(dto.getPostId()));
-                }).collect(Collectors.toList());
+        return responseList.map(this::entityToDTO).getContent();
     }
 
     private Post dtoToEntity(PostRequestDTO dto) {
@@ -242,28 +236,11 @@ public class PostServicesImpl implements IPostServices {
         authorDTO.setPostCount(postRepo.countByAccount_Id(author.getId()));
         authorDTO.setFollowCount(accRepo.countFollowing(author.getId()));
 
-        PostResponseDTO postResponse = toPostResponseDTO(post);
+        PostResponseDTO postResponse = PostResponseDTO.toPostResponseDTO(post);
         postResponse.setAuthor(authorDTO);
         postResponse.setOwner(author.getEmail().equals(Utils.getCurrentAccEmail()));
 
         return postResponse;
-    }
-
-    private PostResponseDTO toPostResponseDTO(Post post) {
-
-        return PostResponseDTO.builder()
-                .postId(post.getId())
-                .title(post.getTitle())
-                .slug(post.getSlug())
-                .content(post.getContent())
-                .postThumbnail(post.getPostThumbnail())
-                .publishedDate(post.getPublishedDate())
-                .isBookmarked(post.getBookmarkedPosts().stream()
-                        .anyMatch(bp -> bp.getAccount().getEmail().equals(Utils.getCurrentAccEmail())))
-                .bookmarkedCount(post.getBookmarkedPosts().size())
-                .commentCount(post.getComments().size())
-                .categories(post.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
-                .build();
     }
 
 }

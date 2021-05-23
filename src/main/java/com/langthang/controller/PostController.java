@@ -58,7 +58,7 @@ public class PostController {
             @RequestParam("keyword") String keyword,
             @PageableDefault Pageable pageable) {
 
-        return postServices.getPreviewPostByKeyword(keyword, pageable);
+        return postServices.findPostByKeyword(keyword, pageable);
     }
 
     @GetMapping(value = "/post", params = {"prop"})

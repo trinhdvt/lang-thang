@@ -65,7 +65,7 @@ public class UserController {
             @PathVariable("account_id") int accountId,
             @PageableDefault(sort = {"publishedDate"}) Pageable pageable) {
 
-        List<PostResponseDTO> responseList = postServices.getAllPreviewPostOfUser(accountId, pageable);
+        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountId, pageable);
 
         return ResponseEntity.ok(responseList);
     }
