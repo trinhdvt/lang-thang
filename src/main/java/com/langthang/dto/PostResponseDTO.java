@@ -37,7 +37,7 @@ public class PostResponseDTO {
 
     private int commentCount;
 
-    private Set<TagDTO> tags;
+    private Set<CategoryDTO> categories;
 
     public PostResponseDTO(int postId, String title, String slug, Date publishedDate, String postThumbnail) {
         this.postId = postId;

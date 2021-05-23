@@ -1,14 +1,13 @@
 package com.langthang.services.impl;
 
 import com.langthang.dto.AccountDTO;
+import com.langthang.dto.CategoryDTO;
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.dto.TagDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Category;
 import com.langthang.model.entity.Post;
-import com.langthang.model.entity.Tag;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
@@ -263,15 +262,7 @@ public class PostServicesImpl implements IPostServices {
                         .anyMatch(bp -> bp.getAccount().getEmail().equals(Utils.getCurrentAccEmail())))
                 .bookmarkedCount(post.getBookmarkedPosts().size())
                 .commentCount(post.getComments().size())
-                .tags(post.getPostTag().stream().map(this::tagMapper).collect(Collectors.toSet()))
-                .build();
-    }
-
-    private TagDTO tagMapper(Tag tag) {
-        return TagDTO.builder()
-                .tagName(tag.getTagName())
-                .tagId(tag.getId())
-                .tagCount(tag.getPostTag().size())
+                .categories(post.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
                 .build();
     }
 
