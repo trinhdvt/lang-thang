@@ -5,7 +5,6 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <!--    <script src="app.js"></script>-->
 </head>
 <body>
 
@@ -19,7 +18,10 @@
     let email = 'trinhvideo123@gmail.com';
     let password = 'trinhvideo123';
     let token = null;
+    let notificationSubscription = null;
 
+    // có thể gọi lúc bắt đầu load trang
+    // kết nối đến socket server
     function connect() {
 
         const socket = new SockJS("http://localhost:8080/socket-server");
@@ -33,6 +35,7 @@
         });
     }
 
+    // đăng nhập để lấy token
     function login() {
         $.ajax({
             type: 'POST',
@@ -50,22 +53,35 @@
         })
     }
 
+    // subcribe để nhận thông báo mới nhất
     function subscribe_notify() {
         if (ws != null) {
-            ws.subscribe(`/topic/notify/${email}`, function (message) {
-                console.log(message.body);
+            notificationSubscription = ws.subscribe(`/topic/notify/${email}`, function (notify) {
+                // notify.body chính là thông báo mới nhất
+                console.log(notify.body);
             }, {'Authorization': `Bearer ${token}`});
         }
     }
 
+    // unsubsribe sau khi logout
+    function unsubscribe_notify() {
+        if (notificationSubscription != null) {
+            notificationSubscription.unsubscribe();
+        }
+    }
+
+    // đăng ký nhận comment mới nhất
     function subscribe_post() {
         if (ws != null) {
-            ws.subscribe("/topic/post/1", function (message) {
-                console.log(message.body);
+            ws.subscribe("/topic/post/1", function (comment) {
+                // comment.body chính là comment mới nhất
+                console.log(comment.body);
             })
         }
     }
 
+    // có thể gọi cái này lúc thoát trang
+    // disconnect thì có nghĩa là sẽ unsubcribe toàn bộ
     function disconnect() {
         if (ws != null) {
             ws.disconnect();
