@@ -200,7 +200,19 @@ Trả về thông tin chi tiết của một bài viết
   "bookmarked": true,
   "bookmarkedCount": 1,
   "commentCount": 2,
-  "owner": false
+  "owner": false,
+  "categories": [
+    {
+      "categoryId": 3,
+      "categoryName": "Du lịch Sài Gòn",
+      "postCount": 1
+    },
+    {
+      "categoryId": 2,
+      "categoryName": "Du lịch văn minh",
+      "postCount": 1
+    }
+  ]
 }
 ```
 
