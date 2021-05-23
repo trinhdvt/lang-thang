@@ -19,79 +19,22 @@
 
 * Các bược thực hiện:
 
-1. Sau khi người dùng đăng nhập thành công, Client `subscribe` vào địa chỉ `/topic/notify` để lắng nghe
+1. Sau khi người dùng đăng nhập thành công, Client `subscribe` vào địa chỉ `/topic/notify/{client_email}` để lắng nghe các thông báo mới nhất.
 
-2. Nếu có thông tin trả về thì Client so sánh `accountId` trong message trả về với `accountId` hiện tại, nếu khớp nhau
-   thì báo là có thông báo mới (ví dụ như thêm số `1` vô cái icon).
-   **Lưu ý:** Message trả về chỉ chứa `accountId` để xác định xem đó là notify của ai, chứ không chứa dữ liệu. Sau khi
-   họ bấm vào nút xem thông báo thì mới gửi request để load dữ liệu.
+    * **Lưu ý:** Khi `Subscribe` phải có kèm theo `token`
+
+2. Nếu có thông tin trả về thì có nghĩa là Client có thông báo mới
+
+    * Thông tin trả về giống như 1 thông báo vậy, (xem lại [ở đây](Notification_API.md#Lấy-ra-danh-sách-các-thông-báo))
 
 3. Sau khi đăng xuất thì `unsubscribe`
 
 ### Real-time comment
 
-- Khá tương tự, chỉ khác là sẽ `subscribe` vào địa chỉ `/topic/post` ngay khi bắt đầu vào tranh chủ luôn
+- Khá tương tự, chỉ khác là sẽ `subscribe` vào địa chỉ `/topic/post/{post_id}` ngay khi người dùng click vào 1 bài viết nào đó và khi `Subscribe` không cần kèm theo `token`
 
-- Thông tin trả về bao gồm `postId`, `accountId`, `content`, ... Nên phải tracking được xem thử họ đang ở `postId` bao nhiêu,
-  rồi so sánh nếu khớp thì hiển thị lên
+- Thông tin trả về giống như 1 comment ở bài viết vậy (xem lại [ở đây](Comment_API.md#Lấy-ra-danh-sách-các-comment-của-một-bài-viết))
 
 ### Code ví dụ
 
-```html
-
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
-            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
-            crossorigin="anonymous"></script>
-</head>
-
-<body>
-<script type="text/javascript">
-    let websocket = null;
-    let notify_subscription = null;
-
-    // gọi hàm này lúc load page luôn
-    function connect() {
-        // Khởi tạo
-        const socket = new SockJS("http://localhost:8080/socket-server");
-        websocket = Stomp.over(socket);
-
-        // Kết nối tới server
-        websocket.connect({}, function (callback) {
-            websocket.subscribe("/topic/post", function (message) {
-                // có comment mới
-                // render các kiểu ở đây
-                console.log(JSON.parse(message.body));
-            });
-        }, function (error) {
-
-        });
-    }
-
-    // khi nào đăng nhập xong thì gọi hàm này
-    function notifySubscribe() {
-        if (websocket != null) {
-            notify_subscription = websocket.subscribe("/topic/notify", function (message) {
-                //    có notify mới
-                //    render các kiểu
-            });
-        }
-    }
-
-    // đăng xuất thì unsubscribe
-    function notifyUnsubscribe() {
-        if (notify_subscription != null) {
-            notify_subscription.unsubscribe();
-        }
-    }
-    
-    // đóng kết nối khi họ tắt cửa sổ
-    function disconnect() {
-        if (websocket != null) {
-            websocket.disconnect();
-        }
-    }
-</script>
-</body>
-```
+> Xem code mẫu [ở đây](../../src/main/resources/static/index.html)
