@@ -93,7 +93,6 @@ public class Account {
         this.name = Utils.escapeHtml(name);
         this.about = Utils.escapeHtml(about);
         this.avatarLink = Utils.escapeHtml(avatarLink);
-        this.occupation = Utils.escapeHtml(occupation);
         this.fbLink = Utils.escapeHtml(fbLink);
         this.instagramLink = Utils.escapeHtml(instagramLink);
     }
