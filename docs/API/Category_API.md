@@ -9,6 +9,14 @@ Trả về 1 danh sách các thể loại kèm theo số lượng bài viết t�
 
 * **Method:** `GET`
 
+* **Request Params:**
+
+  | Name     | Type  | Description                | Default                |
+  | -------- |:----: | ------------               | -------                |
+  | `page`   | `int` | Index của page             | 0                      |
+  | `size`   | `int` | Số lượng `category` trả về | `2^31-1` (lấy toàn bộ) | 
+
+
 * **Success Response:**
 
     - **Code:** `200 OK` - Kèm 1 danh sách các thể loại được sắp xếp theo tên
