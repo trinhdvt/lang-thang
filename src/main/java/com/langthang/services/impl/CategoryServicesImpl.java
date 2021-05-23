@@ -24,7 +24,7 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Override
     public List<CategoryDTO> getAllCategory(Pageable pageable) {
         return categoryRepo.findAll(pageable).stream()
-                .map(this::toCategoryDTO)
+                .map(CategoryDTO::toCategoryDTO)
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +53,7 @@ public class CategoryServicesImpl implements ICategoryServices {
         category.setName(newName);
         Category savedCategory = categoryRepo.save(category);
 
-        return toCategoryDTO(savedCategory);
+        return CategoryDTO.toCategoryDTO(savedCategory);
     }
 
     @Override
@@ -67,14 +67,7 @@ public class CategoryServicesImpl implements ICategoryServices {
         Category newCategory = new Category(categoryName);
         categoryRepo.save(newCategory);
 
-        return toCategoryDTO(newCategory);
+        return CategoryDTO.toCategoryDTO(newCategory);
     }
 
-    private CategoryDTO toCategoryDTO(Category category) {
-        return CategoryDTO.builder()
-                .categoryId(category.getId())
-                .categoryName(category.getName())
-                .postCount(category.getPostCategories().size())
-                .build();
-    }
 }

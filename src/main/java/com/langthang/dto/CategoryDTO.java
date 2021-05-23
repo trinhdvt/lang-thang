@@ -1,5 +1,6 @@
 package com.langthang.dto;
 
+import com.langthang.model.entity.Category;
 import lombok.Builder;
 import lombok.Value;
 
@@ -9,4 +10,12 @@ public class CategoryDTO {
     int categoryId;
     String categoryName;
     int postCount;
+
+    public static CategoryDTO toCategoryDTO(Category entity) {
+        return CategoryDTO.builder()
+                .categoryId(entity.getId())
+                .categoryName(entity.getName())
+                .postCount(entity.getPostCategories().size())
+                .build();
+    }
 }
