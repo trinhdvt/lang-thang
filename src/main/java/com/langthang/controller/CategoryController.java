@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -24,9 +25,11 @@ public class CategoryController {
     private IPostServices postServices;
 
     @GetMapping("/category")
-    public ResponseEntity<Object> getListCategory() {
+    public ResponseEntity<Object> getListCategory(
+            @PageableDefault(sort = {"name"},
+                    size = Integer.MAX_VALUE) Pageable pageable) {
 
-        List<CategoryDTO> categoryList = categoryServices.getAllCategory();
+        List<CategoryDTO> categoryList = categoryServices.getAllCategory(pageable);
 
         return ResponseEntity.ok(categoryList);
     }
@@ -44,7 +47,9 @@ public class CategoryController {
     @PostMapping("/category")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Object> addNewCategory(
-            @RequestParam("name") @NotBlank String categoryName) {
+            @RequestParam("name") @NotBlank
+            @Max(value = 150, message = "Short name please! Category name cannot exceed 150 characters")
+                    String categoryName) {
 
         CategoryDTO newCategory = categoryServices.addNewCategory(categoryName);
 
@@ -66,7 +71,9 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Object> modifyCategory(
             @PathVariable("category_id") int categoryId,
-            @RequestParam("name") @NotBlank String newName) {
+            @RequestParam("name") @NotBlank
+            @Max(value = 150, message = "Short name please! Category name cannot exceed 150 characters")
+                    String newName) {
 
         categoryServices.modifyCategory(categoryId, newName);
 

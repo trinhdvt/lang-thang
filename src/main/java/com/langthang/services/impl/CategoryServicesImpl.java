@@ -6,7 +6,7 @@ import com.langthang.model.entity.Category;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.services.ICategoryServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +22,8 @@ public class CategoryServicesImpl implements ICategoryServices {
     private CategoryRepository categoryRepo;
 
     @Override
-    public List<CategoryDTO> getAllCategory() {
-        return categoryRepo.findAll(Sort.by("name")).stream()
+    public List<CategoryDTO> getAllCategory(Pageable pageable) {
+        return categoryRepo.findAll(pageable).stream()
                 .map(this::toCategoryDTO)
                 .collect(Collectors.toList());
     }
