@@ -33,12 +33,16 @@ import java.util.Set;
 @NamedNativeQueries({
         @NamedNativeQuery(
                 name = "Post.getPreviewPostByKeyword",
-                query = "select id,title,slug,published_date,post_thumbnail from post where match(title, content) against(?1)",
+                query = "select id,title,slug,published_date,post_thumbnail " +
+                        "from post where match(title, content) against(?1 in boolean mode) " +
+                        "order by match(title, content) against(?1 in boolean mode) DESC",
                 resultSetMapping = "postToPostDTO"
         ),
         @NamedNativeQuery(
                 name = "Post.getPreviewPostByKeyword.count",
-                query = "select count(id) as cnt from post where match(title, content) against(?1)",
+                query = "select count(id) as cnt " +
+                        "from post where match(title, content) against(?1 in boolean mode) " +
+                        "order by match(title, content) against(?1 in boolean mode) DESC",
                 resultSetMapping = "postToPostDTO.count"
         )
 })
