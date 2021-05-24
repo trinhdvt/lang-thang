@@ -13,6 +13,8 @@ public interface INotificationServices {
 
     void createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationDTO.TYPE type);
 
+    void sendNotificationToFollower(String sourceAccEmail, int destPostId);
+
     List<NotificationDTO> getNotifications(String accEmail, Pageable pageable);
 
     List<NotificationDTO> getUnseenNotifications(String accEmail, Pageable pageable);

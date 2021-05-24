@@ -10,6 +10,7 @@ import com.langthang.model.entity.Notify;
 import com.langthang.model.entity.Post;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
+import com.langthang.repository.PostRepository;
 import com.langthang.services.INotificationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,9 @@ public class NotificationServicesImpl implements INotificationServices {
 
     @Autowired
     private AccountRepository accRepo;
+
+    @Autowired
+    private PostRepository postRepo;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -67,6 +71,19 @@ public class NotificationServicesImpl implements INotificationServices {
         notificationDTO.setNotificationType(type);
 
         eventPublisher.publishEvent(new OnNewNotificationEvent(notificationDTO));
+    }
+
+    @Override
+    @Async
+    public void sendNotificationToFollower(String sourceAccEmail, int destPostId) {
+        Account sourceAcc = accRepo.findAccountByEmail(sourceAccEmail);
+        Post destPost = postRepo.findPostById(destPostId);
+        List<Account> followers = accRepo.getFollowedAccount(sourceAcc.getId());
+
+        followers.forEach(
+                follower -> createNotification(sourceAcc, follower, destPost, NotificationDTO.TYPE.NEW_POST)
+        );
+
     }
 
     @Override
