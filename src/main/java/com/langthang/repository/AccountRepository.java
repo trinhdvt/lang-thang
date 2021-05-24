@@ -38,4 +38,10 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("select count(p.account) " +
             "from Post p where p.account.id=?1 and p.status=true ")
     int countPublishedPost(int accountId);
+
+    @Query("select acc " +
+            "from FollowingRelationship fr left join Account acc " +
+            "on fr.accountId=acc.id " +
+            "where fr.followingAccountId=?1")
+    List<Account> getFollowedAccount(int accountId);
 }
