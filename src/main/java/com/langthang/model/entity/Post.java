@@ -70,6 +70,7 @@ public class Post {
         content = Utils.escapeHtml(content);
         title = Utils.escapeHtml(title);
         postThumbnail = Utils.escapeHtml(postThumbnail);
+        publishedDate = new Date();
     }
 
     @Override

@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -46,7 +45,6 @@ public class PostServicesImpl implements IPostServices {
         Post post = dtoToEntity(postRequestDTO);
         post.setAccount(accRepo.findAccountByEmail(authorEmail));
         post.setStatus(!isDraft);
-        post.setPublishedDate(new Date());
 
         Post savedPost = postRepo.saveAndFlush(post);
         return PostResponseDTO.builder()
@@ -66,10 +64,9 @@ public class PostServicesImpl implements IPostServices {
         existingPost.setTitle(postRequestDTO.getTitle());
         existingPost.setContent(postRequestDTO.getContent());
         existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
-        existingPost.setPublishedDate(new Date());
         existingPost.setStatus(true);
 
-        Post savedPost = postRepo.save(existingPost);
+        Post savedPost = postRepo.saveAndFlush(existingPost);
         return PostResponseDTO.builder()
                 .postId(savedPost.getId())
                 .slug(savedPost.getSlug())
