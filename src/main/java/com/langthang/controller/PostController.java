@@ -3,6 +3,7 @@ package com.langthang.controller;
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.model.entity.Role;
+import com.langthang.services.INotificationServices;
 import com.langthang.services.IPostServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,9 @@ public class PostController {
 
     @Autowired
     private IPostServices postServices;
+
+    @Autowired
+    private INotificationServices notificationServices;
 
     @GetMapping("/post/{id}")
     public ResponseEntity<Object> getPostDetailById(
@@ -89,6 +93,8 @@ public class PostController {
         } else {
             savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
         }
+
+        notificationServices.sendNotificationToFollower(authorEmail, savedPost.getPostId());
 
         return ResponseEntity.ok(savedPost);
     }
