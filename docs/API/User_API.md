@@ -53,12 +53,12 @@ Trả về thông tin chi tiết của User hiện tại
 
     * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
 
-## Lấy ra các bài viết của một User
+## Lấy ra các bài viết của một User (bằng `Id` và `email`)
 
 ----
 Danh sách các bài viết của User (chỉ gồm các thông tin cơ bản như ở trang chủ, mặc định được sắp xếp theo `publishedDate`) 
 
-* **URL**: `/user/posts/{account_id}`
+* **URL**: `/user/posts/{account_id}` hoặc `/user/posts?email={account_email}`
 
 * **Method:** `GET`
 
@@ -76,6 +76,32 @@ Danh sách các bài viết của User (chỉ gồm các thông tin cơ bản nh
 * **Error Response:**
 
     * **Code**: `404 NOT_FOUND` - User không tồn tại
+
+## Lấy ra các bài viết / bản nháp của User hiện tại
+
+----
+Danh sách các bài viết / bản nháp của User hiện tại (mặc định được sắp xếp theo `publishedDate`)
+
+* **URL**: `/user/posts` để lấy bài viết hoặc `/user/drafts` để lấy bản nháp
+
+* **Method:** `GET`
+
+* **Headers:** `Authorization: Bearer <token hiện tại>`
+
+* **Request Params**
+
+  | Name     | Type       | Description             | Default   |
+  | -------- |:------:    | ------------            | :-------: |
+  | `page`   | `int >= 0` | Thứ tự trang            | 0         |
+  | `size`   | `int >= 1` | Số lượng bài muốn lấy   | 10        |
+
+* **Success Response:**
+
+  * **Code:** `200 OK` - Kèm danh sách các bài viết y chang như bên [Post API](Post_API.md#Lấy-ra-danh-sách-các-bài-viết-nổi-bật)
+
+* **Error Response:**
+
+  * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
 
 ## Follow / Unfollow 1 người nào đó
 
