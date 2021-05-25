@@ -47,14 +47,7 @@ public class LoggingAspectConfig {
         }
 
         try {
-            Object result = joinPoint.proceed();
-            if (log.isDebugEnabled()) {
-                log.debug("Exit: {}.{}() with result = {}",
-                        joinPoint.getSignature().getDeclaringTypeName(),
-                        joinPoint.getSignature().getName(),
-                        result);
-            }
-            return result;
+            return joinPoint.proceed();
         } catch (Throwable throwable) {
             log.error("Illegal argument: {} in {}.{}()",
                     Arrays.toString(joinPoint.getArgs()),
