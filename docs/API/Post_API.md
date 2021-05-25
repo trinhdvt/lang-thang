@@ -252,11 +252,12 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Request Body:** `Content-Type: multipart/form-data`
 
-| Name              | Type     | Description                        |
-| ----------        |:------:  | ------------                       |
-| `title`           | `string` | Tên bài viết                       |
-| `content`         | `string` | Nội dung bài viết                  |
-| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết     |
+| Name              | Type     | Description                           |
+| ----------        |:------:  | ------------                          |
+| `title`           | `string` | Tên bài viết                          |
+| `content`         | `string` | Nội dung bài viết                     |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết        |
+| `categories`      | `array`  | Mảng chứa các `category_id` (max = 5) |
 
 * **Success Response:**
 
@@ -281,11 +282,12 @@ Sửa bài viết (bài của ai người đó sửa)
 
 * **Request Body:** `Content-Type: multipart/form-data`
 
-| Name              | Type     | Description                    |
-| ----------        |:------:  | ------------                   |
-| `title`           | `string` | Tên bài viết                   |
-| `content`         | `string` | Nội dung bài viết              |
-| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết |
+| Name              | Type     | Description                           |
+| ----------        |:------:  | ------------                          |
+| `title`           | `string` | Tên bài viết                          |
+| `content`         | `string` | Nội dung bài viết                     |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết        |
+| `categories`      | `array`  | Mảng chứa các `category_id` (max = 5) |
 
 * **Success Response:**
 
@@ -321,7 +323,7 @@ Sửa bài viết (bài của ai người đó sửa)
 ----
 Lưu một bản nháp mới
 
-* **URL**: `/post/draft`
+* **URL**: `/draft`
 
 * **Method:**: `POST`
 
@@ -329,11 +331,12 @@ Lưu một bản nháp mới
 
 * **Request Body:** `Content-Type: multipart/form-data`
 
-| Name              | Type     | Description                        |
-| ----------        |:------:  | ------------                       |
-| `title`           | `string` | Tên bài viết                       |
-| `content`         | `string` | Nội dung bài viết                  |
-| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết     |
+| Name              | Type     | Description                           |
+| ----------        |:------:  | ------------                          |
+| `title`           | `string` | Tên bài viết                          |
+| `content`         | `string` | Nội dung bài viết                     |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết        |
+| `categories`      | `array`  | Mảng chứa các `category_id` (max = 5) |
 
 * **Success Response:**
 
@@ -348,7 +351,7 @@ Lưu một bản nháp mới
 ----
 Lấy ra một bản nháp
 
-* **URL**: `/post/draft/{id}`
+* **URL**: `/draft/{id}`
 
 * **Method:**: `GET`
 
@@ -382,7 +385,7 @@ Lấy ra một bản nháp
 ----
 Sửa bản nháp của mình (của ai người đó sửa)
 
-* **URL**: `/post/draft/{id}`
+* **URL**: `/draft/{id}`
 
 * **Method:**: `PUT`
 
@@ -390,11 +393,12 @@ Sửa bản nháp của mình (của ai người đó sửa)
 
 * **Request Body:** `Content-Type: multipart/form-data`
 
-| Name              | Type     | Description                        |
-| ----------        |:------:  | ------------                       |
-| `title`           | `string` | Tên bài viết                       |
-| `content`         | `string` | Nội dung bài viết                  |
-| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết    |
+| Name              | Type     | Description                           |
+| ----------        |:------:  | ------------                          |
+| `title`           | `string` | Tên bài viết                          |
+| `content`         | `string` | Nội dung bài viết                     |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết        |
+| `categories`      | `array`  | Mảng chứa các `category_id` (max = 5) |
 
 * **Success Response:**
 
@@ -411,7 +415,7 @@ Sửa bản nháp của mình (của ai người đó sửa)
 ----
 Xóa đi một bản nháp (của ai người đó xoá)
 
-* **URL**: `/post/draft/{id}`
+* **URL**: `/draft/{id}`
 
 * **Method:**: `DELETE`
 
