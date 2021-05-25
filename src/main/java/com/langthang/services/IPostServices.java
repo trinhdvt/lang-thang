@@ -23,6 +23,10 @@ public interface IPostServices {
 
     List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable);
 
+    List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable);
+
+    List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable);
+
     List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable);
 
     void checkResourceExistAnOwner(int postId, String ownerEmail);

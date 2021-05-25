@@ -167,6 +167,25 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
+    public List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable) {
+        Account account = accRepo.findAccountByEmail(accountEmail);
+        if (account == null) {
+            throw new CustomException("Account with email: " + accountEmail + " not found", HttpStatus.NOT_FOUND);
+        }
+
+        Page<Post> allPostOfUser = postRepo.getAllByAccount_EmailAndStatusIsTrue(accountEmail, pageable);
+
+        return allPostOfUser.map(this::entityToDTO).getContent();
+    }
+
+    @Override
+    public List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable) {
+        Page<Post> allDraftOfUser = postRepo.getAllByAccount_EmailAndStatusIsFalse(accountEmail,pageable);
+
+        return allDraftOfUser.map(this::entityToDTO).getContent();
+    }
+
+    @Override
     public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable) {
         Page<Post> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable);
 

@@ -51,7 +51,7 @@ public class UserController {
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> getCurrentUserInfo(
-            Authentication authentication){
+            Authentication authentication) {
 
         String currentEmail = authentication.getName();
 
@@ -68,6 +68,43 @@ public class UserController {
         List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountId, pageable);
 
         return ResponseEntity.ok(responseList);
+    }
+
+    @GetMapping(value = "/user/posts", params = {"email"})
+    public ResponseEntity<Object> getAllPostsOfUser(
+            @RequestParam("email") String accountEmail,
+            @PageableDefault(sort = {"publishedDate"}) Pageable pageable) {
+
+        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountEmail, pageable);
+
+        return ResponseEntity.ok(responseList);
+    }
+
+    @GetMapping("/user/posts")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> getAllPostsOfCurrentUser(
+            @PageableDefault(sort = {"publishedDate"}) Pageable pageable,
+            Authentication authentication) {
+
+        String accountEmail = authentication.getName();
+
+        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountEmail, pageable);
+
+        return ResponseEntity.ok(responseList);
+    }
+
+
+    @GetMapping("/user/drafts")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> getAllDraftsOfUser(
+            @PageableDefault(sort = {"publishedDate"}) Pageable pageable,
+            Authentication authentication) {
+
+        String accountEmail = authentication.getName();
+
+        List<PostResponseDTO> draftList = postServices.getAllDraftOfUser(accountEmail, pageable);
+
+        return ResponseEntity.ok(draftList);
     }
 
     @PutMapping("/user/follow/{account_id}")

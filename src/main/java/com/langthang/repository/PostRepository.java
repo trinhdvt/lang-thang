@@ -24,6 +24,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Page<Post> findByAccount_IdAndStatusIsTrue(int accountId, Pageable pageable);
 
+    Page<Post> getAllByAccount_EmailAndStatusIsTrue(String accountEmail, Pageable pageable);
+
+    Page<Post> getAllByAccount_EmailAndStatusIsFalse(String accountEmail, Pageable pageable);
+
     @Query("select p from Post p join p.postCategories pc" +
             " where pc=?1 and p.status = true and p.account.id is not null ")
     Page<Post> findPostByCategories(Category category, Pageable pageable);
