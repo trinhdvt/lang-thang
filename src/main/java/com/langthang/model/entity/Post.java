@@ -1,7 +1,10 @@
 package com.langthang.model.entity;
 
 import com.langthang.utils.Utils;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,7 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @Entity
 @Table(name = "post")
 public class Post {
@@ -62,6 +64,12 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     @OrderBy("commentDate ASC")
     private List<Comment> comments;
+
+    public Post(String title, String content, String postThumbnail) {
+        this.title = title;
+        this.content = content;
+        this.postThumbnail = postThumbnail;
+    }
 
     @PrePersist
     @PreUpdate
