@@ -1,9 +1,9 @@
 package com.langthang.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.util.HtmlUtils;
 
 import java.text.Normalizer;
 import java.util.regex.Pattern;
@@ -23,10 +23,13 @@ public class Utils {
                 .replaceAll("-{2,}", "-");
     }
 
+    static final String[] htmlCharacter = new String[]{"&", "<", ">", "\"", "'", "/"};
+    static final String[] escapedCharacter = new String[]{"&amp;", "&lt;", "&gt;", "&quot;", "&#x27;", "&#x2F;"};
+
     public static String escapeHtml(String html) {
         if (html == null)
             return "";
-        return HtmlUtils.htmlEscape(HtmlUtils.htmlUnescape(html));
+        return StringUtils.replaceEach(html, htmlCharacter, escapedCharacter);
     }
 
 
