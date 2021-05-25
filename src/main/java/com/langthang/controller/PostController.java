@@ -132,7 +132,7 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/post/draft")
+    @PostMapping("/draft")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> saveTemporaryPost(
             @RequestBody @Valid PostRequestDTO postRequestDTO,
@@ -145,7 +145,7 @@ public class PostController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/post/draft/{id}")
+    @GetMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> getTemporaryPost(
             @PathVariable("id") int postId,
@@ -160,7 +160,7 @@ public class PostController {
         return ResponseEntity.ok(postResponseDTO);
     }
 
-    @PutMapping("/post/draft/{id}")
+    @PutMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> updateDraft(
             @PathVariable("id") int postId,
@@ -177,7 +177,7 @@ public class PostController {
         return ResponseEntity.accepted().build();
     }
 
-    @DeleteMapping("/post/draft/{id}")
+    @DeleteMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> deleteDraft(
             @PathVariable("id") int postId,

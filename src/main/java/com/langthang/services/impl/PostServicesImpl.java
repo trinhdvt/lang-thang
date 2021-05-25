@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -42,9 +44,11 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft) {
-        Post post = dtoToEntity(postRequestDTO);
+        Post post = new Post(postRequestDTO.getTitle(), postRequestDTO.getContent(), postRequestDTO.getPostThumbnail());
         post.setAccount(accRepo.findAccountByEmail(authorEmail));
         post.setStatus(!isDraft);
+
+        post.setPostCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(post);
         return PostResponseDTO.builder()
@@ -65,6 +69,8 @@ public class PostServicesImpl implements IPostServices {
         existingPost.setContent(postRequestDTO.getContent());
         existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
         existingPost.setStatus(true);
+
+        existingPost.setPostCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(existingPost);
         return PostResponseDTO.builder()
@@ -221,6 +227,8 @@ public class PostServicesImpl implements IPostServices {
         oldPost.setContent(postRequestDTO.getContent());
         oldPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
 
+        oldPost.setPostCategories(getCategories(postRequestDTO));
+
         postRepo.save(oldPost);
     }
 
@@ -237,13 +245,6 @@ public class PostServicesImpl implements IPostServices {
         return responseList.map(this::entityToDTO).getContent();
     }
 
-    private Post dtoToEntity(PostRequestDTO dto) {
-        return Post.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .postThumbnail(dto.getPostThumbnail())
-                .build();
-    }
 
     private PostResponseDTO entityToDTO(Post post) {
         Account author = post.getAccount();
@@ -259,4 +260,28 @@ public class PostServicesImpl implements IPostServices {
         return postResponse;
     }
 
+    private Set<Category> getCategories(PostRequestDTO postDTO) {
+        Set<Category> categories = new HashSet<>();
+
+        String[] categoriesId = postDTO.getCategories();
+        if (categoriesId == null || categoriesId.length == 0) {
+            return categories;
+        }
+
+        try {
+            for (String categoryId : categoriesId) {
+                Category category = categoryRepo.findById(Integer.valueOf(categoryId)).orElse(null);
+                if (category == null) {
+                    throw new CustomException("Category with id: " + categoryId + " not found!",
+                            HttpStatus.UNPROCESSABLE_ENTITY);
+                } else {
+                    categories.add(category);
+                }
+            }
+        } catch (Exception e) {
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return categories;
+    }
 }
