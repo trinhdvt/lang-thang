@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @Validated
 public class FileUploadController {
@@ -35,7 +38,9 @@ public class FileUploadController {
 
         String publicUrl = storageServices.uploadFile(multipartFile);
 
-        return ResponseEntity.ok(publicUrl);
+        Map<String, String> response = new HashMap<>();
+        response.put("url", publicUrl);
+        return ResponseEntity.ok(response);
     }
 
 
