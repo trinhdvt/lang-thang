@@ -20,6 +20,14 @@ Trả về một đường dẫn public có thể truy cập được
 * **Success Response:**
 
     * **Code:** `200 OK` - Kèm theo đường dẫn public có thể truy cập được
+    
+    * **Example:**
+  
+```json5
+{
+  "url": "abc.xyz.jpg"
+}
+```
   
 * **Error Response:**
 
