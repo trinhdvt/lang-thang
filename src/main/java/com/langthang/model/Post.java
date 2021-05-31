@@ -44,14 +44,6 @@ public class Post {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "post_tag",
-            joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<Tag> postTag;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
             name = "post_category",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")

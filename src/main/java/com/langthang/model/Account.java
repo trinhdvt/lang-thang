@@ -38,8 +38,6 @@ public class Account {
 
     private String about;
 
-    private String occupation;
-
     private String fbLink;
 
     private String instagramLink;
