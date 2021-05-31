@@ -1,6 +1,6 @@
 package com.langthang.dto;
 
-import com.langthang.model.entity.Category;
+import com.langthang.model.Category;
 import lombok.Builder;
 import lombok.Value;
 

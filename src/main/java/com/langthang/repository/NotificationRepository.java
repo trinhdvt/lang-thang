@@ -1,6 +1,6 @@
 package com.langthang.repository;
 
-import com.langthang.model.entity.Notify;
+import com.langthang.model.Notify;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

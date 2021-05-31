@@ -2,7 +2,7 @@ package com.langthang.services;
 
 
 import com.langthang.exception.CustomException;
-import com.langthang.model.entity.RefreshToken;
+import com.langthang.model.RefreshToken;
 import com.langthang.repository.RefreshTokenRepository;
 import com.langthang.services.impl.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;

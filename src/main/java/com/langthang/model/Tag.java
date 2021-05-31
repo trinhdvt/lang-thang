@@ -1,4 +1,4 @@
-package com.langthang.model.entity;
+package com.langthang.model;
 
 import lombok.*;
 import org.hibernate.annotations.LazyCollection;

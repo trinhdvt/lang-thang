@@ -1,6 +1,6 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.entity.Account;
+import com.langthang.model.Account;
 import com.langthang.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

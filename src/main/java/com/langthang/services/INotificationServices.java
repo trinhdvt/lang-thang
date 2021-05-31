@@ -1,8 +1,8 @@
 package com.langthang.services;
 
 import com.langthang.dto.NotificationDTO;
-import com.langthang.model.entity.Account;
-import com.langthang.model.entity.Post;
+import com.langthang.model.Account;
+import com.langthang.model.Post;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

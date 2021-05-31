@@ -1,26 +1,24 @@
-package com.langthang.model.entity;
+package com.langthang.model;
 
 import com.langthang.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Entity
-@Table(name = "comment")
-public class Comment {
+@Table(name = "post_report")
+public class PostReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -28,33 +26,37 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToMany(mappedBy = "likedComments", fetch = FetchType.EAGER)
-    private Set<Account> likedAccounts = new HashSet<>();
+    private Date reportedDate;
 
     private String content;
 
-    private Date commentDate;
+    private boolean isSolved;
 
-    public Comment(Account account, Post post, String content) {
+    private String decision;
+
+    public PostReport(Account account, Post post, String content) {
         this.account = account;
         this.post = post;
         this.content = content;
-        this.commentDate = new Date();
+        this.isSolved = false;
+        this.reportedDate = new Date();
     }
 
     @PrePersist
     @PreUpdate
-    @PostUpdate
-    void encodeContent() {
+    public void escapeHtml(){
         this.content = Utils.escapeHtml(content);
+        this.decision = Utils.escapeHtml(decision);
     }
 
     @Override
     public String toString() {
-        return "Comment{" +
+        return "PostReport{" +
                 "id=" + id +
+                ", reportedDate=" + reportedDate +
                 ", content='" + content + '\'' +
-                ", commentDate=" + commentDate +
+                ", isSolved=" + isSolved +
+                ", decision='" + decision + '\'' +
                 '}';
     }
 }

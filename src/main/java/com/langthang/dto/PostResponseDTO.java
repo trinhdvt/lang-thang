@@ -1,7 +1,7 @@
 package com.langthang.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.langthang.model.entity.Post;
+import com.langthang.model.Post;
 import com.langthang.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

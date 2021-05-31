@@ -1,4 +1,4 @@
-package com.langthang.model.entity;
+package com.langthang.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

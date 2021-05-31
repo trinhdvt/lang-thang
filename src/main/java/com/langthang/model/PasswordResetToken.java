@@ -1,4 +1,4 @@
-package com.langthang.model.entity;
+package com.langthang.model;
 
 import lombok.Getter;
 
@@ -8,9 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Entity
-@Table(name = "register_token")
+@Table(name = "password_reset_token")
 @Getter
-public class RegisterToken {
+public class PasswordResetToken {
     private static final int EXPIRATION = 60 * 24 * 365;
 
     @Id
@@ -26,18 +26,13 @@ public class RegisterToken {
     @Column(name = "expire_date")
     private Date expireDate;
 
-    public RegisterToken() {
-    }
-
-    public RegisterToken(String token, Account account) {
+    public PasswordResetToken(String token, Account account) {
         this.token = token;
         this.account = account;
         this.expireDate = calculateExpireDate(EXPIRATION);
     }
 
-    public void updateToken(String token) {
-        this.token = token;
-        this.expireDate = calculateExpireDate(EXPIRATION);
+    public PasswordResetToken() {
     }
 
     private Date calculateExpireDate(int expiryTimeInMinutes) {

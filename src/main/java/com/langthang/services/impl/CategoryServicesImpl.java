@@ -2,7 +2,7 @@ package com.langthang.services.impl;
 
 import com.langthang.dto.CategoryDTO;
 import com.langthang.exception.CustomException;
-import com.langthang.model.entity.Category;
+import com.langthang.model.Category;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.services.ICategoryServices;
 import org.springframework.beans.factory.annotation.Autowired;

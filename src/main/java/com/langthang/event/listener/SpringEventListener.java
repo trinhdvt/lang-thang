@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.langthang.dto.CommentDTO;
 import com.langthang.dto.NotificationDTO;
 import com.langthang.event.*;
-import com.langthang.model.entity.Account;
+import com.langthang.model.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
 import com.langthang.utils.Utils;

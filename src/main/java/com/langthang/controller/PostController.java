@@ -2,7 +2,7 @@ package com.langthang.controller;
 
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.model.entity.Role;
+import com.langthang.model.Role;
 import com.langthang.services.INotificationServices;
 import com.langthang.services.IPostServices;
 import org.springframework.beans.factory.annotation.Autowired;

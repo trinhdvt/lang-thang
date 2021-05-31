@@ -1,8 +1,8 @@
 package com.langthang.services;
 
 import com.langthang.dto.AccountRegisterDTO;
-import com.langthang.model.entity.Account;
-import com.langthang.model.entity.RegisterToken;
+import com.langthang.model.Account;
+import com.langthang.model.RegisterToken;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

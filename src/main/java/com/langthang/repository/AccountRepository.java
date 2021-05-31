@@ -1,6 +1,6 @@
 package com.langthang.repository;
 
-import com.langthang.model.entity.Account;
+import com.langthang.model.Account;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

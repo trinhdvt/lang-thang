@@ -1,8 +1,8 @@
 package com.langthang.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.langthang.model.entity.Account;
-import com.langthang.model.entity.Role;
+import com.langthang.model.Account;
+import com.langthang.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
