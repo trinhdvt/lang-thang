@@ -31,7 +31,7 @@ public class FileUploadController {
      * @param multipartFile file to upload
      * @return URL that client can access via browsers
      */
-    @PostMapping(value = "/upload", params = {"upload"})
+    @PostMapping(value = "/upload")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> uploadFile(
             @RequestParam("upload") @ValidImage MultipartFile multipartFile) {
