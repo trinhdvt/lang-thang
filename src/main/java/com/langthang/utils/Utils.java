@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.util.HtmlUtils;
 
 import java.text.Normalizer;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public class Utils {
     public static String escapeHtml(String html) {
         if (html == null)
             return "";
-        return StringUtils.replaceEach(html, htmlCharacter, escapedCharacter);
+        return StringUtils.replaceEach(HtmlUtils.htmlUnescape(html), htmlCharacter, escapedCharacter);
     }
 
 
