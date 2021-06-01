@@ -31,10 +31,10 @@ public class FileUploadController {
      * @param multipartFile file to upload
      * @return URL that client can access via browsers
      */
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", params = {"upload"})
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> uploadFile(
-            @RequestParam("image") @ValidImage MultipartFile multipartFile) {
+            @RequestParam("upload") @ValidImage MultipartFile multipartFile) {
 
         String publicUrl = storageServices.uploadFile(multipartFile);
 
