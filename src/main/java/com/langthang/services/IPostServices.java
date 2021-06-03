@@ -33,7 +33,7 @@ public interface IPostServices {
 
     void deletePostById(int postId);
 
-    void updatePostById(int postId, PostRequestDTO postRequestDTO);
+    PostResponseDTO updatePostById(int postId, PostRequestDTO postRequestDTO);
 
     PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO);
 
