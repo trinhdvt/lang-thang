@@ -239,6 +239,25 @@ public class PostServicesImpl implements IPostServices {
         postRepo.deleteDraftById(draftId);
     }
 
+    @Override
+    public void checkDraftExistAnOwner(String slug, String accEmail) {
+
+    }
+
+    @Override
+    public PostResponseDTO getDraftBySlug(String slug, String accEmail) {
+        Post draft = postRepo.findPostBySlugAndStatus(slug, false);
+        if (draft == null) {
+            throw new CustomException("Draft with slug: " + slug + " not found!", HttpStatus.NOT_FOUND);
+        }
+
+        if (!draft.getAccount().getEmail().equals(accEmail)){
+            throw new CustomException("Access denied!",HttpStatus.FORBIDDEN);
+        }
+
+        return entityToDTO(draft);
+    }
+
 
     private PostResponseDTO entityToDTO(Post post) {
         Account author = post.getAccount();

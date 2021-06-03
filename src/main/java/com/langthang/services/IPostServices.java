@@ -40,4 +40,8 @@ public interface IPostServices {
     List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable);
 
     void deleteDraftById(int draftId);
+
+    void checkDraftExistAnOwner(String slug, String accEmail);
+
+    PostResponseDTO getDraftBySlug(String slug, String accEmail);
 }

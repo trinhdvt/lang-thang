@@ -160,6 +160,19 @@ public class PostController {
         return ResponseEntity.ok(postResponseDTO);
     }
 
+    @GetMapping(value = "/draft", params = {"slug"})
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> getDraftBySlug(
+            @RequestParam("slug") String slug,
+            Authentication authentication) {
+
+        String accEmail = authentication.getName();
+
+        PostResponseDTO draftDTO = postServices.getDraftBySlug(slug, accEmail);
+
+        return ResponseEntity.ok(draftDTO);
+    }
+
     @PutMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> updateDraft(
