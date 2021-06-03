@@ -38,4 +38,6 @@ public interface IPostServices {
     PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO);
 
     List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable);
+
+    void deleteDraftById(int draftId);
 }

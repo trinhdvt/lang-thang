@@ -75,4 +75,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Modifying
     @Query("update Post p set p.status=false where p.id=?1")
     void deleteById(int postId);
+
+    @Query("delete from Post p where p.id=?1 and p.status = false")
+    @Modifying
+    @Transactional
+    void deleteDraftById(int draftId);
 }

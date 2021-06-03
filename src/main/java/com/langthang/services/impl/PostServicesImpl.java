@@ -239,6 +239,11 @@ public class PostServicesImpl implements IPostServices {
         return responseList.map(this::entityToDTO).getContent();
     }
 
+    @Override
+    public void deleteDraftById(int draftId) {
+        postRepo.deleteDraftById(draftId);
+    }
+
 
     private PostResponseDTO entityToDTO(Post post) {
         Account author = post.getAccount();

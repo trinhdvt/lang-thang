@@ -180,14 +180,14 @@ public class PostController {
     @DeleteMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> deleteDraft(
-            @PathVariable("id") int postId,
+            @PathVariable("id") int draftId,
             Authentication authentication) {
 
         String authorEmail = authentication.getName();
 
-        postServices.checkResourceExistAnOwner(postId, authorEmail);
+        postServices.checkResourceExistAnOwner(draftId, authorEmail);
 
-        postServices.deletePostById(postId);
+        postServices.deleteDraftById(draftId);
 
         return ResponseEntity.noContent().build();
     }
