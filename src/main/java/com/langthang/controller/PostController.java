@@ -101,7 +101,7 @@ public class PostController {
 
     @PutMapping(value = "/post/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> modifyPost(
+    public ResponseEntity<Object> updatePost(
             @PathVariable("id") int postId,
             @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
@@ -110,9 +110,9 @@ public class PostController {
 
         postServices.checkResourceExistAnOwner(postId, authorEmail);
 
-        postServices.updatePostById(postId, postRequestDTO);
+        PostResponseDTO updatedPostDTO = postServices.updatePostById(postId, postRequestDTO);
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted().body(updatedPostDTO);
     }
 
     @DeleteMapping(value = "/post/{id}")
@@ -134,7 +134,7 @@ public class PostController {
 
     @PostMapping("/draft")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> saveTemporaryPost(
+    public ResponseEntity<Object> addDraft(
             @RequestBody @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
 
@@ -147,7 +147,7 @@ public class PostController {
 
     @GetMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> getTemporaryPost(
+    public ResponseEntity<Object> getDraftById(
             @PathVariable("id") int postId,
             Authentication authentication) {
 
