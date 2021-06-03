@@ -54,7 +54,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> getBookmarkedPostByAccount_Email(String accountEmail, Pageable pageable);
 
 
-    @Query(value = "select id, title, content, published_date, last_modified, post_thumbnail, slug, status, account_id " +
+    @Query(value = "select id, title, content, published_date, post_thumbnail, slug, status, account_id " +
             "from post where match(title, content) against(?1 in boolean mode) " +
             "order by match(title, content) against(?1 in boolean mode) DESC",
             countQuery = "select count(id) " +
