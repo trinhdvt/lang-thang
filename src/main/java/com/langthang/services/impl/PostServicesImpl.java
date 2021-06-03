@@ -45,7 +45,7 @@ public class PostServicesImpl implements IPostServices {
     public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft) {
         Post post = new Post(postRequestDTO.getTitle(), postRequestDTO.getContent(), postRequestDTO.getPostThumbnail());
         post.setAccount(accRepo.findAccountByEmail(authorEmail));
-        post.setStatus(!isDraft);
+        post.setPublished(!isDraft);
 
         post.setPostCategories(getCategories(postRequestDTO));
 
@@ -54,26 +54,8 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public PostResponseDTO updateAndPublicDraft(PostRequestDTO postRequestDTO) {
-        Post existingPost = postRepo.findPostById(postRequestDTO.getPostId());
-        if (existingPost == null) {
-            throw new CustomException("Draft with id: " + postRequestDTO.getPostId() + "not found",
-                    HttpStatus.NOT_FOUND);
-        }
-
-        existingPost.setTitle(postRequestDTO.getTitle());
-        existingPost.setContent(postRequestDTO.getContent());
-        existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
-        existingPost.setStatus(true);
-        existingPost.setPostCategories(getCategories(postRequestDTO));
-
-        Post savedPost = postRepo.saveAndFlush(existingPost);
-        return new PostResponseDTO(savedPost.getId(), savedPost.getSlug());
-    }
-
-    @Override
     public PostResponseDTO getPostDetailById(int postId) {
-        Post post = postRepo.findPostByIdAndStatus(postId, true);
+        Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
             throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
@@ -84,7 +66,7 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public PostResponseDTO getPostDetailBySlug(String slug) {
-        Post post = postRepo.findPostBySlugAndStatus(slug, true);
+        Post post = postRepo.findPostBySlugAndPublished(slug, true);
 
         if (post == null) {
             throw new CustomException("Post " + slug + " not found", HttpStatus.NOT_FOUND);
@@ -94,19 +76,18 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public PostResponseDTO getDraftById(int postId) {
-        Post post = postRepo.findPostByIdAndStatus(postId, false);
-
-        if (post == null) {
-            throw new CustomException("Draft with id " + postId + " not found", HttpStatus.NOT_FOUND);
+    public PostResponseDTO getDraftById(int postId, String authorEmail) {
+        Post draft = verifyResourceOwner(postId, authorEmail);
+        if (!draft.isPublished()) {
+            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
         }
 
-        return entityToDTO(post);
+        return PostResponseDTO.toPostResponseDTO(draft);
     }
 
     @Override
     public List<PostResponseDTO> getPreviewPost(Pageable pageable) {
-        Page<Post> postResponse = postRepo.findByAccountNotNullAndStatusIsTrue(pageable);
+        Page<Post> postResponse = postRepo.findByAccountNotNullAndPublishedIsTrue(pageable);
 
         return postResponse.map(this::entityToDTO).getContent();
     }
@@ -154,7 +135,7 @@ public class PostServicesImpl implements IPostServices {
             throw new CustomException("Account with id: " + accountId + " not found", HttpStatus.NOT_FOUND);
         }
 
-        Page<Post> allPostOfUser = postRepo.findByAccount_IdAndStatusIsTrue(accountId, pageable);
+        Page<Post> allPostOfUser = postRepo.findByAccount_IdAndPublishedIsTrue(accountId, pageable);
 
         return allPostOfUser.map(this::entityToDTO).getContent();
     }
@@ -166,14 +147,14 @@ public class PostServicesImpl implements IPostServices {
             throw new CustomException("Account with email: " + accountEmail + " not found", HttpStatus.NOT_FOUND);
         }
 
-        Page<Post> allPostOfUser = postRepo.getAllByAccount_EmailAndStatusIsTrue(accountEmail, pageable);
+        Page<Post> allPostOfUser = postRepo.getAllByAccount_EmailAndPublishedIsTrue(accountEmail, pageable);
 
         return allPostOfUser.map(this::entityToDTO).getContent();
     }
 
     @Override
     public List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable) {
-        Page<Post> allDraftOfUser = postRepo.getAllByAccount_EmailAndStatusIsFalse(accountEmail, pageable);
+        Page<Post> allDraftOfUser = postRepo.getAllByAccount_EmailAndPublishedIsFalse(accountEmail, pageable);
 
         return allDraftOfUser.map(this::entityToDTO).getContent();
     }
@@ -190,35 +171,34 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public void checkResourceExistAnOwner(int postId, String ownerEmail) {
+    public PostResponseDTO getPostOrDraftContent(String slug, String authorEmail) {
+        Post post = postRepo.findPostBySlug(slug);
 
-        if (!postRepo.existsById(postId)) {
-            throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
-        }
+        verifyResourceOwner(post, authorEmail);
 
-        if (!postRepo.existsByIdAndAccount_Email(postId, ownerEmail)) {
-            throw new CustomException("Access Denied", HttpStatus.FORBIDDEN);
-        }
-
+        return PostResponseDTO.toPostResponseDTO(post);
     }
 
     @Override
-    public void deletePostById(int postId) {
-        postRepo.deleteById(postId);
+    public void deletePostById(int postId, String authorEmail, boolean isAdmin) {
+        Post post = postRepo.findPostById(postId);
+
+        if (isAdmin && post != null && post.isPublished()) {
+            postRepo.delete(post);
+        } else {
+            verifyResourceOwner(post, authorEmail);
+
+            postRepo.delete(post);
+        }
     }
 
     @Override
-    public PostResponseDTO updatePostById(int postId, PostRequestDTO postRequestDTO) {
-        Post oldPost = postRepo.findPostById(postId);
-        oldPost.setTitle(postRequestDTO.getTitle());
-        oldPost.setContent(postRequestDTO.getContent());
-        oldPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
+    public String updatePostById(int postId, String authorEmail, PostRequestDTO requestDTO) {
+        Post existingPost = verifyResourceOwner(postId, authorEmail);
+        updatePostContent(existingPost,requestDTO);
+        existingPost.setPublished(true);
 
-        oldPost.setPostCategories(getCategories(postRequestDTO));
-
-        Post updatedPost = postRepo.saveAndFlush(oldPost);
-
-        return new PostResponseDTO(updatedPost.getId(), updatedPost.getSlug());
+        return postRepo.saveAndFlush(existingPost).getSlug();
     }
 
     @Override
@@ -235,29 +215,13 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public void deleteDraftById(int draftId) {
-        postRepo.deleteDraftById(draftId);
+    public void updateDraftById(int postId, String authorEmail, PostRequestDTO requestDTO) {
+        Post existingPost = verifyResourceOwner(postId, authorEmail);
+        updatePostContent(existingPost,requestDTO);
+        existingPost.setPublished(false);
+
+        postRepo.saveAndFlush(existingPost);
     }
-
-    @Override
-    public void checkDraftExistAnOwner(String slug, String accEmail) {
-
-    }
-
-    @Override
-    public PostResponseDTO getDraftBySlug(String slug, String accEmail) {
-        Post draft = postRepo.findPostBySlugAndStatus(slug, false);
-        if (draft == null) {
-            throw new CustomException("Draft with slug: " + slug + " not found!", HttpStatus.NOT_FOUND);
-        }
-
-        if (!draft.getAccount().getEmail().equals(accEmail)){
-            throw new CustomException("Access denied!",HttpStatus.FORBIDDEN);
-        }
-
-        return entityToDTO(draft);
-    }
-
 
     private PostResponseDTO entityToDTO(Post post) {
         Account author = post.getAccount();
@@ -296,5 +260,27 @@ public class PostServicesImpl implements IPostServices {
         }
 
         return categories;
+    }
+
+    public Post verifyResourceOwner(int postId, String authorEmail) {
+        Post post = postRepo.findPostById(postId);
+        verifyResourceOwner(post, authorEmail);
+        return post;
+    }
+
+    private void verifyResourceOwner(Post post, String authorEmail) {
+        if (post == null) {
+            throw new CustomException("Not found!", HttpStatus.NOT_FOUND);
+        }
+        if (!post.getAccount().getEmail().equals(authorEmail)) {
+            throw new CustomException("Access denied!", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private void updatePostContent(Post existingPost, PostRequestDTO requestDTO){
+        existingPost.setTitle(requestDTO.getTitle());
+        existingPost.setContent(requestDTO.getContent());
+        existingPost.setPostThumbnail(requestDTO.getPostThumbnail());
+        existingPost.setPostCategories(getCategories(requestDTO));
     }
 }
