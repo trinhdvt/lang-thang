@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -89,7 +90,8 @@ public class PostController {
 
     @PostMapping("/post")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> addPost(
+    @ResponseStatus(HttpStatus.OK)
+    public Object addPost(
             @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
 
@@ -100,12 +102,13 @@ public class PostController {
 
         notificationServices.sendNotificationToFollower(authorEmail, savedPost.getPostId());
 
-        return ResponseEntity.ok(savedPost);
+        return Collections.singletonMap("slug", savedPost.getSlug());
     }
 
     @PutMapping(value = "/post/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> updatePost(
+    @ResponseStatus(HttpStatus.OK)
+    public Object updatePost(
             @PathVariable("id") int postId,
             @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
@@ -115,7 +118,7 @@ public class PostController {
 //      attempting to update existing post
         String updatedSlug = postServices.updatePostById(postId, authorEmail, postRequestDTO);
 
-        return ResponseEntity.accepted().body(updatedSlug);
+        return Collections.singletonMap("slug", updatedSlug);
     }
 
     @DeleteMapping(value = "/post/{id}")
@@ -142,7 +145,7 @@ public class PostController {
 
         postServices.addNewPostOrDraft(postRequestDTO, authorEmail, true);
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/draft/{id}")
@@ -171,6 +174,6 @@ public class PostController {
         // or make a post become a draft (hide it away)
         postServices.updateDraftById(postId, authorEmail, postRequestDTO);
 
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 }
