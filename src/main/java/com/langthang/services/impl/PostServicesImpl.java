@@ -101,12 +101,7 @@ public class PostServicesImpl implements IPostServices {
             throw new CustomException("Draft with id " + postId + " not found", HttpStatus.NOT_FOUND);
         }
 
-        return PostResponseDTO.builder()
-                .postId(postId)
-                .title(post.getTitle())
-                .content(post.getContent())
-                .postThumbnail(post.getPostThumbnail())
-                .build();
+        return entityToDTO(post);
     }
 
     @Override
