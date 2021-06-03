@@ -291,7 +291,16 @@ Sửa bài viết (bài của ai người đó sửa)
 
 * **Success Response:**
 
-    * **Code:** `202 ACCEPTED` - Sửa thành công
+    * **Code:** `202 ACCEPTED` - Sửa thành công, kèm theo `id` và `slug`
+  
+    * **Example**:
+  
+```json5
+{
+  "postId": 28,
+  "slug": "abc-xyz-wer"
+}
+```
 
 * **Error Response:**
 
