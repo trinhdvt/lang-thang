@@ -1,24 +1,15 @@
 package com.langthang.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Builder
+@Getter
+@Setter
 public class PostRequestDTO {
-    /**
-     * An identity ID of this post
-     */
-    private Integer postId;
-
     @NotNull
     @NotBlank
     @Size(max = 200, message = "Title maximum 200 characters")
