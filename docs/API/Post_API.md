@@ -7,13 +7,13 @@
 * [Lấy danh sách các bài viết theo từ khóa](#Tìm-kiếm-các-bài-viết-theo-tiêu-đề-và-nội-dung)
 * [Lấy thông tin chi tiết một bài viết bằng id](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-id)
 * [Lấy thông tin chi tiết một bài viết bằng slug](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-slug)
-* [Đăng tải bài viết](#Đăng-tải-một-bài-viết-mới-(public-luôn,-không-phải-nháp))
-* [Sửa bài viết](#sửa-bài-viết)
-* [Xóa (ẩn) bài viết](#Xóa-bài-viết-(thực-ra-là-ẩn-đi-thôi))
-* [Thêm một bản nháp](#lưu-bản-nháp)
-* [Lấy một bản nháp](#Lấy-ra-một-bản-nháp)
-* [Sửa bản nháp](#Sửa-bản-nháp)
-* [Xóa bản nháp](#Xóa-bản-nháp-(hiện-tại-là-ẩn-đi-thôi,-sau-này-là-xóa-luôn))
+* [Đăng tải bài viết](#Đăng-tải-một-bài-viết-mới)
+* [Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)](#Lấy nội dung của bài viết hoặc bản nháp bằng slug-(cho-mục-đích-sửa))
+* [Sửa bài viết hoặc chuyển bản nháp thành bài viết](#Sửa bài viết hoặc chuyển bản nháp thành bài viết)
+* [Xóa bài viết / bản nháp](#Xóa-bài-viết-hoặc-bản-nháp)
+* [Thêm một bản nháp](#thêm-bản-nháp-mới)
+* [Lấy ra một bản nháp](#Lấy-ra-một-bản-nháp)
+* [Sửa bản nháp hoặc chuyển bài viết thành bản nháp](#Sửa bản nháp hoặc chuyển bài viết thành bản nháp)
 
 ## Lấy ra danh sách các bài viết mới nhất
 
@@ -239,7 +239,40 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Response:** Xem lại phần trên
 
-## Đăng tải một bài viết mới (public luôn, không phải nháp)
+## Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)
+
+----
+Lấy ra nội dung của một bài viết hoặc bản nháp bằng `slug` cho mục đích sửa nội dung
+
+* **URL**: `/post/{slug}/edit`
+
+* **Method:**: `GET`
+
+* **Header**: `Authorization: Bearer <token hiện tại>`
+
+* **Success Response:**
+
+  * **Code:** `200 OK` - Kèm theo nội dung cơ bản của bài viết hoặc bản nháp
+
+  * **Example**:
+
+```json5
+{
+  "postId": "12",
+  "title": "abcxyz",
+  "content": "abcxyz",
+  "postThumbnail": "http://abc.xyz.jpg",
+  "..."
+}
+```
+
+* **Error Response:**
+
+  * **Code:** `404 NOT_FOUND` - Không tìm thấy
+
+  * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / không sở hữu
+
+## Đăng tải một bài viết mới
 
 ----
 Đăng tải một bài viết mới
@@ -252,27 +285,35 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Request Body:** `Content-Type: multipart/form-data`
 
-| Name              | Type     | Description                           |
-| ----------        |:------:  | ------------                          |
-| `title`           | `string` | Tên bài viết                          |
-| `content`         | `string` | Nội dung bài viết                     |
-| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết        |
-| `categories`      | `array`  | Mảng chứa các `category_id` (max = 5) |
+| Name              | Type     | Description                                |
+| ----------        |:------:  | ------------                               |
+| `title`           | `string` | Tiêu đề bài viết (max = 200 kí tự)         |
+| `content`         | `string` | Nội dung bài viết                          |
+| `postThumbnail`   | `string` | Link ảnh đại diện cho bài viết (max = 250) |
+| `categories`      | `array`  | Mảng chứa các `category_id` (max = 5)      |
 
 * **Success Response:**
 
-    * **Code:** `200 OK` - Kèm theo thông tin cơ bản của bài viết vừa đăng 
-    
+    * **Code:** `200 OK` - Kèm theo `slug` của bài viết vừa đăng
+
+    * **Example**:
+  
+```json5
+{
+  "slug": "abc-xyz-qwe"
+}
+```
+
 * **Error Response:**
 
     * **Code:** `400 BAD REQUEST` - Param của request không hợp lệ
 
-    * **Code:** `401 FORBIDDEN` - Chưa đăng nhập / public một bài viết từ một bản nháp không do mình sở hữu
+    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / public một bài viết từ một bản nháp không do mình sở hữu
 
-## Sửa bài viết
+## Sửa bài viết hoặc chuyển bản nháp thành bài viết
 
 ----
-Sửa bài viết (bài của ai người đó sửa)
+Sửa một bài viết đã công khai hoặc chuyển bản nháp thành bài đăng công khai
 
 * **URL**: `/post/{id}`
 
@@ -291,25 +332,28 @@ Sửa bài viết (bài của ai người đó sửa)
 
 * **Success Response:**
 
-    * **Code:** `202 ACCEPTED` - Sửa thành công, kèm theo `id` và `slug`
+    * **Code:** `200 OK` - Sửa thành công, kèm theo `slug` mới
   
     * **Example**:
   
 ```json5
 {
-  "postId": 28,
   "slug": "abc-xyz-wer"
 }
 ```
 
 * **Error Response:**
 
-    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu) 
+    * **Code:** `400 BAD_REQUEST` - Sai tham số
 
-## Xóa bài viết (thực ra là ẩn đi thôi)
+    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / không sở hữu
+  
+    * **Code:** `404 NOT_FOUND` - Không tồn tại
+
+## Xóa bài viết hoặc bản nháp
 
 ----
-Ẩn đi một bài viết (`admin` có quyền)
+Xoá một bài viết hoặc bản nháp do mình sở hữu. Riêng ADMIN có quyền xoá bài viết của người dùng
 
 * **URL**: `/post/{id}`
 
@@ -323,14 +367,14 @@ Sửa bài viết (bài của ai người đó sửa)
 
 * **Error Response:**
 
-    * **Code:** `404 NOT_FOUND` - Bài viết không tồn tại
+    * **Code:** `404 NOT_FOUND` - Bài viết / bài nháp không tồn tại
 
-    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / không sở hữu
 
-## Lưu bản nháp
+## Thêm bản nháp mới
 
 ----
-Lưu một bản nháp mới
+Thêm một bản nháp mới
 
 * **URL**: `/draft`
 
@@ -349,16 +393,18 @@ Lưu một bản nháp mới
 
 * **Success Response:**
 
-    * **Code:** `202 ACCEPTED` - Lưu thành công
+    * **Code:** `200 OK` - Lưu thành công
     
 * **Error Response:**
-  
+      
+    * **Code:** `400 BAD_REQUEST` - Tham số không hợp lệ
+
     * **Code:** `403 FORBIDDEN` - Chưa đăng nhập
 
 ## Lấy ra một bản nháp
 
 ----
-Lấy ra một bản nháp
+Lấy ra một bản nháp bằng id
 
 * **URL**: `/draft/{id}`
 
@@ -368,7 +414,7 @@ Lấy ra một bản nháp
 
 * **Success Response:**
 
-    * **Code:** `202 ACCEPTED` - Kèm theo thông tin của bản nháp
+    * **Code:** `200 OK` - Kèm theo thông tin của bản nháp
     
     * **Example**:
     
@@ -379,6 +425,7 @@ Lấy ra một bản nháp
   "title": "Mục sở thị hòn đảo của những người khổng lồ, 1m8 vẫn bị coi là người lùn",
   "publishedDate": "2021-05-10 06:26",
   "postThumbnail": "https://xxx.yyy.zzz.jpg",
+  "categories": []
 }
 
 ```
@@ -387,12 +434,12 @@ Lấy ra một bản nháp
 
     * **Code:** `404 NOT_FOUND` - Bản nháp không tồn tại
     
-    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / không sở hữu
 
-## Sửa bản nháp
+## Sửa bản nháp hoặc chuyển bài viết thành bản nháp
 
 ----
-Sửa bản nháp của mình (của ai người đó sửa)
+Sửa bản nháp đã tồn tại hoặc chuyển một bài viết về dạng bản nháp (ẩn đi)
 
 * **URL**: `/draft/{id}`
 
@@ -411,31 +458,10 @@ Sửa bản nháp của mình (của ai người đó sửa)
 
 * **Success Response:**
 
-    * **Code:** `202 ACCEPTED` - Sửa thành công
+    * **Code:** `204 NO_COTENT` - Sửa thành công
 
 * **Error Response:**
 
     * **Cdoe:** `404 NOT_FOUND` - Bản nháp không tồn tại
 
-    * **Code:** `403 FORBIDDEN` - Không có quyền
-
-## Xóa bản nháp (hiện tại là ẩn đi thôi, sau này là xóa luôn)
-
-----
-Xóa đi một bản nháp (của ai người đó xoá)
-
-* **URL**: `/draft/{id}`
-
-* **Method:**: `DELETE`
-
-* **Header**: `Authorization: Bearer <token hiện tại>`
-
-* **Success Response:**
-
-    * **Code:** `204 NO_CONTENT` - Xoá thành công
-
-* **Error Response:**
-
-    * **Code:** `404 NOT_FOUND` - Bản nháp không tồn tại
-    
-    * **Code:** `403 FORBIDDEN` - Không có quyền (chưa đăng nhập / không sở hữu)
+    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / không sở hữu
