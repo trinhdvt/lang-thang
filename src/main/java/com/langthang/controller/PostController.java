@@ -74,6 +74,19 @@ public class PostController {
         return postServices.getPopularPostByProperty(propertyName, pageable.getPageSize());
     }
 
+    @GetMapping("/post/{slug}/edit")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> getEditableContent(
+            @PathVariable("slug") String slug,
+            Authentication authentication) {
+
+        String accEmail = authentication.getName();
+
+        PostResponseDTO content = postServices.getPostOrDraftContent(slug, accEmail);
+
+        return ResponseEntity.ok(content);
+    }
+
     @PostMapping("/post")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> addPost(
@@ -81,18 +94,9 @@ public class PostController {
             Authentication authentication) {
 
         String authorEmail = authentication.getName();
-        PostResponseDTO savedPost;
 
-        if (postRequestDTO.getPostId() != null) {
-            int postId = postRequestDTO.getPostId();
-
-            postServices.checkResourceExistAnOwner(postId, authorEmail);
-
-            savedPost = postServices.updateAndPublicDraft(postRequestDTO);
-
-        } else {
-            savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
-        }
+//      attempting to add new post
+        PostResponseDTO savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
 
         notificationServices.sendNotificationToFollower(authorEmail, savedPost.getPostId());
 
@@ -108,11 +112,10 @@ public class PostController {
 
         String authorEmail = authentication.getName();
 
-        postServices.checkResourceExistAnOwner(postId, authorEmail);
+//      attempting to update existing post
+        String updatedSlug = postServices.updatePostById(postId, authorEmail, postRequestDTO);
 
-        PostResponseDTO updatedPostDTO = postServices.updatePostById(postId, postRequestDTO);
-
-        return ResponseEntity.accepted().body(updatedPostDTO);
+        return ResponseEntity.accepted().body(updatedSlug);
     }
 
     @DeleteMapping(value = "/post/{id}")
@@ -121,13 +124,10 @@ public class PostController {
             @PathVariable("id") int postId,
             Authentication authentication) {
 
-        if (authentication.getAuthorities().contains(Role.ROLE_MEMBER)) {
-            String authorEmail = authentication.getName();
+        String requestEmail = authentication.getName();
+        boolean isAdmin = authentication.getAuthorities().contains(Role.ROLE_ADMIN);
 
-            postServices.checkResourceExistAnOwner(postId, authorEmail);
-        }
-
-        postServices.deletePostById(postId);
+        postServices.deletePostById(postId, requestEmail, isAdmin);
 
         return ResponseEntity.noContent().build();
     }
@@ -135,7 +135,7 @@ public class PostController {
     @PostMapping("/draft")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> addDraft(
-            @RequestBody @Valid PostRequestDTO postRequestDTO,
+            @Valid PostRequestDTO postRequestDTO,
             Authentication authentication) {
 
         String authorEmail = authentication.getName();
@@ -153,24 +153,9 @@ public class PostController {
 
         String authorEmail = authentication.getName();
 
-        postServices.checkResourceExistAnOwner(postId, authorEmail);
-
-        PostResponseDTO postResponseDTO = postServices.getDraftById(postId);
+        PostResponseDTO postResponseDTO = postServices.getDraftById(postId, authorEmail);
 
         return ResponseEntity.ok(postResponseDTO);
-    }
-
-    @GetMapping(value = "/draft", params = {"slug"})
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> getDraftBySlug(
-            @RequestParam("slug") String slug,
-            Authentication authentication) {
-
-        String accEmail = authentication.getName();
-
-        PostResponseDTO draftDTO = postServices.getDraftBySlug(slug, accEmail);
-
-        return ResponseEntity.ok(draftDTO);
     }
 
     @PutMapping("/draft/{id}")
@@ -182,26 +167,10 @@ public class PostController {
 
         String authorEmail = authentication.getName();
 
-        postServices.checkResourceExistAnOwner(postId, authorEmail);
-
         // update existing draft
-        postServices.updatePostById(postRequestDTO.getPostId(), postRequestDTO);
+        // or make a post become a draft (hide it away)
+        postServices.updateDraftById(postId, authorEmail, postRequestDTO);
 
         return ResponseEntity.accepted().build();
-    }
-
-    @DeleteMapping("/draft/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> deleteDraft(
-            @PathVariable("id") int draftId,
-            Authentication authentication) {
-
-        String authorEmail = authentication.getName();
-
-        postServices.checkResourceExistAnOwner(draftId, authorEmail);
-
-        postServices.deleteDraftById(draftId);
-
-        return ResponseEntity.noContent().build();
     }
 }
