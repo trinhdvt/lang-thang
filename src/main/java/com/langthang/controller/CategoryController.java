@@ -4,6 +4,7 @@ import com.langthang.dto.CategoryDTO;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.services.ICategoryServices;
 import com.langthang.services.IPostServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,17 +16,16 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 public class CategoryController {
 
-    @Autowired
-    private ICategoryServices categoryServices;
+    private final ICategoryServices categoryServices;
 
-    @Autowired
-    private IPostServices postServices;
+    private final IPostServices postServices;
 
     @GetMapping("/category")
-    public ResponseEntity<Object> getListCategory(
+    public ResponseEntity<Object> getListOfCategory(
             @PageableDefault(sort = {"name"},
                     size = Integer.MAX_VALUE) Pageable pageable) {
 
@@ -69,7 +69,7 @@ public class CategoryController {
 
     @PutMapping("/category/{category_id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Object> modifyCategory(
+    public ResponseEntity<Object> modifyCategoryName(
             @PathVariable("category_id") int categoryId,
             @RequestParam("name") @NotBlank
             @Max(value = 150, message = "Short name please! Category name cannot exceed 150 characters")

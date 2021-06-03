@@ -20,8 +20,12 @@ import java.util.List;
 @Validated
 public class NotificationController {
 
+    private final INotificationServices notificationServices;
+
     @Autowired
-    private INotificationServices notificationServices;
+    public NotificationController(INotificationServices notificationServices) {
+        this.notificationServices = notificationServices;
+    }
 
     @GetMapping("/notifications")
     @PreAuthorize("isAuthenticated()")

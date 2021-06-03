@@ -8,6 +8,7 @@ import com.langthang.dto.PostResponseDTO;
 import com.langthang.dto.ResetPasswordDTO;
 import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,15 +21,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 @Validated
 public class UserController {
 
-    @Autowired
-    private IUserServices userServices;
+    private final IUserServices userServices;
 
-    @Autowired
-    private IPostServices postServices;
+    private final IPostServices postServices;
 
     @GetMapping("/user/{account_id}")
     public ResponseEntity<Object> getInformationOfUser(

@@ -12,6 +12,7 @@ import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IPostServices;
 import com.langthang.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class PostServicesImpl implements IPostServices {
@@ -33,14 +35,11 @@ public class PostServicesImpl implements IPostServices {
         COMMENT, BOOKMARK
     }
 
-    @Autowired
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
 
-    @Autowired
-    private AccountRepository accRepo;
+    private final AccountRepository accRepo;
 
-    @Autowired
-    private CategoryRepository categoryRepo;
+    private final CategoryRepository categoryRepo;
 
     @Override
     public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft) {
@@ -51,10 +50,7 @@ public class PostServicesImpl implements IPostServices {
         post.setPostCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(post);
-        return PostResponseDTO.builder()
-                .postId(savedPost.getId())
-                .slug(savedPost.getSlug())
-                .build();
+        return new PostResponseDTO(savedPost.getId(), savedPost.getSlug());
     }
 
     @Override
@@ -69,14 +65,10 @@ public class PostServicesImpl implements IPostServices {
         existingPost.setContent(postRequestDTO.getContent());
         existingPost.setPostThumbnail(postRequestDTO.getPostThumbnail());
         existingPost.setStatus(true);
-
         existingPost.setPostCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(existingPost);
-        return PostResponseDTO.builder()
-                .postId(savedPost.getId())
-                .slug(savedPost.getSlug())
-                .build();
+        return new PostResponseDTO(savedPost.getId(), savedPost.getSlug());
     }
 
     @Override
@@ -186,7 +178,7 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable) {
-        Page<Post> allDraftOfUser = postRepo.getAllByAccount_EmailAndStatusIsFalse(accountEmail,pageable);
+        Page<Post> allDraftOfUser = postRepo.getAllByAccount_EmailAndStatusIsFalse(accountEmail, pageable);
 
         return allDraftOfUser.map(this::entityToDTO).getContent();
     }
@@ -221,7 +213,7 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public void updatePostById(int postId, PostRequestDTO postRequestDTO) {
+    public PostResponseDTO updatePostById(int postId, PostRequestDTO postRequestDTO) {
         Post oldPost = postRepo.findPostById(postId);
         oldPost.setTitle(postRequestDTO.getTitle());
         oldPost.setContent(postRequestDTO.getContent());
@@ -229,7 +221,9 @@ public class PostServicesImpl implements IPostServices {
 
         oldPost.setPostCategories(getCategories(postRequestDTO));
 
-        postRepo.save(oldPost);
+        Post updatedPost = postRepo.saveAndFlush(oldPost);
+
+        return new PostResponseDTO(updatedPost.getId(), updatedPost.getSlug());
     }
 
     @Override

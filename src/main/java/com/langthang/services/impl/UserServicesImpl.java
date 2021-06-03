@@ -5,10 +5,15 @@ import com.langthang.dto.AccountInfoDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.model.FollowingRelationship;
+import com.langthang.model.Post;
+import com.langthang.model.PostReport;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.FollowRelationshipRepo;
+import com.langthang.repository.PostReportRepository;
+import com.langthang.repository.PostRepository;
 import com.langthang.services.IUserServices;
 import com.langthang.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,18 +26,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class UserServicesImpl implements IUserServices {
 
-    @Autowired
-    private AccountRepository accRepo;
+    private final AccountRepository accRepo;
 
-    @Autowired
-    private FollowRelationshipRepo followRepo;
+    private final FollowRelationshipRepo followRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    private final PostRepository postRepo;
+
+    private final PostReportRepository reportRepo;
 
     @Override
     public AccountDTO getDetailInformation(int accountId) {
@@ -125,6 +132,20 @@ public class UserServicesImpl implements IUserServices {
 
         account.setPassword(passwordEncoder.encode(newPassword));
         accRepo.saveAndFlush(account);
+    }
+
+    @Override
+    public void createReport(String reporterEmail, int postId, String reportContent) {
+        Post reportPost = postRepo.findPostByIdAndStatus(postId, true);
+        if (reportPost == null) {
+            throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.NOT_FOUND);
+        }
+
+        Account reporter = accRepo.findAccountByEmail(reporterEmail);
+
+        PostReport postReport = new PostReport(reporter, reportPost, reportContent);
+
+        reportRepo.save(postReport);
     }
 
     private AccountDTO toDetailAccountDTO(Account account) {

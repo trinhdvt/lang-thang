@@ -5,6 +5,7 @@ import com.langthang.dto.PostResponseDTO;
 import com.langthang.model.Role;
 import com.langthang.services.INotificationServices;
 import com.langthang.services.IPostServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,15 +20,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 @Validated
 public class PostController {
 
-    @Autowired
-    private IPostServices postServices;
+    private final IPostServices postServices;
 
-    @Autowired
-    private INotificationServices notificationServices;
+    private final INotificationServices notificationServices;
 
     @GetMapping("/post/{id}")
     public ResponseEntity<Object> getPostDetailById(

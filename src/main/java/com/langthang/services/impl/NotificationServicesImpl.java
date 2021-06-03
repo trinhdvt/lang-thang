@@ -12,6 +12,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.INotificationServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,21 +26,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class NotificationServicesImpl implements INotificationServices {
 
-    @Autowired
-    private NotificationRepository notifyRepo;
+    private final NotificationRepository notifyRepo;
 
-    @Autowired
-    private AccountRepository accRepo;
+    private final AccountRepository accRepo;
 
-    @Autowired
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${application.notify-template.like-comment}")
     private String likeNotificationTemplate;

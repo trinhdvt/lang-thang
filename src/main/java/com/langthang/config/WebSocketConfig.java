@@ -23,8 +23,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private final JwtTokenServices tokenServices;
+
     @Autowired
-    private JwtTokenServices tokenServices;
+    public WebSocketConfig(JwtTokenServices tokenServices) {
+        this.tokenServices = tokenServices;
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {

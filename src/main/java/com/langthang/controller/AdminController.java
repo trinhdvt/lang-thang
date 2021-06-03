@@ -4,6 +4,7 @@ import com.langthang.dto.AccountDTO;
 import com.langthang.dto.SystemReportDTO;
 import com.langthang.services.IAdminServices;
 import com.langthang.services.IUserServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,16 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 @Validated
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class AdminController {
 
-    @Autowired
-    private IAdminServices adminServices;
+    private final IAdminServices adminServices;
 
-    @Autowired
-    private IUserServices userServices;
+    private final IUserServices userServices;
 
     @GetMapping("/system/info")
     public ResponseEntity<Object> getBasicSystemInfo() {
@@ -55,10 +55,10 @@ public class AdminController {
     }
 
     @PutMapping("/user/{user_id}/admin")
-    public ResponseEntity<Object> updateUserToAdmin(
+    public ResponseEntity<Object> assignRoleAdminToUser(
             @PathVariable("user_id") int userId) {
 
-        adminServices.updateUserToAdmin(userId);
+        adminServices.assignRoleAdminToUser(userId);
 
         return ResponseEntity.accepted().build();
     }

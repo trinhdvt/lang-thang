@@ -9,8 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyMailSender {
 
+    private final JavaMailSender mailSender;
+
     @Autowired
-    private JavaMailSender mailSender;
+    public MyMailSender(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void sendRegisterTokenEmail(String endpoint, String verifyToken, Account account) {
         String subject = "Registration Confirmation";

@@ -10,26 +10,24 @@ import com.langthang.repository.BookmarkedPostRepo;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IBookmarkServices;
 import com.langthang.services.INotificationServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class BookmarkServiceImpl implements IBookmarkServices {
 
-    @Autowired
-    private AccountRepository accRepo;
+    private final AccountRepository accRepo;
 
-    @Autowired
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
 
-    @Autowired
-    private BookmarkedPostRepo bookmarkRepo;
+    private final BookmarkedPostRepo bookmarkRepo;
 
-    @Autowired
-    private INotificationServices notificationServices;
+    private final INotificationServices notificationServices;
 
     @Override
     public int bookmarkPost(int postId, String currentEmail) {

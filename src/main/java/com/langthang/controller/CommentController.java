@@ -3,6 +3,7 @@ package com.langthang.controller;
 import com.langthang.dto.CommentDTO;
 import com.langthang.event.OnNewCommentEvent;
 import com.langthang.services.ICommentServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
@@ -15,14 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 public class CommentController {
 
-    @Autowired
-    private ICommentServices commentServices;
+    private final ICommentServices commentServices;
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/comment/post/{post_id}")
     public ResponseEntity<Object> getCommentOfPost(

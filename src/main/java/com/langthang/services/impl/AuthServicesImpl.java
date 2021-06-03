@@ -13,6 +13,7 @@ import com.langthang.repository.PasswordResetTokenRepository;
 import com.langthang.repository.RegisterTokenRepository;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.JwtTokenServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,30 +34,24 @@ import java.util.Calendar;
 import java.util.Random;
 import java.util.UUID;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class AuthServicesImpl implements IAuthServices {
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    @Autowired
-    private JwtTokenServices jwtTokenServices;
+    private final JwtTokenServices jwtTokenServices;
 
-    @Autowired
-    private AuthenticationManager authManager;
+    private final AuthenticationManager authManager;
 
-    @Autowired
-    private RegisterTokenRepository tokenRepository;
+    private final RegisterTokenRepository tokenRepository;
 
-    @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepo;
+    private final PasswordResetTokenRepository passwordResetTokenRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private GoogleIdTokenVerifier googleIdTokenVerifier;
+    private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
     @Override
     public String login(String email, String password, HttpServletResponse resp) {

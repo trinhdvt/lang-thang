@@ -11,6 +11,7 @@ import com.langthang.event.OnResetPasswordEvent;
 import com.langthang.model.Account;
 import com.langthang.model.RegisterToken;
 import com.langthang.services.IAuthServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Validated
 @RestController
 public class AuthenticationController {
@@ -33,11 +35,9 @@ public class AuthenticationController {
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
 
-    @Autowired
-    private IAuthServices authServices;
+    private final IAuthServices authServices;
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/auth/login")
     public ResponseEntity<Object> login(

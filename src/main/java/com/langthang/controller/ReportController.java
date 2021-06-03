@@ -2,6 +2,8 @@ package com.langthang.controller;
 
 import com.langthang.dto.PostReportDTO;
 import com.langthang.services.IAdminServices;
+import com.langthang.services.IUserServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,12 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Validated
 @RestController
 public class ReportController {
 
-    @Autowired
-    private IAdminServices adminServices;
+    private final IAdminServices adminServices;
+
+    private final IUserServices userServices;
 
     @GetMapping("/report")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -27,7 +31,7 @@ public class ReportController {
             @PageableDefault(sort = {"isSolved", "reportedDate"})
                     Pageable pageable) {
 
-        List<PostReportDTO> listOfReports = adminServices.getPostReport(pageable);
+        List<PostReportDTO> listOfReports = adminServices.getListOfPostReport(pageable);
 
         return ResponseEntity.ok(listOfReports);
     }
@@ -51,7 +55,7 @@ public class ReportController {
 
         String reportAccount = authentication.getName();
 
-        adminServices.createReport(reportAccount, postId, reportContent);
+        userServices.createReport(reportAccount, postId, reportContent);
 
         return ResponseEntity.accepted().build();
     }

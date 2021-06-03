@@ -5,13 +5,13 @@ import com.langthang.dto.PostReportDTO;
 import com.langthang.dto.SystemReportDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
-import com.langthang.model.Post;
 import com.langthang.model.PostReport;
 import com.langthang.model.Role;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PostReportRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IAdminServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,18 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class AdminServicesImpl implements IAdminServices {
 
-    @Autowired
-    private AccountRepository accRepo;
+    private final AccountRepository accRepo;
 
-    @Autowired
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
 
-    @Autowired
-    private PostReportRepository reportRepo;
+    private final PostReportRepository reportRepo;
 
     @Override
     public SystemReportDTO getBasicSystemReport() {
@@ -46,7 +44,7 @@ public class AdminServicesImpl implements IAdminServices {
     }
 
     @Override
-    public void updateUserToAdmin(int userId) {
+    public void assignRoleAdminToUser(int userId) {
         Account account = accRepo.findAccountByIdAndEnabled(userId, true);
 
         if (account == null) {
@@ -59,7 +57,7 @@ public class AdminServicesImpl implements IAdminServices {
     }
 
     @Override
-    public List<PostReportDTO> getPostReport(Pageable pageable) {
+    public List<PostReportDTO> getListOfPostReport(Pageable pageable) {
         Page<PostReport> reportList = reportRepo.findAll(pageable);
 
         return reportList.map(this::toBasicPostReportDTO).getContent();
@@ -73,20 +71,6 @@ public class AdminServicesImpl implements IAdminServices {
         }
 
         return toPostReportDetailDTO(postReport);
-    }
-
-    @Override
-    public void createReport(String reporterEmail, int postId, String reportContent) {
-        Post reportPost = postRepo.findPostByIdAndStatus(postId, true);
-        if (reportPost == null) {
-            throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.NOT_FOUND);
-        }
-
-        Account reporter = accRepo.findAccountByEmail(reporterEmail);
-
-        PostReport postReport = new PostReport(reporter, reportPost, reportContent);
-
-        reportRepo.save(postReport);
     }
 
     @Override

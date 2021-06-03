@@ -3,6 +3,7 @@ package com.langthang.controller;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.services.IBookmarkServices;
 import com.langthang.services.IPostServices;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,14 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 public class BookmarkController {
 
-    @Autowired
-    private IBookmarkServices bookmarkServices;
+    private final IBookmarkServices bookmarkServices;
 
-    @Autowired
-    private IPostServices postServices;
+    private final IPostServices postServices;
 
     @GetMapping("/bookmark/posts")
     @PreAuthorize("isAuthenticated()")

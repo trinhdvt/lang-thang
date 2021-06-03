@@ -18,8 +18,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class CategoryServicesImpl implements ICategoryServices {
 
+    private final CategoryRepository categoryRepo;
+
     @Autowired
-    private CategoryRepository categoryRepo;
+    public CategoryServicesImpl(CategoryRepository categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
 
     @Override
     public List<CategoryDTO> getAllCategory(Pageable pageable) {

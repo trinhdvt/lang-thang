@@ -9,6 +9,7 @@ import com.langthang.model.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
 import com.langthang.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,21 +18,18 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Component
 @Slf4j
 public class SpringEventListener {
 
-    @Autowired
-    private IAuthServices authServices;
+    private final IAuthServices authServices;
 
-    @Autowired
-    private MyMailSender mailSender;
+    private final MyMailSender mailSender;
 
-    @Autowired
-    private ObjectMapper jacksonMapper;
+    private final ObjectMapper jacksonMapper;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Value("${application.broker.notify.prefix}")
     private String onNewNotifyPrefix;

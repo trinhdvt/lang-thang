@@ -13,6 +13,7 @@ import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,21 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class CommentServicesImpl implements ICommentServices {
 
-    @Autowired
-    private CommentRepository commentRepo;
+    private final CommentRepository commentRepo;
 
-    @Autowired
-    private AccountRepository accRepo;
+    private final AccountRepository accRepo;
 
-    @Autowired
-    private PostRepository postRepo;
+    private final PostRepository postRepo;
 
-    @Autowired
-    private INotificationServices notificationServices;
+    private final INotificationServices notificationServices;
 
     @Override
     public CommentDTO addNewComment(int postId, String content, String commenterEmail) {
