@@ -23,4 +23,6 @@ public interface IUserServices {
     void checkEmailAndPassword(String currentEmail, String oldPassword);
 
     void updatePassword(String currentEmail, String password);
+
+    void createReport(String reportAccount, int postId, String reportContent);
 }
