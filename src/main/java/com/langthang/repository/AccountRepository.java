@@ -36,7 +36,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     int countCommentOnMyPost(int accountId);
 
     @Query("select count(p.account) " +
-            "from Post p where p.account.id=?1 and p.status=true ")
+            "from Post p where p.account.id=?1 and p.published=true ")
     int countPublishedPost(int accountId);
 
     @Query("select acc " +

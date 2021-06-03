@@ -37,7 +37,7 @@ public class CommentServicesImpl implements ICommentServices {
 
     @Override
     public CommentDTO addNewComment(int postId, String content, String commenterEmail) {
-        Post post = postRepo.findPostByIdAndStatus(postId, true);
+        Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
             throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -91,7 +91,7 @@ public class CommentServicesImpl implements ICommentServices {
     @Override
     public List<CommentDTO> getAllCommentOfPost(int postId, Pageable pageable) {
 
-        if (!postRepo.existsByIdAndStatus(postId, true)) {
+        if (!postRepo.existsByIdAndPublished(postId, true)) {
             throw new CustomException("Not found", HttpStatus.NOT_FOUND);
         }
 

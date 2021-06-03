@@ -36,7 +36,7 @@ public class BookmarkServiceImpl implements IBookmarkServices {
             throw new CustomException("Already bookmarked", HttpStatus.NO_CONTENT);
         }
 
-        Post post = postRepo.findPostByIdAndStatus(postId, true);
+        Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
             throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);

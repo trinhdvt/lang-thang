@@ -136,7 +136,7 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public void createReport(String reporterEmail, int postId, String reportContent) {
-        Post reportPost = postRepo.findPostByIdAndStatus(postId, true);
+        Post reportPost = postRepo.findPostByIdAndPublished(postId, true);
         if (reportPost == null) {
             throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.NOT_FOUND);
         }

@@ -32,7 +32,8 @@ public class Post {
 
     private String postThumbnail;
 
-    private boolean status;
+    @Column(name = "status")
+    private boolean published;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
@@ -70,7 +71,9 @@ public class Post {
         content = Utils.escapeHtml(content);
         title = Utils.escapeHtml(title);
         postThumbnail = Utils.escapeHtml(postThumbnail);
-        publishedDate = new Date();
+        if (publishedDate == null) {
+            publishedDate = new Date();
+        }
     }
 
     @Override
