@@ -42,6 +42,11 @@ public class PostResponseDTO {
 
     private Set<CategoryDTO> categories;
 
+    public PostResponseDTO(int postId, String slug) {
+        this.postId = postId;
+        this.slug = slug;
+    }
+
     public PostResponseDTO(int postId, String title, String slug, Date publishedDate, String postThumbnail) {
         this.postId = postId;
         this.title = title;
