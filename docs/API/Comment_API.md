@@ -1,13 +1,15 @@
 # `Comment` API Document
 
-## Lấy ra danh sách các comment của một bài viết
+## Lấy ra danh sách các comment của một bài viết (bằng `id` hoặc `slug`)
 
 ----
 Trả về 1 danh sách các comment của một bài viết (được sắp xếp tăng dần theo ngày comment)
 
-* **URL**: `/comment/post/{post_id}`
+* **URL**: `/comment/post/{post_id}` hoặc `/comment/post?slug={slug}`
 
 * **Method:** `GET`
+
+* **Header:** `Authorization: Bearer <access token> (optional)`
 
 * **Request Params:**
 
@@ -73,7 +75,7 @@ Trả về 1 danh sách các comment của một bài viết (được sắp x�
 
 * **Error Response:**
 
-    * **Code**: `404 NOT_FOUND` - không tìm bài viết
+    * **Code**: `404 NOT_FOUND` - Không tìm bài viết
 
 ## Thêm một comment
 
@@ -125,7 +127,7 @@ Thêm 1 comment vào bài viết
     
 * **Error Response:**
 
-    * **Code**: `422 UNPROCESSABLE_ENTITY` - bài viết không tồn tại
+    * **Code**: `404 NOT_FOUND` - bài viết không tồn tại
 
     * **Code**: `403 FORBIDDEN` - chưa đăng nhập
 
@@ -165,16 +167,16 @@ Xoá một comment
   
 * **Error Response:**
 
-    * **Code**: `422 UNPROCESSABLE_ENTITY` - comment không tồn tại
+    * **Code**: `404 NOT_FOUND` - Comment không tồn tại
 
-    * **Code**: `403 FORBIDDEN` - chưa đăng nhập / không sở hữu
+    * **Code**: `403 FORBIDDEN / 401 UNAUTHORIZED` - chưa đăng nhập / không sở hữu
 
 ## Like / Unlike comment
 
 ----
 Like / Unlike comment, nếu đã like thì sẽ trở thành unlike và ngược lại
 
-* **URL**: `/comment/like/{comment_id}`
+* **URL**: `/comment/{comment_id}/like`
 
 * **Method:** `PUT`
 
@@ -186,6 +188,6 @@ Like / Unlike comment, nếu đã like thì sẽ trở thành unlike và ngượ
   
 * **Error Response:**
 
-    * **Code**: `422 UNPROCESSABLE_ENTITY` - comment không tồn tại
+    * **Code**: `404 NOT_FOUND` - Comment không tồn tại
 
-    * **Code**: `403 FORBIDDEN` - Chưa đăng nhập / không sở hữu
+    * **Code**: `403 FORBIDDEN` - Chưa đăng nhập 
