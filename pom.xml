@@ -26,7 +26,7 @@
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
         <google.api.version>1.31.4</google.api.version>
-        <apache.common-lang.version>3.12.0</apache.common-lang.version>
+        <apache.common-text.version>1.9</apache.common-text.version>
     </properties>
 
     <dependencies>
@@ -131,8 +131,8 @@
 
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${apache.common-lang.version}</version>
+            <artifactId>commons-text</artifactId>
+            <version>${apache.common-text.version}</version>
         </dependency>
 
         <dependency>
