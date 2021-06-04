@@ -8,7 +8,7 @@
 * [Lấy thông tin chi tiết một bài viết bằng id](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-id)
 * [Lấy thông tin chi tiết một bài viết bằng slug](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-slug)
 * [Đăng tải bài viết](#Đăng-tải-một-bài-viết-mới)
-* [Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)](#Lấy-nội-dung-của-bài-viết-hoặc-bản-nháp-bằng-slug-(cho-mục-đích-sửa))
+* [Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)](#Lấy-nội-dung-của-bài-viết-hoặc-bản-nháp-bằng-slug)
 * [Sửa bài viết hoặc chuyển bản nháp thành bài viết](#Sửa-bài-viết-hoặc-chuyển-bản-nháp-thành-bài-viết)
 * [Xóa bài viết / bản nháp](#Xóa-bài-viết-hoặc-bản-nháp)
 * [Thêm một bản nháp](#thêm-bản-nháp-mới)
@@ -239,7 +239,7 @@ Trả về thông tin chi tiết của một bài viết
 
 * **Response:** Xem lại phần trên
 
-## Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)
+## Lấy nội dung của bài viết hoặc bản nháp bằng slug
 
 ----
 Lấy ra nội dung của một bài viết hoặc bản nháp bằng `slug` cho mục đích sửa nội dung
