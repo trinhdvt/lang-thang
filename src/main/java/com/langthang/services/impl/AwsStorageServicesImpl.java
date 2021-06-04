@@ -1,12 +1,11 @@
 package com.langthang.services.impl;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import com.langthang.exception.CustomException;
 import com.langthang.services.IStorageServices;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +38,7 @@ public class AwsStorageServicesImpl implements IStorageServices {
     @Override
     public String uploadFile(MultipartFile multipartFile) {
         File uploadFile = convertToFile(multipartFile);
-        String filename = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+        String filename = System.currentTimeMillis() + "_" + StringUtils.deleteWhitespace(multipartFile.getOriginalFilename());
 
         PutObjectRequest objectRequest = new PutObjectRequest(bucketName, filename, uploadFile);
         objectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
@@ -54,12 +54,24 @@ public class AwsStorageServicesImpl implements IStorageServices {
         return filename;
     }
 
-    public List<String> getAllFileInBucket() {
+    @Override
+    public void deleteFiles(List<String> filesName) {
+        try {
+            DeleteObjectsRequest dor = new DeleteObjectsRequest(bucketName)
+                    .withKeys(filesName.toArray(new String[0]));
+            s3Client.deleteObjects(dor);
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public Set<String> getAllFiles() {
         ObjectListing objectListing = s3Client.listObjects(bucketName);
         return objectListing.getObjectSummaries()
                 .stream()
                 .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private File convertToFile(MultipartFile multipartFile) {
