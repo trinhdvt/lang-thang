@@ -15,5 +15,7 @@ public interface ICommentServices {
 
     List<CommentDTO> getAllCommentOfPost(int postId, Pageable pageable);
 
+    List<CommentDTO> getAllCommentOfPost(String slug, Pageable pageable);
+
     int likeOrUnlikeComment(int commentId, String accEmail);
 }

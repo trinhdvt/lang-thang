@@ -40,7 +40,7 @@ public class CommentServicesImpl implements ICommentServices {
         Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
-            throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("Post not found!", HttpStatus.NOT_FOUND);
         }
 
         Account commenter = accRepo.findAccountByEmail(commenterEmail);
@@ -58,12 +58,12 @@ public class CommentServicesImpl implements ICommentServices {
         Comment oldComment = commentRepo.findById(commentId).orElse(null);
 
         if (oldComment == null) {
-            throw new CustomException("Comment not found", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
         }
 
         Account commenter = oldComment.getAccount();
         if (!commenter.getEmail().equals(accEmail)) {
-            throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new CustomException("Access denied", HttpStatus.UNAUTHORIZED);
         }
 
         oldComment.setContent(content);
@@ -77,11 +77,11 @@ public class CommentServicesImpl implements ICommentServices {
         Comment existingComment = commentRepo.findById(commentId).orElse(null);
 
         if (existingComment == null) {
-            throw new CustomException("Comment not existed", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
         }
 
         if (!existingComment.getAccount().getEmail().equals(accEmail)) {
-            throw new CustomException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new CustomException("Access denied", HttpStatus.UNAUTHORIZED);
         }
 
         commentRepo.delete(existingComment);
@@ -96,6 +96,18 @@ public class CommentServicesImpl implements ICommentServices {
         }
 
         return commentRepo.getCommentsByPost_Id(postId, pageable)
+                .map(this::toCommentDTO)
+                .getContent();
+    }
+
+    @Override
+    public List<CommentDTO> getAllCommentOfPost(String slug, Pageable pageable) {
+        Post post = postRepo.findPostBySlugAndPublished(slug, true);
+        if (post == null) {
+            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+        }
+
+        return commentRepo.getCommentsByPost_Id(post.getId(), pageable)
                 .map(this::toCommentDTO)
                 .getContent();
     }

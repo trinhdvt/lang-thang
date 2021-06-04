@@ -35,6 +35,17 @@ public class CommentController {
         return ResponseEntity.ok(commentList);
     }
 
+    @GetMapping(value = "/comment/post", params = {"slug"})
+    public ResponseEntity<Object> getCommentOfPost(
+            @RequestParam("slug") String slug,
+            @PageableDefault(sort = {"commentDate"},
+                    direction = Sort.Direction.DESC) Pageable pageable) {
+
+        List<CommentDTO> commentList = commentServices.getAllCommentOfPost(slug, pageable);
+
+        return ResponseEntity.ok(commentList);
+    }
+
     @PutMapping("/comment/{comment_id}/like")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> likeOrUnlikeComment(
