@@ -8,12 +8,12 @@
 * [Lấy thông tin chi tiết một bài viết bằng id](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-id)
 * [Lấy thông tin chi tiết một bài viết bằng slug](#Lấy-thông-tin-chi-tiết-của-một-bài-viết-bằng-slug)
 * [Đăng tải bài viết](#Đăng-tải-một-bài-viết-mới)
-* [Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)](#Lấy nội dung của bài viết hoặc bản nháp bằng slug-(cho-mục-đích-sửa))
-* [Sửa bài viết hoặc chuyển bản nháp thành bài viết](#Sửa bài viết hoặc chuyển bản nháp thành bài viết)
+* [Lấy nội dung của bài viết hoặc bản nháp bằng slug (cho mục đích sửa)](#Lấy-nội-dung-của-bài-viết-hoặc-bản-nháp-bằng-slug-(cho-mục-đích-sửa))
+* [Sửa bài viết hoặc chuyển bản nháp thành bài viết](#Sửa-bài-viết-hoặc-chuyển-bản-nháp-thành-bài-viết)
 * [Xóa bài viết / bản nháp](#Xóa-bài-viết-hoặc-bản-nháp)
 * [Thêm một bản nháp](#thêm-bản-nháp-mới)
 * [Lấy ra một bản nháp](#Lấy-ra-một-bản-nháp)
-* [Sửa bản nháp hoặc chuyển bài viết thành bản nháp](#Sửa bản nháp hoặc chuyển bài viết thành bản nháp)
+* [Sửa bản nháp hoặc chuyển bài viết thành bản nháp](#Sửa-bản-nháp-hoặc-chuyển-bài-viết-thành-bản-nháp)
 
 ## Lấy ra danh sách các bài viết mới nhất
 
