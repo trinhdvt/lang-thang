@@ -17,6 +17,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.Order;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,19 +63,29 @@ public class ClearUnusedImageJob {
 
     @Bean
     public Job clearTrashImageJob() {
-        return jobBuilderFactory.get("clearTrashImage")
+        return jobBuilderFactory.get("clearTrashImageJob")
                 .preventRestart()
                 .listener(clearTrashImageListener())
-                .flow(stepToClearTrashImage())
-                .end()
+                .start(clearTrashImageStep1())
+                .next(clearTrashImageStep2())
                 .build();
     }
 
     @Bean
-    public Step stepToClearTrashImage() {
-        return stepBuilderFactory.get("stepToClearTrashImage")
+    public Step clearTrashImageStep1() {
+        return stepBuilderFactory.get("clearTrashImageStep1")
                 .<String, String>chunk(BATCH_SIZE)
-                .reader(imageReader())
+                .reader(accountTableImageReader())
+                .processor(extractImageUrlProcessor())
+                .writer(unusedImageFilter())
+                .build();
+    }
+
+    @Bean
+    public Step clearTrashImageStep2() {
+        return stepBuilderFactory.get("clearTrashImageStep2")
+                .<String, String>chunk(BATCH_SIZE)
+                .reader(postTableImageReader())
                 .processor(extractImageUrlProcessor())
                 .writer(unusedImageFilter())
                 .build();
@@ -108,7 +119,17 @@ public class ClearUnusedImageJob {
     }
 
     @Bean
-    public ItemReader<String> imageReader() {
+    public ItemReader<String> accountTableImageReader() {
+        return new JdbcCursorItemReaderBuilder<String>()
+                .name("accountTableImageReader")
+                .dataSource(dataSource)
+                .sql("select distinct(avatar_link) from account")
+                .rowMapper((rs, i) -> rs.getString(1))
+                .build();
+    }
+
+    @Bean
+    public ItemReader<String> postTableImageReader() {
         return new JdbcPagingItemReaderBuilder<String>()
                 .name("imageReader")
                 .dataSource(dataSource)
