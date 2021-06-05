@@ -36,7 +36,7 @@ public class FileUploadController {
     public ResponseEntity<Object> uploadFile(
             @RequestParam("upload") @ValidImage MultipartFile multipartFile) {
 
-        String publicUrl = storageServices.uploadFile(multipartFile);
+        String publicUrl = storageServices.uploadImage(multipartFile);
 
         Map<String, String> response = new HashMap<>();
         response.put("url", publicUrl);

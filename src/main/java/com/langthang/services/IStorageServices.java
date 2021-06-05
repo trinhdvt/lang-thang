@@ -2,15 +2,17 @@ package com.langthang.services;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 public interface IStorageServices {
-    String uploadFile(MultipartFile multipartFile);
+    String uploadImage(MultipartFile multipartFile);
 
-    String deleteFile(String filename);
+    void uploadFile(String absPath);
 
-    void deleteFiles(List<String> filesName);
+    void deleteImage(String filename);
 
-    Set<String> getAllFiles();
+    void deleteImages(Collection<String> filesName);
+
+    Set<String> getAllImages();
 }
