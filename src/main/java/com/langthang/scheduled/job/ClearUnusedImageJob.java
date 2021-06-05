@@ -103,7 +103,7 @@ public class ClearUnusedImageJob {
             public void afterJob(@NonNull JobExecution jobExecution) {
                 log.debug("Job done!");
 
-                Set<String> imageInS3Storage = storageServices.getAllFiles();
+                Set<String> imageInS3Storage = storageServices.getAllImages();
                 Set<String> imageInDB = imageHolder.getContent();
 
                 log.debug("File in AWS S3: {}", imageInS3Storage.size());
@@ -112,7 +112,7 @@ public class ClearUnusedImageJob {
 
                 imageInS3Storage.removeAll(imageInDB);
                 log.debug("File should be remove {}", imageInS3Storage.size());
-//                storageServices.deleteFiles(new ArrayList<>(imageInS3Storage));
+                storageServices.deleteImages(imageInS3Storage);
                 imageHolder.destroy();
             }
         };
