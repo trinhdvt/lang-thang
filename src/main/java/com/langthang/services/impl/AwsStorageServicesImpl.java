@@ -2,9 +2,13 @@ package com.langthang.services.impl;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.langthang.exception.CustomException;
 import com.langthang.services.IStorageServices;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,15 +19,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AwsStorageServicesImpl implements IStorageServices {
 
-    @Value("${cloud.aws.bucket.name}")
-    private String bucketName;
+    @Value("${cloud.aws.bucket.image-bucket}")
+    private String imageBucket;
+
+    @Value("${cloud.aws.bucket.backup-bucket}")
+    private String fileBucket;
 
     @Value("${cloud.aws.public.base-url}")
     private String basePublicURL;
@@ -36,11 +44,11 @@ public class AwsStorageServicesImpl implements IStorageServices {
     }
 
     @Override
-    public String uploadFile(MultipartFile multipartFile) {
+    public String uploadImage(MultipartFile multipartFile) {
         File uploadFile = convertToFile(multipartFile);
         String filename = System.currentTimeMillis() + "_" + StringUtils.deleteWhitespace(multipartFile.getOriginalFilename());
 
-        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, filename, uploadFile);
+        PutObjectRequest objectRequest = new PutObjectRequest(imageBucket, filename, uploadFile);
         objectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
         s3Client.putObject(objectRequest);
 
@@ -49,25 +57,39 @@ public class AwsStorageServicesImpl implements IStorageServices {
     }
 
     @Override
-    public String deleteFile(String filename) {
-        s3Client.deleteObject(bucketName, filename);
-        return filename;
+    public void uploadFile(String absPath) {
+        File file = new File(absPath);
+        if (!file.exists() || !file.isFile()) {
+            throw new RuntimeException("File not exist");
+        }
+
+        String fileName = file.getName();
+        PutObjectRequest objectRequest = new PutObjectRequest(fileBucket, fileName, file);
+        s3Client.putObject(objectRequest);
+
+        file.delete();
     }
 
     @Override
-    public void deleteFiles(List<String> filesName) {
+    public void deleteImage(String filename) {
+        s3Client.deleteObject(imageBucket, filename);
+    }
+
+    @Override
+    public void deleteImages(Collection<String> filesName) {
         try {
-            DeleteObjectsRequest dor = new DeleteObjectsRequest(bucketName)
-                    .withKeys(filesName.toArray(new String[0]));
-            s3Client.deleteObjects(dor);
+//            DeleteObjectsRequest dor = new DeleteObjectsRequest(imageBucket)
+//                    .withKeys(filesName.toArray(new String[0]));
+//            s3Client.deleteObjects(dor);
+            filesName.parallelStream().forEach(this::makePrivate);
         } catch (AmazonServiceException e) {
-            System.err.println(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
     @Override
-    public Set<String> getAllFiles() {
-        ObjectListing objectListing = s3Client.listObjects(bucketName);
+    public Set<String> getAllImages() {
+        ObjectListing objectListing = s3Client.listObjects(imageBucket);
         return objectListing.getObjectSummaries()
                 .stream()
                 .map(S3ObjectSummary::getKey)
@@ -88,5 +110,9 @@ public class AwsStorageServicesImpl implements IStorageServices {
         } else {
             throw new CustomException("File name is null", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private void makePrivate(String objectKey) {
+        s3Client.setObjectAcl(imageBucket, objectKey, CannedAccessControlList.Private);
     }
 }
