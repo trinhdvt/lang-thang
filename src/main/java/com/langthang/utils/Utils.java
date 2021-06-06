@@ -33,10 +33,9 @@ public class Utils {
         return StringUtils.replaceEach(HtmlUtils.htmlUnescape(html), htmlCharacter, escapedCharacter);
     }
 
-
     public static String getCurrentAccEmail() {
         Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (currentAuth instanceof AnonymousAuthenticationToken) {
+        if (currentAuth == null || currentAuth instanceof AnonymousAuthenticationToken) {
             return null;
         } else {
             return currentAuth.getName();
