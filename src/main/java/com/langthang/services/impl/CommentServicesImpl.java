@@ -1,8 +1,6 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.AccountDTO;
 import com.langthang.dto.CommentDTO;
-import com.langthang.dto.NotificationDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.model.Comment;
@@ -12,7 +10,7 @@ import com.langthang.repository.CommentRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
 import com.langthang.services.INotificationServices;
-import com.langthang.utils.Utils;
+import com.langthang.utils.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -46,11 +44,9 @@ public class CommentServicesImpl implements ICommentServices {
         Account commenter = accRepo.findAccountByEmail(commenterEmail);
         Comment comment = new Comment(commenter, post, content);
 
-        notificationServices.createNotification(commenter, post.getAccount(), post, NotificationDTO.TYPE.COMMENT);
-
         Comment savedComment = commentRepo.save(comment);
 
-        return toCommentDTO(savedComment);
+        return CommentDTO.toCommentDTO(savedComment);
     }
 
     @Override
@@ -69,7 +65,7 @@ public class CommentServicesImpl implements ICommentServices {
         oldComment.setContent(content);
         Comment newComment = commentRepo.save(oldComment);
 
-        return toCommentDTO(newComment);
+        return CommentDTO.toCommentDTO(newComment);
     }
 
     @Override
@@ -96,7 +92,7 @@ public class CommentServicesImpl implements ICommentServices {
         }
 
         return commentRepo.getCommentsByPost_Id(postId, pageable)
-                .map(this::toCommentDTO)
+                .map(CommentDTO::toCommentDTO)
                 .getContent();
     }
 
@@ -108,7 +104,7 @@ public class CommentServicesImpl implements ICommentServices {
         }
 
         return commentRepo.getCommentsByPost_Id(post.getId(), pageable)
-                .map(this::toCommentDTO)
+                .map(CommentDTO::toCommentDTO)
                 .getContent();
     }
 
@@ -129,29 +125,11 @@ public class CommentServicesImpl implements ICommentServices {
             notificationServices.createNotification(currentAcc,
                     comment.getAccount(),
                     comment.getPost(),
-                    NotificationDTO.TYPE.LIKE);
+                    NotificationType.LIKE);
         }
 
         accRepo.saveAndFlush(currentAcc);
 
         return commentRepo.countCommentLike(commentId);
-    }
-
-    private CommentDTO toCommentDTO(Comment savedComment) {
-        Account commenter = savedComment.getAccount();
-
-        AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
-
-        return CommentDTO.builder()
-                .commenter(commenterDTO)
-                .postId(savedComment.getPost().getId())
-                .commentId(savedComment.getId())
-                .commentDate(savedComment.getCommentDate())
-                .content(savedComment.getContent())
-                .isMyComment(commenter.getEmail().equals(Utils.getCurrentAccEmail()))
-                .likeCount(savedComment.getLikedAccounts().size())
-                .isLiked(savedComment.getLikedAccounts().stream()
-                        .anyMatch(a -> a.getEmail().equals(Utils.getCurrentAccEmail())))
-                .build();
     }
 }

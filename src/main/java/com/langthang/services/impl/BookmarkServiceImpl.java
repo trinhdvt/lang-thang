@@ -1,6 +1,5 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.NotificationDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.model.BookmarkedPost;
@@ -9,7 +8,6 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.BookmarkedPostRepo;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IBookmarkServices;
-import com.langthang.services.INotificationServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +25,6 @@ public class BookmarkServiceImpl implements IBookmarkServices {
 
     private final BookmarkedPostRepo bookmarkRepo;
 
-    private final INotificationServices notificationServices;
-
     @Override
     public int bookmarkPost(int postId, String currentEmail) {
         BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, currentEmail);
@@ -43,8 +39,6 @@ public class BookmarkServiceImpl implements IBookmarkServices {
         }
 
         Account currentAcc = accRepo.findAccountByEmail(currentEmail);
-
-        notificationServices.createNotification(currentAcc, post.getAccount(), post, NotificationDTO.TYPE.BOOKMARK);
 
         BookmarkedPost newBookmark = new BookmarkedPost(currentAcc, post);
         bookmarkRepo.save(newBookmark);
