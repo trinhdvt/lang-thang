@@ -17,7 +17,7 @@ public interface INotificationServices {
 
     List<NotificationDTO> getNotifications(String accEmail, Pageable pageable);
 
-    List<NotificationDTO> getUnseenNotifications(String accEmail, Pageable pageable);
+    List<NotificationDTO> getUnseenNotifications(String accEmail);
 
     void maskAsSeen(int notificationId, String accEmail);
 }

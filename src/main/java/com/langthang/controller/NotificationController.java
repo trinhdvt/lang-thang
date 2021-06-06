@@ -42,13 +42,11 @@ public class NotificationController {
 
     @GetMapping(value = "/notifications/unseen")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> getUnseenNotifications(
-            @PageableDefault Pageable pageable,
-            Authentication authentication) {
+    public ResponseEntity<Object> getUnseenNotifications(Authentication authentication) {
 
         String currentEmail = authentication.getName();
 
-        List<NotificationDTO> unseenNotifications = notificationServices.getUnseenNotifications(currentEmail, pageable);
+        List<NotificationDTO> unseenNotifications = notificationServices.getUnseenNotifications(currentEmail);
 
         return ResponseEntity.ok(unseenNotifications);
     }

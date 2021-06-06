@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -99,10 +100,10 @@ public class NotificationServicesImpl implements INotificationServices {
     }
 
     @Override
-    public List<NotificationDTO> getUnseenNotifications(String accEmail, Pageable pageable) {
-        Page<Notify> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail, pageable);
+    public List<NotificationDTO> getUnseenNotifications(String accEmail) {
+        List<Notify> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail);
 
-        return unseenList.map(this::toNotificationDTO).getContent();
+        return unseenList.stream().map(this::toNotificationDTO).collect(Collectors.toList());
     }
 
     @Override
