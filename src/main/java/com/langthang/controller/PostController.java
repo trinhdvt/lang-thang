@@ -3,7 +3,6 @@ package com.langthang.controller;
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.model.Role;
-import com.langthang.services.INotificationServices;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,6 @@ import java.util.List;
 public class PostController {
 
     private final IPostServices postServices;
-
-    private final INotificationServices notificationServices;
 
     @GetMapping("/post/{id}")
     public ResponseEntity<Object> getPostDetailById(
@@ -99,8 +96,6 @@ public class PostController {
 
 //      attempting to add new post
         PostResponseDTO savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
-
-        notificationServices.sendNotificationToFollower(authorEmail, savedPost.getPostId());
 
         return Collections.singletonMap("slug", savedPost.getSlug());
     }

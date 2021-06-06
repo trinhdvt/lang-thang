@@ -1,11 +1,9 @@
 package com.langthang.controller;
 
 import com.langthang.dto.CommentDTO;
-import com.langthang.event.OnNewCommentEvent;
 import com.langthang.services.ICommentServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -21,8 +19,6 @@ import java.util.List;
 public class CommentController {
 
     private final ICommentServices commentServices;
-
-    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/comment/post/{post_id}")
     public ResponseEntity<Object> getCommentOfPost(
@@ -69,8 +65,6 @@ public class CommentController {
         String currentEmail = authentication.getName();
 
         CommentDTO newComment = commentServices.addNewComment(postId, content, currentEmail);
-
-        eventPublisher.publishEvent(new OnNewCommentEvent(newComment));
 
         return ResponseEntity.ok(newComment);
     }
