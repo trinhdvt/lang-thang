@@ -1,6 +1,7 @@
 package com.langthang.repository;
 
 import com.langthang.model.Account;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,5 +44,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "from FollowingRelationship fr left join Account acc " +
             "on fr.accountId=acc.id " +
             "where fr.followingAccountId=?1")
-    List<Account> getFollowedAccount(int accountId);
+    Page<Account> getFollowedAccount(int accountId, PageRequest pageable);
 }
