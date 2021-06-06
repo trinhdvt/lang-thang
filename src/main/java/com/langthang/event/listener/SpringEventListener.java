@@ -8,9 +8,7 @@ import com.langthang.event.*;
 import com.langthang.model.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
-import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Component
-@Slf4j
 public class SpringEventListener {
 
     private final IAuthServices authServices;
@@ -86,8 +83,6 @@ public class SpringEventListener {
     @Async
     public void handleNewComment(OnNewCommentEvent event) throws JsonProcessingException {
         CommentDTO newComment = event.getNewComment();
-        newComment.setMyComment(newComment.getCommenter().getEmail().equals(Utils.getCurrentAccEmail()));
-
         String dest = onNewCommentPrefix + "/" + newComment.getPostId();
 
         messagingTemplate.convertAndSend(dest, jacksonMapper.writeValueAsString(newComment));
