@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,11 +51,11 @@ public class ClearUnusedImageJob {
 
     private final IStorageServices storageServices;
 
-    private final ImageHolder imageHolder;
-
     private final StepBuilderFactory stepBuilderFactory;
 
     private final JobBuilderFactory jobBuilderFactory;
+
+    private static Set<String > imageInDB = null;
 
     @PostConstruct
     protected void init() {
@@ -96,7 +97,7 @@ public class ClearUnusedImageJob {
         return new JobExecutionListener() {
             @Override
             public void beforeJob(@NonNull JobExecution jobExecution) {
-                imageHolder.init();
+                imageInDB = Collections.synchronizedSet(new HashSet<>());
             }
 
             @Override
@@ -104,7 +105,6 @@ public class ClearUnusedImageJob {
                 log.debug("Job done!");
 
                 Set<String> imageInS3Storage = storageServices.getAllImages();
-                Set<String> imageInDB = imageHolder.getContent();
 
                 log.debug("File in AWS S3: {}", imageInS3Storage.size());
                 log.debug("File in db: {}", imageInDB.size());
@@ -113,7 +113,7 @@ public class ClearUnusedImageJob {
                 imageInS3Storage.removeAll(imageInDB);
                 log.debug("File should be remove {}", imageInS3Storage.size());
                 storageServices.deleteImages(imageInS3Storage);
-                imageHolder.destroy();
+                imageInDB = null;
             }
         };
     }
@@ -151,7 +151,7 @@ public class ClearUnusedImageJob {
             while (matcher.find()) {
                 String imageUrl = matcher.group(0);
                 String imageName = StringUtils.replace(imageUrl, S3_IMAGE_URL_PREFIX + "/", "");
-                imageHolder.addItem(imageName);
+                imageInDB.add(imageName);
             }
         });
     }
