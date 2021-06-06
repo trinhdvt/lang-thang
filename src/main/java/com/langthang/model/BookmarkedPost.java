@@ -1,5 +1,6 @@
 package com.langthang.model;
 
+import com.langthang.event.listener.BookmarkEntityListener;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "bookmarked_post")
+@EntityListeners(BookmarkEntityListener.class)
 public class BookmarkedPost {
     @EmbeddedId
     private BookmarkedPostKey id;

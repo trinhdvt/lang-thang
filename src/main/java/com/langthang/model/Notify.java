@@ -1,6 +1,6 @@
 package com.langthang.model;
 
-import com.langthang.utils.Utils;
+import com.langthang.event.listener.NotificationEntityListener;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,6 +13,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "notify")
+@EntityListeners(NotificationEntityListener.class)
 public class Notify {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,12 +45,6 @@ public class Notify {
         this.content = content;
         this.notifyDate = new Date();
         this.seen = false;
-    }
-
-    @PreUpdate
-    @PrePersist
-    public void escapeHtml() {
-        this.content = Utils.escapeHtml(content);
     }
 
     @Override

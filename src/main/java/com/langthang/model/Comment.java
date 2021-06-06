@@ -1,6 +1,6 @@
 package com.langthang.model;
 
-import com.langthang.utils.Utils;
+import com.langthang.event.listener.CommentEntityListener;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,6 +15,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "comment")
+@EntityListeners(CommentEntityListener.class)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,13 +41,6 @@ public class Comment {
         this.post = post;
         this.content = content;
         this.commentDate = new Date();
-    }
-
-    @PrePersist
-    @PreUpdate
-    @PostUpdate
-    void encodeContent() {
-        this.content = Utils.escapeHtml(content);
     }
 
     @Override

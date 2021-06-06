@@ -1,6 +1,6 @@
 package com.langthang.model;
 
-import com.langthang.utils.Utils;
+import com.langthang.event.listener.AccountEntityListener;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +14,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "account")
+@EntityListeners(AccountEntityListener.class)
 public class Account {
     @Id
     @Column(name = "id")
@@ -81,19 +82,6 @@ public class Account {
             inverseJoinColumns = @JoinColumn(name = "comment_id")
     )
     private Set<Comment> likedComments;
-
-    @PrePersist
-    @PreUpdate
-    public void setAvatarLink() {
-        if (this.avatarLink == null || this.avatarLink.isEmpty()) {
-            this.avatarLink = "https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png";
-        }
-        this.name = Utils.escapeHtml(name);
-        this.about = Utils.escapeHtml(about);
-        this.avatarLink = Utils.escapeHtml(avatarLink);
-        this.fbLink = Utils.escapeHtml(fbLink);
-        this.instagramLink = Utils.escapeHtml(instagramLink);
-    }
 
     @Override
     public String toString() {

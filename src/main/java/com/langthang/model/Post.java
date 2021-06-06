@@ -1,6 +1,6 @@
 package com.langthang.model;
 
-import com.langthang.utils.Utils;
+import com.langthang.event.listener.PostEntityListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +17,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "post")
+@EntityListeners(PostEntityListener.class)
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +36,7 @@ public class Post {
     @Column(name = "status")
     private boolean published;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -64,26 +65,15 @@ public class Post {
         this.postThumbnail = postThumbnail;
     }
 
-    @PrePersist
-    @PreUpdate
-    public void encodeContentAndCreateSlug() {
-        slug = Utils.createSlug(title) + "-" + System.currentTimeMillis();
-        content = Utils.escapeHtml(content);
-        title = Utils.escapeHtml(title);
-        postThumbnail = Utils.escapeHtml(postThumbnail);
-        if (publishedDate == null) {
-            publishedDate = new Date();
-        }
-    }
-
     @Override
     public String toString() {
         return "Post{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
+                ", slug='" + slug + '\'' +
                 ", publishedDate=" + publishedDate +
                 ", postThumbnail='" + postThumbnail + '\'' +
+                ", published=" + published +
                 '}';
     }
 }
