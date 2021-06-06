@@ -1,5 +1,10 @@
 package com.langthang.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.langthang.model.Account;
+import com.langthang.model.Notify;
+import com.langthang.model.Post;
+import com.langthang.utils.constraints.NotificationType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +16,7 @@ import java.util.Date;
 @Setter
 @Builder
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationDTO {
 
     private int notificationId;
@@ -39,9 +45,28 @@ public class NotificationDTO {
     /**
      * What kind of this notification
      */
-    private TYPE notificationType;
+    private NotificationType notificationType;
 
-    public enum TYPE {
-        LIKE, COMMENT, REPORT, BOOKMARK, NEW_POST
+    public static NotificationDTO toNotificationDTO(Notify notify) {
+        Account sourceAcc = notify.getSourceAccount();
+        Post destPost = notify.getPost();
+
+        AccountDTO sourceAccDTO = AccountDTO.toBasicAccount(sourceAcc);
+
+        PostResponseDTO targetPostResponseDTO = PostResponseDTO.builder()
+                .postId(destPost.getId())
+                .title(destPost.getTitle())
+                .slug(destPost.getSlug())
+                .build();
+
+        return NotificationDTO.builder()
+                .notificationId(notify.getId())
+                .destEmail(notify.getAccount().getEmail())
+                .sourceAccount(sourceAccDTO)
+                .destPost(targetPostResponseDTO)
+                .content(notify.getContent())
+                .notifyDate(notify.getNotifyDate())
+                .seen(notify.isSeen())
+                .build();
     }
 }
