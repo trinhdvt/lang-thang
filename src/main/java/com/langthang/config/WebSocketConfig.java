@@ -1,6 +1,8 @@
 package com.langthang.config;
 
 import com.langthang.services.JwtTokenServices;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -46,15 +48,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+            public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-                if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+                if (accessor != null && StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
                     String token = accessor.getFirstNativeHeader("Authorization");
+
                     if (token != null) {
                         token = token.substring(7);
+                        String destination = accessor.getDestination();
 
-                        if (tokenServices.isValidToken(token)) {
+                        if (tokenServices.isValidToken(token) && StringUtils.endsWith(destination, tokenServices.getUserName(token))) {
                             Authentication auth = tokenServices.getAuthentication(token);
                             accessor.setUser(auth);
                         }
