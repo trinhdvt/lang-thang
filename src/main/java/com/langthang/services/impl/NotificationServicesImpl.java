@@ -1,21 +1,16 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.AccountDTO;
 import com.langthang.dto.NotificationDTO;
-import com.langthang.dto.PostResponseDTO;
-import com.langthang.event.OnNewNotificationEvent;
 import com.langthang.exception.CustomException;
-import com.langthang.model.Account;
-import com.langthang.model.Notify;
-import com.langthang.model.Post;
+import com.langthang.model.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.INotificationServices;
+import com.langthang.utils.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -38,8 +33,6 @@ public class NotificationServicesImpl implements INotificationServices {
 
     private final PostRepository postRepo;
 
-    private final ApplicationEventPublisher eventPublisher;
-
     @Value("${application.notify-template.like-comment}")
     private String likeNotificationTemplate;
 
@@ -53,57 +46,70 @@ public class NotificationServicesImpl implements INotificationServices {
     private String newPostNotificationTemplate;
 
     @Override
-    public void createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationDTO.TYPE type) {
-        if (sourceAcc == null || destAcc == null || destPost == null) {
+    @Async
+    public void addBookmarkNotification(BookmarkedPost bookmarkedPost) {
+        Account sourceAccount = bookmarkedPost.getAccount();
+        Post destPost = bookmarkedPost.getPost();
+        Account destAccount = destPost.getAccount();
+
+        Notify bookmarkNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.BOOKMARK);
+//       cannot create self-notification
+        if (bookmarkNotification != null) {
+            notifyRepo.saveAndFlush(bookmarkNotification);
+        }
+    }
+
+    @Override
+    @Async
+    public void addCommentNotification(Comment comment) {
+        Account sourceAccount = comment.getAccount();
+        Post destPost = comment.getPost();
+        Account destAccount = destPost.getAccount();
+
+        Notify commentNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.COMMENT);
+//      cannot create self-notification
+        if (commentNotification != null) {
+            notifyRepo.saveAndFlush(commentNotification);
+        }
+    }
+
+    @Override
+    public Notify createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type) {
+
+        if (sourceAcc == null || destPost == null || destAcc == null) {
             throw new CustomException("Internal Server Error when create notifications", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (sourceAcc.getEmail().equals(destAcc.getEmail())) {
-            return;
+            return null;
         }
 
         String content = createContentByType(type, sourceAcc.getName(), destPost.getTitle());
-        Notify newNotify = new Notify(destAcc, destPost, sourceAcc, content);
-        newNotify = notifyRepo.save(newNotify);
 
-        NotificationDTO notificationDTO = toNotificationDTO(newNotify);
-        notificationDTO.setNotificationType(type);
-
-        eventPublisher.publishEvent(new OnNewNotificationEvent(notificationDTO));
+        return new Notify(destAcc, destPost, sourceAcc, content);
     }
 
     @Override
-    @Async
-    public void sendNotificationToFollower(String sourceAccEmail, int destPostId) {
-        Account sourceAcc = accRepo.findAccountByEmail(sourceAccEmail);
+    public Notify createNotification(int sourceAccId, int destAccId, int destPostId, NotificationType type) {
+        Account sourceAcc = accRepo.findAccountByIdAndEnabled(sourceAccId, true);
+        Account destAcc = accRepo.findAccountByIdAndEnabled(destAccId, true);
         Post destPost = postRepo.findPostById(destPostId);
-        List<Account> followers = accRepo.getFollowedAccount(sourceAcc.getId());
 
-        followers.forEach(
-                follower -> createNotification(sourceAcc, follower, destPost, NotificationDTO.TYPE.NEW_POST)
-        );
-
-    }
-
-    @Override
-    @Async
-    public void createNotification(Account sourceAcc, String targetAccEmail, Post destPost, NotificationDTO.TYPE type) {
-        Account targetAcc = accRepo.findAccountByEmailAndEnabled(targetAccEmail, true);
-        createNotification(sourceAcc, targetAcc, destPost, type);
+        return createNotification(sourceAcc, destAcc, destPost, type);
     }
 
     @Override
     public List<NotificationDTO> getNotifications(String accEmail, Pageable pageable) {
         Page<Notify> notifyList = notifyRepo.findAllByAccount_Email(accEmail, pageable);
 
-        return notifyList.map(this::toNotificationDTO).getContent();
+        return notifyList.map(NotificationDTO::toNotificationDTO).getContent();
     }
 
     @Override
     public List<NotificationDTO> getUnseenNotifications(String accEmail) {
         List<Notify> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail);
 
-        return unseenList.stream().map(this::toNotificationDTO).collect(Collectors.toList());
+        return unseenList.stream().map(NotificationDTO::toNotificationDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -121,36 +127,13 @@ public class NotificationServicesImpl implements INotificationServices {
         notifyRepo.save(notify);
     }
 
-    private NotificationDTO toNotificationDTO(Notify notify) {
-        Account sourceAcc = notify.getSourceAccount();
-        Post destPost = notify.getPost();
-
-        AccountDTO sourceAccDTO = AccountDTO.toBasicAccount(sourceAcc);
-
-        PostResponseDTO targetPostResponseDTO = PostResponseDTO.builder()
-                .postId(destPost.getId())
-                .title(destPost.getTitle())
-                .slug(destPost.getSlug())
-                .build();
-
-        return NotificationDTO.builder()
-                .notificationId(notify.getId())
-                .destEmail(notify.getAccount().getEmail())
-                .sourceAccount(sourceAccDTO)
-                .destPost(targetPostResponseDTO)
-                .content(notify.getContent())
-                .notifyDate(notify.getNotifyDate())
-                .seen(notify.isSeen())
-                .build();
-    }
-
-    private String createContentByType(NotificationDTO.TYPE type, String sourceName, String postTitle) {
+    private String createContentByType(NotificationType type, String sourceName, String postTitle) {
         String notificationTemplate = getNotificationTemplate(type);
 
         return MessageFormat.format(notificationTemplate, sourceName, postTitle);
     }
 
-    private String getNotificationTemplate(NotificationDTO.TYPE notificationType) {
+    private String getNotificationTemplate(NotificationType notificationType) {
         switch (notificationType) {
             case LIKE:
                 return likeNotificationTemplate;
