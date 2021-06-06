@@ -111,7 +111,7 @@ public class NotificationServicesImpl implements INotificationServices {
         Notify notify = notifyRepo.findById(notificationId).orElse(null);
 
         if (notify == null) {
-            return;
+            throw new CustomException("Not found!", HttpStatus.NOT_FOUND);
         }
         if (!notify.getAccount().getEmail().equals(accEmail)) {
             throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
