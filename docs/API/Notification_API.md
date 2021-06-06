@@ -102,13 +102,6 @@ Lấy ra danh sách các thông báo chưa xem
 
 * **Method:** `GET`
 
-* **Request Params**
-
-  | Name    | Type    | Description                 | Default   |
-  | ------- |:------: | ------------                | :-------: |
-  | `page`  | `int`   | Số thứ tự trang             | 0         |
-  | `size`  | `int`   | Số lượng thông báo muốn lấy | 10        |
-
 * **Response**: Giống như phần trên
 
 ## Đánh dấu một thông báo là đã xem
@@ -126,8 +119,10 @@ Lấy ra danh sách các thông báo chưa xem
 
   * **Success Response:**
 
-    * **Code:** `204 ACCEPTED` - Đã đánh dấu là đã xem
+    * **Code:** `204 NO_CONTENT` - Đã đánh dấu là đã xem
 
   * **Error Response:**
   
-    * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
+    * **Code**: `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / Không sở hữu
+      
+    * **Code**: `404 NOT_FOUND` - Thông báo không tồn tại
