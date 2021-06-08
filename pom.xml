@@ -27,6 +27,7 @@
         <jwt.version>0.9.1</jwt.version>
         <google.api.version>1.31.4</google.api.version>
         <apache.common-text.version>1.9</apache.common-text.version>
+        <hibernate.search.version>5.11.9.Final</hibernate.search.version>
     </properties>
 
     <dependencies>
@@ -79,6 +80,12 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search-orm</artifactId>
+            <version>${hibernate.search.version}</version>
         </dependency>
 
         <dependency>
