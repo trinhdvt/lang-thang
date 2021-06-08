@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -94,9 +95,9 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable) {
-        Page<Post> postResp = postRepo.findPostByKeyword(keyword, pageable);
+        List<Post> posts = postRepo.searchByKeyword(keyword, pageable);
 
-        return postResp.map(this::entityToDTO).getContent();
+        return posts.stream().map(this::entityToDTO).collect(Collectors.toList());
     }
 
 
@@ -195,7 +196,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public String updatePostById(int postId, String authorEmail, PostRequestDTO requestDTO) {
         Post existingPost = verifyResourceOwner(postId, authorEmail);
-        updatePostContent(existingPost,requestDTO);
+        updatePostContent(existingPost, requestDTO);
         existingPost.setPublished(true);
 
         return postRepo.saveAndFlush(existingPost).getSlug();
@@ -217,7 +218,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public void updateDraftById(int postId, String authorEmail, PostRequestDTO requestDTO) {
         Post existingPost = verifyResourceOwner(postId, authorEmail);
-        updatePostContent(existingPost,requestDTO);
+        updatePostContent(existingPost, requestDTO);
         existingPost.setPublished(false);
 
         postRepo.saveAndFlush(existingPost);
@@ -277,7 +278,7 @@ public class PostServicesImpl implements IPostServices {
         }
     }
 
-    private void updatePostContent(Post existingPost, PostRequestDTO requestDTO){
+    private void updatePostContent(Post existingPost, PostRequestDTO requestDTO) {
         existingPost.setTitle(requestDTO.getTitle());
         existingPost.setContent(requestDTO.getContent());
         existingPost.setPostThumbnail(requestDTO.getPostThumbnail());

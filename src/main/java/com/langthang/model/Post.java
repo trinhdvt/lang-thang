@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.TermVector;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,13 +21,16 @@ import java.util.Set;
 @Entity
 @Table(name = "post")
 @EntityListeners(PostEntityListener.class)
+@Indexed
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Field(termVector = TermVector.YES)
     private String title;
 
+    @Field(termVector = TermVector.YES)
     private String content;
 
     private String slug;

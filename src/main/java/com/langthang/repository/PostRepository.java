@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface PostRepository extends JpaRepository<Post, Integer> {
+public interface PostRepository extends JpaRepository<Post, Integer>, FullTextSearch<Post> {
 
     Post findPostBySlug(String slug);
 
@@ -52,15 +52,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             "where a.email=?1 and p.published=true " +
             "order by bp.bookmarkedDate desc ")
     Page<Post> getBookmarkedPostByAccount_Email(String accountEmail, Pageable pageable);
-
-
-    @Query(value = "select id, title, content, published_date, post_thumbnail, slug, status, account_id " +
-            "from post where match(title, content) against(?1 in boolean mode) " +
-            "order by match(title, content) against(?1 in boolean mode) DESC",
-            countQuery = "select count(id) " +
-                    "from post where match(title, content) against(?1 in boolean mode) ",
-            nativeQuery = true)
-    Page<Post> findPostByKeyword(String keyword, Pageable pageable);
 
     @Query("select count(bp) from BookmarkedPost bp where bp.post.id=?1")
     int countBookmarks(int postId);
