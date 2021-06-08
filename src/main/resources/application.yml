@@ -1,0 +1,95 @@
+spring:
+  config:
+    import: classpath:application-private.yml
+  batch:
+    initialize-schema: always
+    job:
+      enabled: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/do-an-lang-thang
+    username: root
+    password: illusion
+    hikari:
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        useLocalSessionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        search:
+          default:
+            directory_provider: filesystem
+            indexBase: ~/data
+    open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm
+
+cloud:
+  aws:
+    bucket:
+      image-bucket: langthang-user-photos
+      backup-bucket: lang-thang-backup
+    region:
+      static: ap-southeast-1
+    stack:
+      auto: false
+    public:
+      base-url: https://${cloud.aws.bucket.image-bucket}.s3-${cloud.aws.region.static}.amazonaws.com
+
+application:
+  image:
+    support-type: image/png,image/jpg,image/jpeg
+    pattern: ${cloud.aws.public.base-url}/\S*?.(jpg|png|jpeg)
+  broker:
+    prefix: /topic
+    end-point: /socket-server
+    notify:
+      prefix: ${application.broker.prefix}/notify
+    post:
+      prefix: ${application.broker.prefix}/post
+  notify-template:
+    like-comment: "<b>{0}</b> đã thích bình luận của bạn trong bài viết <b>{1}</b>"
+    comment-post: "<b>{0}</b> đã bình luận về bài viết <b>{1}</b>"
+    bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b>"
+    following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
+
+security:
+  jwt:
+    token:
+      prefix: Bearer
+      secret-key: WeAreBrother
+      expire-length: 600000
+    refresh-token:
+      cookie-name: refresh-token
+      cookie-length: 15552000
+  oauth2:
+    google:
+      client-id: 545452035521-c4eljpuu1281eml2ci6kaud39s5kc9ct.apps.googleusercontent.com
+
+server:
+  compression:
+    enabled: true
+
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+    com:
+      langthang: DEBUG
