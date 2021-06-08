@@ -1,5 +1,6 @@
 package com.langthang.scheduled;
 
+import com.langthang.scheduled.job.BackupDatabaseJob;
 import com.langthang.utils.OnLinuxCondition;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.io.IOException;
 import java.util.Date;
 
 @Setter(onMethod_ = {@Autowired})
@@ -26,6 +28,8 @@ public class ScheduledJobManager {
 
     private Job clearTrashImageJob;
 
+    private BackupDatabaseJob backupDatabaseJob;
+
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void runClearTrashImageJob() throws Exception {
         log.debug("Attempting to clear unused resource {}", new Date());
@@ -33,5 +37,10 @@ public class ScheduledJobManager {
                 .addDate("run-time", new Date())
                 .toJobParameters();
         jobLauncher.run(clearTrashImageJob, jobParams);
+    }
+
+    @Scheduled(cron = "0 30 0 * * ?", zone = "Asia/Ho_Chi_Minh")
+    public void runBackupDBJob() throws IOException {
+        backupDatabaseJob.run();
     }
 }
