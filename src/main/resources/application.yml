@@ -31,7 +31,7 @@ spring:
         search:
           default:
             directory_provider: filesystem
-            indexBase: ~/data
+            indexBase: lucene_index
     open-in-view: false
   servlet:
     multipart:
