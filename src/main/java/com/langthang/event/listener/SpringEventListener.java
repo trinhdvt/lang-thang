@@ -83,6 +83,7 @@ public class SpringEventListener {
     @Async
     public void handleNewComment(OnNewCommentEvent event) throws JsonProcessingException {
         CommentDTO newComment = event.getNewComment();
+        newComment.setMyComment(false);
         String dest = onNewCommentPrefix + "/" + newComment.getPostId();
 
         messagingTemplate.convertAndSend(dest, jacksonMapper.writeValueAsString(newComment));
