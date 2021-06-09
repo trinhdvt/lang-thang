@@ -3,6 +3,7 @@ package com.langthang.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.langthang.model.Post;
 import com.langthang.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostResponseDTO {
 
