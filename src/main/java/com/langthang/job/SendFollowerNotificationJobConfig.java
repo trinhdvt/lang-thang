@@ -1,4 +1,4 @@
-package com.langthang.scheduled.job;
+package com.langthang.job;
 
 import com.langthang.model.Account;
 import com.langthang.model.Notify;

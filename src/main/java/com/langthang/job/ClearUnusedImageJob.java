@@ -1,4 +1,4 @@
-package com.langthang.scheduled.job;
+package com.langthang.job;
 
 import com.langthang.services.IStorageServices;
 import lombok.NonNull;

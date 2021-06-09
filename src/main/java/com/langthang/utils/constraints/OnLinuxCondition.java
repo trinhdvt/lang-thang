@@ -1,4 +1,4 @@
-package com.langthang.utils;
+package com.langthang.utils.constraints;
 
 import lombok.NonNull;
 import org.apache.commons.lang3.SystemUtils;

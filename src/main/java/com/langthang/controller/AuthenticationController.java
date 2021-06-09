@@ -4,7 +4,7 @@ import com.langthang.annotation.PasswordMatches;
 import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.dto.JwtTokenDTO;
-import com.langthang.dto.ResetPasswordDTO;
+import com.langthang.dto.PasswordDTO;
 import com.langthang.event.OnRegisterWithGoogle;
 import com.langthang.event.OnRegistrationEvent;
 import com.langthang.event.OnResetPasswordEvent;
@@ -150,7 +150,7 @@ public class AuthenticationController {
     @PutMapping("/auth/savePassword")
     public ResponseEntity<Object> savePassword(
             @RequestParam("token") @NotBlank String token,
-            @Valid @PasswordMatches ResetPasswordDTO resetPasswordDTO) {
+            @Valid @PasswordMatches PasswordDTO passwordDTO) {
 
         authServices.validatePasswordResetToken(token);
 
@@ -160,7 +160,7 @@ public class AuthenticationController {
             return new ResponseEntity<>("Account not found", HttpStatus.FORBIDDEN);
         }
 
-        authServices.changeAccountPassword(account, resetPasswordDTO.getPassword());
+        authServices.changeAccountPassword(account, passwordDTO.getPassword());
 
         return ResponseEntity.accepted().build();
     }

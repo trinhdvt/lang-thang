@@ -2,14 +2,17 @@ package com.langthang.dto;
 
 import com.langthang.model.Category;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
-@Value
 @Builder
+@Data
 public class CategoryDTO {
-    int categoryId;
-    String categoryName;
-    int postCount;
+
+    private int categoryId;
+
+    private String categoryName;
+
+    private int postCount;
 
     public static CategoryDTO toCategoryDTO(Category entity) {
         return CategoryDTO.builder()

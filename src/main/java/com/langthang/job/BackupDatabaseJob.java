@@ -1,4 +1,4 @@
-package com.langthang.scheduled.job;
+package com.langthang.job;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

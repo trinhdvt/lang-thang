@@ -5,7 +5,7 @@ import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountDTO;
 import com.langthang.dto.AccountInfoDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.dto.ResetPasswordDTO;
+import com.langthang.dto.PasswordDTO;
 import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
 import lombok.RequiredArgsConstructor;
@@ -137,7 +137,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> updateUserPassword(
             @RequestParam("oldPassword") String oldPassword,
-            @Valid @PasswordMatches ResetPasswordDTO newPassword,
+            @Valid @PasswordMatches PasswordDTO newPassword,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();

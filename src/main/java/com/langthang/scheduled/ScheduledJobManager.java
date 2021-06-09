@@ -1,7 +1,7 @@
 package com.langthang.scheduled;
 
-import com.langthang.scheduled.job.BackupDatabaseJob;
-import com.langthang.utils.OnLinuxCondition;
+import com.langthang.job.BackupDatabaseJob;
+import com.langthang.utils.constraints.OnLinuxCondition;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -41,6 +41,7 @@ public class ScheduledJobManager {
 
     @Scheduled(cron = "0 30 0 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void runBackupDBJob() throws IOException {
+        log.debug("Attempting to backup database {}", new Date());
         backupDatabaseJob.run();
     }
 }

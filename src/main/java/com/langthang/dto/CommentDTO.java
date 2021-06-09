@@ -11,18 +11,25 @@ import java.util.Date;
 @Data
 @Builder
 public class CommentDTO {
+
     private int commentId;
+
     private AccountDTO commenter;
+
     private int postId;
+
     private boolean isMyComment;
+
     private Date commentDate;
+
     private String content;
+
     private boolean isLiked;
+
     private int likeCount;
 
     public static CommentDTO toCommentDTO(Comment comment) {
         Account commenter = comment.getAccount();
-
         AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
 
         return CommentDTO.builder()
