@@ -4,12 +4,14 @@ import com.langthang.annotation.PasswordMatches;
 import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountDTO;
 import com.langthang.dto.AccountInfoDTO;
-import com.langthang.dto.PostResponseDTO;
 import com.langthang.dto.PasswordDTO;
+import com.langthang.dto.PostResponseDTO;
 import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +52,7 @@ public class UserController {
 
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
+    @Cacheable(value = "user_detail", key = "{#authentication}")
     public ResponseEntity<Object> getCurrentUserInfo(
             Authentication authentication) {
 
@@ -122,6 +125,7 @@ public class UserController {
 
     @PutMapping("/user/update/info")
     @PreAuthorize("isAuthenticated()")
+    @CacheEvict(value = "user_detail", key = "{#authentication}")
     public ResponseEntity<Object> updateUserBasicInfo(
             @Valid AccountInfoDTO newInfo,
             Authentication authentication) {
