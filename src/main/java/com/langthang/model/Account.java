@@ -30,7 +30,7 @@ public class Account {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Role role = Role.ROLE_MEMBER;
+    private Role role = Role.ROLE_USER;
 
     @Builder.Default
     private boolean enabled = false;

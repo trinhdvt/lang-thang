@@ -47,7 +47,7 @@ public class ReportController {
     }
 
     @PostMapping("/report")
-    @PreAuthorize("hasAuthority('ROLE_MEMBER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<Object> createReport(
             @RequestParam("postId") int postId,
             @RequestParam("content") String reportContent,
