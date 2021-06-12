@@ -2,9 +2,11 @@ package com.langthang.services.impl;
 
 import com.langthang.dto.AccountDTO;
 import com.langthang.dto.PostReportDTO;
+import com.langthang.dto.PostResponseDTO;
 import com.langthang.dto.SystemReportDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
+import com.langthang.model.Post;
 import com.langthang.model.PostReport;
 import com.langthang.model.Role;
 import com.langthang.repository.AccountRepository;
@@ -79,6 +81,9 @@ public class AdminServicesImpl implements IAdminServices {
         if (report == null) {
             throw new CustomException("Report with ID: " + reportId + " not found", HttpStatus.NOT_FOUND);
         }
+        if (report.isSolved()) {
+            throw new CustomException("Already solved", HttpStatus.NOT_ACCEPTABLE);
+        }
 
         report.setDecision(decision);
         report.setSolved(true);
@@ -93,7 +98,6 @@ public class AdminServicesImpl implements IAdminServices {
         return PostReportDTO.builder()
                 .reportId(postReport.getId())
                 .reportDate(postReport.getReportedDate())
-                .reportPostId(postReport.getPost().getId())
                 .solved(postReport.isSolved())
                 .reportContent(postReport.getContent())
                 .decision(postReport.getDecision())
@@ -101,14 +105,15 @@ public class AdminServicesImpl implements IAdminServices {
     }
 
     private PostReportDTO toPostReportDetailDTO(PostReport postReport) {
-        Account reportAccount = postReport.getAccount();
+        Account reporter = postReport.getAccount();
+        AccountDTO reporterDTO = AccountDTO.toBasicAccount(reporter);
 
-        AccountDTO reporter = AccountDTO.toBasicAccount(reportAccount);
-        AccountDTO postOwner = AccountDTO.toBasicAccount(postReport.getPost().getAccount());
+        Post reportedPost = postReport.getPost();
+        PostResponseDTO reportedPostDTO = PostResponseDTO.toPostResponseDTO(reportedPost);
 
         PostReportDTO postReportDTO = toBasicPostReportDTO(postReport);
-        postReportDTO.setReporter(reporter);
-        postReportDTO.setPostOwner(postOwner);
+        postReportDTO.setReporter(reporterDTO);
+        postReportDTO.setReportedPost(reportedPostDTO);
 
         return postReportDTO;
     }
