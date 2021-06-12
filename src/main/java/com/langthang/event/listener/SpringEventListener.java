@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.langthang.dto.CommentDTO;
 import com.langthang.dto.NotificationDTO;
-import com.langthang.event.*;
-import com.langthang.model.Account;
-import com.langthang.services.IAuthServices;
-import com.langthang.utils.MyMailSender;
+import com.langthang.event.OnNewCommentEvent;
+import com.langthang.event.OnNewNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringEventListener {
 
-    private final IAuthServices authServices;
-
-    private final MyMailSender mailSender;
-
     private final ObjectMapper jacksonMapper;
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -33,41 +27,6 @@ public class SpringEventListener {
 
     @Value("${application.broker.post.prefix}")
     private String onNewCommentPrefix;
-
-    @EventListener
-    @Async
-    public void handleConfirmRegistration(OnRegistrationEvent event) {
-        Account destAccount = event.getAccount();
-        String token = event.getToken();
-
-        if (token == null) {
-            token = authServices.createVerifyToken(destAccount);
-        }
-
-        mailSender.sendRegisterTokenEmail(event.getAppUrl()
-                , token
-                , destAccount);
-    }
-
-    @EventListener
-    @Async
-    public void handleResetPassword(OnResetPasswordEvent event) {
-        Account destAccount = event.getAccount();
-        String token = authServices.createPasswordResetToken(destAccount);
-
-        mailSender.sendResetPasswordEmail(event.getAppUrl()
-                , token
-                , destAccount);
-    }
-
-    @EventListener
-    @Async
-    public void handleRegisterWithGoogle(OnRegisterWithGoogle event) {
-        Account destAccount = event.getAccount();
-        String rawPassword = event.getRawPassword();
-
-        mailSender.sendCreatedAccountEmail(destAccount, rawPassword);
-    }
 
     @EventListener
     @Async
