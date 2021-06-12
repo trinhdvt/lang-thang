@@ -109,7 +109,10 @@ public class AdminServicesImpl implements IAdminServices {
         AccountDTO reporterDTO = AccountDTO.toBasicAccount(reporter);
 
         Post reportedPost = postReport.getPost();
-        PostResponseDTO reportedPostDTO = PostResponseDTO.toPostResponseDTO(reportedPost);
+        PostResponseDTO reportedPostDTO = null;
+        if (reportedPost != null) {
+            reportedPostDTO = new PostResponseDTO(reportedPost.getId(), reportedPost.getSlug());
+        }
 
         PostReportDTO postReportDTO = toBasicPostReportDTO(postReport);
         postReportDTO.setReporter(reporterDTO);
