@@ -9,8 +9,6 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -47,16 +45,4 @@ public class ScheduledJobManager {
         backupDatabaseJob.run();
     }
 
-    private CacheManager cacheManager;
-
-    @Scheduled(cron = "0 0/10 * * * ?")
-    public void clearAllCache() {
-        cacheManager.getCacheNames()
-                .parallelStream()
-                .forEach(name -> {
-                    Cache cache = cacheManager.getCache(name);
-                    if (cache != null)
-                        cache.clear();
-                });
-    }
 }
