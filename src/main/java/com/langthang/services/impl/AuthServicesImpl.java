@@ -126,11 +126,6 @@ public class AuthServicesImpl implements IAuthServices {
                     , HttpStatus.FORBIDDEN);
         }
 
-        if (registerToken.getExpireDate().before(Calendar.getInstance().getTime())) {
-            throw new CustomException("Token expired"
-                    , HttpStatus.GONE);
-        }
-
         Account account = registerToken.getAccount();
         account.setEnabled(true);
         tokenRepository.delete(registerToken);
@@ -144,11 +139,17 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public String createPasswordResetToken(Account account) {
-        String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = new PasswordResetToken(token, account);
-        passwordResetTokenRepo.save(resetToken);
+        PasswordResetToken existingToken = passwordResetTokenRepo.findByAccount(account);
 
-        return token;
+        if (existingToken == null) {
+            String token = UUID.randomUUID().toString();
+            existingToken = new PasswordResetToken(token, account);
+        } else {
+            existingToken.refreshExpiration();
+        }
+        passwordResetTokenRepo.save(existingToken);
+
+        return existingToken.getToken();
     }
 
     @Override
