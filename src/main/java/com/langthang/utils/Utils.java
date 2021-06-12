@@ -1,15 +1,14 @@
 package com.langthang.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.util.HtmlUtils;
 
 import java.text.Normalizer;
+import java.util.Base64;
+import java.util.Random;
 import java.util.regex.Pattern;
 
-public class Utils {
+public class Utils extends StringUtils {
 
     static Pattern vietnameseNormPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
@@ -33,12 +32,14 @@ public class Utils {
         return StringUtils.replaceEach(HtmlUtils.htmlUnescape(html), htmlCharacter, escapedCharacter);
     }
 
-    public static String getCurrentAccEmail() {
-        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (currentAuth == null || currentAuth instanceof AnonymousAuthenticationToken) {
-            return null;
-        } else {
-            return currentAuth.getName();
-        }
+    static final Random random = new Random();
+
+    public static String randomString(int length) {
+        if (length < 1)
+            throw new RuntimeException("Length cannot be negative");
+
+        byte[] arr = new byte[length];
+        random.nextBytes(arr);
+        return Base64.getEncoder().encodeToString(arr);
     }
 }
