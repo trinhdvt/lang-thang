@@ -48,7 +48,10 @@ public class PostResponseDTO {
         this.slug = slug;
     }
 
-    public static PostResponseDTO toPostResponseDTO(Post entity){
+    public static PostResponseDTO toPostResponseDTO(Post entity) {
+        if (entity == null)
+            return null;
+
         return PostResponseDTO.builder()
                 .postId(entity.getId())
                 .title(entity.getTitle())
