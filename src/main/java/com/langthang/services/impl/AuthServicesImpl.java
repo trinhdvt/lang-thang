@@ -161,6 +161,7 @@ public class AuthServicesImpl implements IAuthServices {
         }
 
         if (resetToken.getExpireDate().before(Calendar.getInstance().getTime())) {
+            passwordResetTokenRepo.delete(resetToken);
             throw new CustomException("Token expired", HttpStatus.GONE);
         }
     }
