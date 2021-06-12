@@ -5,16 +5,13 @@ import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.dto.JwtTokenDTO;
 import com.langthang.dto.PasswordDTO;
-import com.langthang.event.OnRegisterWithGoogle;
-import com.langthang.event.OnRegistrationEvent;
-import com.langthang.event.OnResetPasswordEvent;
 import com.langthang.model.Account;
-import com.langthang.model.RegisterToken;
 import com.langthang.services.IAuthServices;
+import com.langthang.utils.MyMailSender;
+import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +34,7 @@ public class AuthenticationController {
 
     private final IAuthServices authServices;
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final MyMailSender mailSender;
 
     @PostMapping("/auth/login")
     public ResponseEntity<Object> login(
@@ -56,23 +53,15 @@ public class AuthenticationController {
             @NotBlank String googleToken
             , HttpServletResponse resp) {
 
-        Account tmpAcc = authServices.createAccountUseGoogleToken(googleToken);
+        Account account = authServices.createAccountUseGoogleToken(googleToken);
 
-        Account existingAcc = authServices.findAccountByEmail(tmpAcc.getEmail());
-
-        if (existingAcc != null) {
-            if (!existingAcc.isEnabled()) {
-                return new ResponseEntity<>("Please check your email to verify your account!",
-                        HttpStatus.UNAUTHORIZED);
-            } else
-                return login(existingAcc.getEmail(), null, resp);
-        } else {
-            eventPublisher.publishEvent(new OnRegisterWithGoogle(tmpAcc, tmpAcc.getPassword()));
-
-            Account savedAcc = authServices.saveCreatedGoogleAccount(tmpAcc);
-
-            return login(savedAcc.getEmail(), null, resp);
+        if (Utils.isEmpty(account.getPassword())) {
+            String randomPassword = Utils.randomString(10);
+            authServices.updatePasswordAndSave(account, randomPassword);
+            mailSender.sendCreatedAccountEmail(account.getEmail(), randomPassword);
         }
+
+        return login(account.getEmail(), null, resp);
     }
 
     @PostMapping("/auth/refreshToken")
@@ -93,8 +82,10 @@ public class AuthenticationController {
 
         Account account = authServices.registerNewAccount(accountRegisterDTO);
 
-        String registrationUrl = CLIENT_BASE_URL + "/auth/active/";
-        eventPublisher.publishEvent(new OnRegistrationEvent(account, registrationUrl));
+        String registrationToken = authServices.createRegistrationToken(account);
+
+        String confirmUrl = CLIENT_BASE_URL + "/auth/active/" + registrationToken;
+        mailSender.sendRegisterTokenEmail(account.getEmail(), confirmUrl);
 
         return ResponseEntity.accepted().build();
     }
@@ -104,19 +95,6 @@ public class AuthenticationController {
             @RequestParam("token") String token) {
 
         authServices.validateRegisterToken(token);
-
-        return ResponseEntity.accepted().build();
-    }
-
-    @GetMapping(value = "/auth/resendRegistrationToken", params = {"token"})
-    public ResponseEntity<Object> resendRegistrationToken(
-            @RequestParam("token") String existToken,
-            HttpServletRequest req) {
-
-        RegisterToken newToken = authServices.generateNewRegisterToken(existToken);
-        eventPublisher.publishEvent(new OnRegistrationEvent(newToken.getAccount(),
-                getAppUrl(req) + "/registrationConfirm?token=",
-                newToken.getToken()));
 
         return ResponseEntity.accepted().build();
     }
@@ -131,9 +109,10 @@ public class AuthenticationController {
             return new ResponseEntity<>("Email not found", HttpStatus.NOT_FOUND);
         }
 
-        String resetPasswordUrl = CLIENT_BASE_URL + "/auth/resetPassword/";
+        String resetPasswordToken = authServices.createPasswordResetToken(account);
 
-        eventPublisher.publishEvent(new OnResetPasswordEvent(account, resetPasswordUrl));
+        String confirmUrl = CLIENT_BASE_URL + "/auth/resetPassword/" + resetPasswordToken;
+        mailSender.sendResetPasswordEmail(account.getEmail(), confirmUrl);
 
         return ResponseEntity.accepted().build();
     }
@@ -160,14 +139,9 @@ public class AuthenticationController {
             return new ResponseEntity<>("Account not found", HttpStatus.FORBIDDEN);
         }
 
-        authServices.changeAccountPassword(account, passwordDTO.getPassword());
+        authServices.updatePasswordAndSave(account, passwordDTO.getPassword());
 
         return ResponseEntity.accepted().build();
-    }
-
-    /*----------------NON-API----------------*/
-    private String getAppUrl(HttpServletRequest req) {
-        return "http://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
     }
 
 }

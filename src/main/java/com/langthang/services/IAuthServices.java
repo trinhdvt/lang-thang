@@ -2,21 +2,19 @@ package com.langthang.services;
 
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.model.Account;
-import com.langthang.model.RegisterToken;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface IAuthServices {
+
     String login(String email, String password, HttpServletResponse resp);
 
     String refreshToken(String clientToken, HttpServletRequest req, HttpServletResponse resp);
 
     Account registerNewAccount(AccountRegisterDTO accountRegisterDTO);
 
-    String createVerifyToken(Account account);
-
-    RegisterToken generateNewRegisterToken(String existToken);
+    String createRegistrationToken(Account account);
 
     void validateRegisterToken(String token);
 
@@ -28,9 +26,7 @@ public interface IAuthServices {
 
     Account findAccountByPasswordResetToken(String token);
 
-    void changeAccountPassword(Account account, String newPassword);
-
-    Account saveCreatedGoogleAccount(Account tmpAcc);
+    void updatePasswordAndSave(Account account, String newPassword);
 
     Account createAccountUseGoogleToken(String googleIdToken);
 }

@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.Calendar;
-import java.util.Random;
 import java.util.UUID;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -57,18 +53,12 @@ public class AuthServicesImpl implements IAuthServices {
     public String login(String email, String password, HttpServletResponse resp) {
         try {
 
+            // Password will be null when user log in with Google Account
             if (password != null) {
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
             }
 
             String accessToken = jwtTokenServices.createAccessToken(email);
-
-            // Password will be null when user log in with Google Account
-            if (password == null) {
-                Authentication auth = jwtTokenServices.getAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-
             jwtTokenServices.addRefreshTokenCookie(email, accessToken, resp);
 
             return accessToken;
@@ -103,7 +93,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         if (existAcc != null) {
             if (existAcc.isEnabled()) {
-                throw new CustomException("There is an account with email: " + accountRegisterDTO.getEmail()
+                throw new CustomException("Email already existed: " + accountRegisterDTO.getEmail()
                         , HttpStatus.CONFLICT);
             } else if (!existAcc.isEnabled()) {
                 throw new CustomException("Please check your email to verify your account!"
@@ -120,20 +110,11 @@ public class AuthServicesImpl implements IAuthServices {
     }
 
     @Override
-    public String createVerifyToken(Account account) {
+    public String createRegistrationToken(Account account) {
         String token = UUID.randomUUID().toString();
         RegisterToken myToken = new RegisterToken(token, account);
         tokenRepository.save(myToken);
         return token;
-    }
-
-    @Override
-    public RegisterToken generateNewRegisterToken(String existToken) {
-        RegisterToken oldToken = tokenRepository.findByToken(existToken);
-        String newToken = UUID.randomUUID().toString();
-        oldToken.updateToken(newToken);
-
-        return tokenRepository.save(oldToken);
     }
 
     @Override
@@ -190,16 +171,9 @@ public class AuthServicesImpl implements IAuthServices {
     }
 
     @Override
-    public void changeAccountPassword(Account account, String newPassword) {
+    public void updatePasswordAndSave(Account account, String newPassword) {
         account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
-    }
-
-    @Override
-    public Account saveCreatedGoogleAccount(Account tmpAcc) {
-        tmpAcc.setPassword(passwordEncoder.encode(tmpAcc.getPassword()));
-
-        return accountRepository.saveAndFlush(tmpAcc);
+        accountRepository.saveAndFlush(account);
     }
 
     @Override
@@ -207,7 +181,28 @@ public class AuthServicesImpl implements IAuthServices {
         try {
             GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
             if (googleIdToken != null) {
-                return googleTokenToAccount(googleIdToken);
+                Payload payload = googleIdToken.getPayload();
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+                String avatarLink = (String) payload.get("picture");
+                Account createdAccount = Account.builder()
+                        .email(email)
+                        .name(name)
+                        .avatarLink(avatarLink)
+                        .enabled(true)
+                        .build();
+
+                Account existingAccount = accountRepository.findAccountByEmail(email);
+
+                if (existingAccount != null) {
+                    if (!existingAccount.isEnabled()) {
+                        existingAccount.setEnabled(true);
+                        return accountRepository.saveAndFlush(existingAccount);
+                    }
+                    return existingAccount;
+                } else
+                    return createdAccount;
+
             } else {
                 throw new CustomException("Verify Google Token failed"
                         , HttpStatus.BAD_REQUEST);
@@ -216,26 +211,5 @@ public class AuthServicesImpl implements IAuthServices {
             throw new CustomException("Invalid Google Token"
                     , HttpStatus.BAD_REQUEST);
         }
-    }
-
-    private Account googleTokenToAccount(GoogleIdToken googleIdToken) {
-        Payload payload = googleIdToken.getPayload();
-        String email = payload.getEmail();
-        String name = (String) payload.get("name");
-        String avatarLink = (String) payload.get("picture");
-
-        return Account.builder()
-                .email(email)
-                .password(getRandomPassword())
-                .name(name)
-                .avatarLink(avatarLink)
-                .enabled(true)
-                .build();
-    }
-
-    private String getRandomPassword() {
-        byte[] arr = new byte[10];
-        new Random().nextBytes(arr);
-        return Base64.getEncoder().encodeToString(arr);
     }
 }
