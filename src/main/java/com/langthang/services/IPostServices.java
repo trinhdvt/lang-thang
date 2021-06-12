@@ -2,7 +2,6 @@ package com.langthang.services;
 
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.model.Post;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -31,8 +30,6 @@ public interface IPostServices {
     List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable);
 
     List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable);
-
-    Post verifyResourceOwner(int postId, String authorEmail);
 
     PostResponseDTO getPostOrDraftContent(String slug, String authorEmail);
 

@@ -20,14 +20,10 @@ public class RefreshToken {
     @Id
     private String email;
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", nullable = false, length = 100)
     private String refreshToken;
 
-    @Column(name = "access_token")
+    @Column(name = "access_token", nullable = false)
     private String accessToken;
 
-    public RefreshToken(String email, String refreshToken) {
-        this.email = email;
-        this.refreshToken = refreshToken;
-    }
 }

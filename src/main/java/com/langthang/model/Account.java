@@ -61,7 +61,8 @@ public class Account {
     private List<Notify> notifies;
 
     @OneToMany(mappedBy = "account"
-            , fetch = FetchType.LAZY)
+            , fetch = FetchType.LAZY
+            , cascade = CascadeType.ALL)
     @OrderBy("reportedDate DESC")
     private List<PostReport> postReports;
 
