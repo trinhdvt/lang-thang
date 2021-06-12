@@ -1,12 +1,12 @@
 package com.langthang.utils;
 
-import com.langthang.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class MyMailSender {
 
     private final JavaMailSender mailSender;
@@ -16,36 +16,36 @@ public class MyMailSender {
         this.mailSender = mailSender;
     }
 
-    public void sendRegisterTokenEmail(String endpoint, String verifyToken, Account account) {
+    @Async
+    public void sendRegisterTokenEmail(String destEmail, String confirmUrl) {
         String subject = "Registration Confirmation";
-        String url = endpoint + verifyToken;
         String message = "Please follow this link to verify your account!"
                 + "\r\n"
-                + url;
+                + confirmUrl;
 
-        sendEmail(account.getEmail(), subject, message);
+        sendEmail(destEmail, subject, message);
     }
 
-    public void sendResetPasswordEmail(String endpoint, String token, Account acc) {
+    @Async
+    public void sendResetPasswordEmail(String destEmail, String confirmUrl) {
         String subject = "Reset Password";
-
-        String url = endpoint + token;
         String message = "Please follow this link to reset your password"
                 + "\r\n"
-                + url;
+                + confirmUrl;
 
-        sendEmail(acc.getEmail(), subject, message);
+        sendEmail(destEmail, subject, message);
     }
 
-    public void sendCreatedAccountEmail(Account acc, String rawPassword) {
+    @Async
+    public void sendCreatedAccountEmail(String destEmail, String rawPassword) {
         String subject = "Login with Google";
 
         String message = "We have created a account for you based on your google public info \r\n"
                 + "Please use this account to login and changed your password:\r\n"
-                + "- Email: " + acc.getEmail() + "\r\n"
+                + "- Email: " + destEmail+ "\r\n"
                 + "- Password: " + rawPassword;
 
-        sendEmail(acc.getEmail(), subject, message);
+        sendEmail(destEmail, subject, message);
     }
 
     private void sendEmail(String recipient, String subject, String message) {
