@@ -68,7 +68,9 @@ Trả về token hợp lệ
   Google với mật khẩu ngẫu nhiên, mật khẩu này sẽ được gửi qua email cho người dùng. Sau đó tiến hành đăng nhập bình
   thường
 
-- Nếu người dùng đã đăng nhập thì tiến hành đăng nhập bình thường không cần dùng mật khẩu
+- Nếu người dùng đã có tài khoản thì tiến hành đăng nhập bình thường không cần dùng mật khẩu
+
+- Nếu người dùng đã tạo tài khoản nhưng chưa active thì sẽ active và đăng nhập bình thường
 
 * **URL**: `/auth/google`
 
@@ -179,7 +181,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 ## Quên mật khẩu
 
 ----
-Thay đổi mật khẩu mới khi quên mật khẩu
+- Người dùng gửi yêu cầu thay đổi mật khẩu mới khi quên mật khẩu
 
 * **URL**: `/auth/resetPassword`
 
@@ -193,14 +195,39 @@ Thay đổi mật khẩu mới khi quên mật khẩu
 
 * **Success Response:**
 
-    * **Code:** 202 ACCEPTED - 1 link reset password (có kèm `token`) sẽ được gửi vào email
+    * **Code:** 202 ACCEPTED - 1 link reset password (có kèm `token`) sẽ được gửi vào email (`/auth/resetPassword/{reset_password_token}`)
     
 * **Error Response:**
 
     * **Code:** 400 BAD REQUEST - Email không đúng định dạng
 
-    * **Code:** 403 FORBIDDEN - Email không tồn tại
-  
+    * **Code:** 404 NOT_FOUND - Email không tồn tại
+
+## Xác nhận `reset_password_token`
+
+----
+- Xác nhận xem thử token có hợp lệ để thực hiện yêu cầu đổi mật khẩu hay không
+
+* **URL**: `/auth/changePassword`
+
+* **Method:**: `GET`
+
+* **Request Params**
+
+| Name         | Type     | Description                  |
+| ----------   |:------:  | ------------                 |
+| `token`      | `string` | Token dùng để reset mật khẩu |
+
+* **Success Response:**
+
+  * **Code:** 202 ACCEPTED - Token hợp lệ, có thể tiến hành đổi mật khẩu
+
+* **Error Response:**
+
+  * **Code:** 403 FORBIDDEN - Token không hợp lệ / không tồn tại
+
+  * **Code:** 410 GONE - Token hết hạn, yêu cầu quay lại trang chủ để thực hiện lại yêu cầu
+
 ## Thay đổi mật khẩu
 
 ---

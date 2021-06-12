@@ -81,37 +81,28 @@ Lấy ra thông tin chi tiết của một báo cáo
   
 ```json5
 {
-  "reportId": 2,
-  "reporter": { // người đã report
-    "accountId": 4,
-    "name": "Trinhdvt2",
-    "email": "trinhdvt2@gmail.com",
+  "reportId": 4,
+  "reporter": {
+    "accountId": 5,
+    "name": "Nguyễn Thanh Dũng",
+    "email": "nguyenthanhdung@gmail.com",
     "postCount": 0,
     "followCount": 0,
     "bookmarkOnOwnPostCount": 0,
     "commentOnOwnPostCount": 0,
-    "avatarLink": "https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c",
+    "avatarLink": "https://langthang-user-photos.s3-ap-southeast-1.amazonaws.com/avatar2.png",
     "about": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu",
-    "occupation": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ",
-    "role": "ROLE_ADMIN"
+    "role": "ROLE_ADMIN",
+    "followed": false
   },
-  "postOwner": { // người sở hữu bài viết bị report
-    "accountId": 1,
-    "name": "Do Van Trinh",
-    "email": "trinhvideo123@gmail.com",
-    "postCount": 0,
-    "followCount": 0,
-    "bookmarkOnOwnPostCount": 0,
-    "commentOnOwnPostCount": 0,
-    "avatarLink": "https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c",
-    "about": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu",
-    "occupation": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đ",
-    "role": "ROLE_ADMIN"
+  "reportedPost": {
+    "postId": 5,
+    "slug": "Co-3-mon-ca-phe-Viet-Nam-ngon-nhat-khien-nhieu-nguoi-039-cuong-si-039-1620666138223"
   },
-  "reportPostId": 1, // id của bài viết bị report
-  "reportContent": "Bài viết có sử dụng hình ảnh có bản quyền, làm ơn xoá nó đi hộ cái",
-  "reportDate": "2021-05-14 07:22",
-  "solved": false // nếu là true thì có trả về thêm `decision`
+  "reportContent": "Bài viết có sử dụng từ ngữ nhạy cảm",
+  "reportDate": "2021-05-14 07:23",
+  "solved": true,
+  "decision": "Đã xoá"
 }
 ```
 
@@ -179,3 +170,6 @@ Báo cáo một bài viết
     * **Code**: `404 NOT_FOUND` - Bài viết muốn báo cáo không tồn tại
 
     * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
+  
+    * **Code**: `422 UNPROCESSABLE_ENTITY` - Không thể tự báo cáo bài viết của chính mình
+  
