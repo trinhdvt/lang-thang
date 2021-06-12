@@ -12,7 +12,7 @@ import com.langthang.repository.FollowRelationshipRepo;
 import com.langthang.repository.PostReportRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IUserServices;
-import com.langthang.utils.Utils;
+import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -156,7 +156,7 @@ public class UserServicesImpl implements IUserServices {
         basicAccountDTO.setBookmarkOnOwnPostCount(accRepo.countBookmarkOnMyPost(account.getId()));
         basicAccountDTO.setCommentOnOwnPostCount(accRepo.countCommentOnMyPost(account.getId()));
 
-        String currentAccEmail = Utils.getCurrentAccEmail();
+        String currentAccEmail = SecurityUtils.getUsername();
         if (currentAccEmail != null) {
             Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
             boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());

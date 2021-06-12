@@ -11,7 +11,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IPostServices;
-import com.langthang.utils.Utils;
+import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -233,7 +233,7 @@ public class PostServicesImpl implements IPostServices {
 
         PostResponseDTO postResponse = PostResponseDTO.toPostResponseDTO(post);
         postResponse.setAuthor(authorDTO);
-        postResponse.setOwner(author.getEmail().equals(Utils.getCurrentAccEmail()));
+        postResponse.setOwner(author.getEmail().equals(SecurityUtils.getUsername()));
 
         return postResponse;
     }
