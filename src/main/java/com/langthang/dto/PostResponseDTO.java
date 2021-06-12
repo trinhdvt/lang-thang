@@ -2,7 +2,7 @@ package com.langthang.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.langthang.model.Post;
-import com.langthang.utils.Utils;
+import com.langthang.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,7 +57,7 @@ public class PostResponseDTO {
                 .postThumbnail(entity.getPostThumbnail())
                 .publishedDate(entity.getPublishedDate())
                 .isBookmarked(entity.getBookmarkedPosts().stream()
-                        .anyMatch(bp -> bp.getAccount().getEmail().equals(Utils.getCurrentAccEmail())))
+                        .anyMatch(bp -> bp.getAccount().getEmail().equals(SecurityUtils.getUsername())))
                 .bookmarkedCount(entity.getBookmarkedPosts().size())
                 .commentCount(entity.getComments().size())
                 .categories(entity.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
