@@ -34,4 +34,7 @@ public class PasswordResetToken {
     public PasswordResetToken() {
     }
 
+    public void refreshExpiration() {
+        this.expireDate = DateUtils.addMinutes(this.expireDate, EXPIRATION);
+    }
 }
