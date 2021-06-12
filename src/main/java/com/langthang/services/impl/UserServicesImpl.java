@@ -141,8 +141,11 @@ public class UserServicesImpl implements IUserServices {
             throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.NOT_FOUND);
         }
 
-        Account reporter = accRepo.findAccountByEmail(reporterEmail);
+        if (reportPost.getAccount().getEmail().equals(reporterEmail)) {
+            throw new CustomException("Cannot report your-self", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
 
+        Account reporter = accRepo.findAccountByEmail(reporterEmail);
         PostReport postReport = new PostReport(reporter, reportPost, reportContent);
 
         reportRepo.save(postReport);
