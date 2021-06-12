@@ -2,10 +2,7 @@ package com.langthang.services.impl;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import com.langthang.exception.CustomException;
 import com.langthang.services.IStorageServices;
 import lombok.extern.slf4j.Slf4j;
@@ -78,10 +75,10 @@ public class AwsStorageServicesImpl implements IStorageServices {
     @Override
     public void deleteImages(Collection<String> filesName) {
         try {
-//            DeleteObjectsRequest dor = new DeleteObjectsRequest(imageBucket)
-//                    .withKeys(filesName.toArray(new String[0]));
-//            s3Client.deleteObjects(dor);
-            filesName.parallelStream().forEach(this::makePrivate);
+            DeleteObjectsRequest dor = new DeleteObjectsRequest(imageBucket)
+                    .withKeys(filesName.toArray(new String[0]));
+            s3Client.deleteObjects(dor);
+//            filesName.parallelStream().forEach(this::makePrivate);
         } catch (AmazonServiceException e) {
             log.error(e.getMessage());
         }
