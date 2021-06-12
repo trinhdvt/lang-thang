@@ -10,6 +10,7 @@ import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 @Validated
+@CacheConfig(cacheNames = "userCache")
 public class UserController {
 
     private final IUserServices userServices;
@@ -52,7 +54,7 @@ public class UserController {
 
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
-    @Cacheable(value = "user_detail", key = "{#authentication}")
+    @Cacheable(key = "{@securityUtils.getUsername()}")
     public ResponseEntity<Object> getCurrentUserInfo(
             Authentication authentication) {
 
@@ -125,7 +127,7 @@ public class UserController {
 
     @PutMapping("/user/update/info")
     @PreAuthorize("isAuthenticated()")
-    @CacheEvict(value = "user_detail", key = "{#authentication}")
+    @CacheEvict(key = "{@securityUtils.getUsername()}")
     public ResponseEntity<Object> updateUserBasicInfo(
             @Valid AccountInfoDTO newInfo,
             Authentication authentication) {

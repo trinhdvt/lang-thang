@@ -6,9 +6,9 @@ import com.langthang.model.Role;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -26,35 +26,34 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
 @Validated
+@CacheConfig(cacheNames = "postCache")
 public class PostController {
 
     private final IPostServices postServices;
 
-    @Cacheable(value = "post_detail", key = "{#id,#authentication}", unless = "#result == null")
     @GetMapping("/post/{id}")
+    @Cacheable(key = "{#id,@securityUtils.getUsername()}", unless = "#result == null")
     public ResponseEntity<Object> getPostDetailById(
-            @PathVariable(value = "id") int id,
-            Authentication authentication) {
+            @PathVariable(value = "id") int id) {
 
         PostResponseDTO responseDTO = postServices.getPostDetailById(id);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    @Cacheable(value = "post_detail", key = "{#slug,#authentication}", unless = "#result == null")
     @GetMapping(value = "/post", params = {"slug"})
+    @Cacheable(key = "{#slug,@securityUtils.getUsername()}", unless = "#result == null")
     public ResponseEntity<Object> getPostDetailBySlug(
-            @RequestParam("slug") String slug,
-            Authentication authentication) {
+            @RequestParam("slug") String slug) {
 
         PostResponseDTO responseDTO = postServices.getPostDetailBySlug(slug);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    @Cacheable(value = {"post_homepage"}, key = "{#pageable.pageNumber,#pageable.pageSize}")
     @GetMapping(value = "/post")
     @ResponseStatus(HttpStatus.OK)
+    @Cacheable(key = "{#root.methodName,#pageable}")
     public List<PostResponseDTO> getPreviewPost(
             @PageableDefault(sort = {"publishedDate"},
                     direction = Sort.Direction.DESC) Pageable pageable) {
@@ -71,9 +70,9 @@ public class PostController {
         return postServices.findPostByKeyword(keyword, pageable);
     }
 
-    @Cacheable(value = {"post_homepage"}, key = "{#propertyName,#pageable.pageNumber,#pageable.pageSize}")
     @GetMapping(value = "/post", params = {"prop"})
     @ResponseStatus(HttpStatus.OK)
+    @Cacheable(key = "{#root.methodName,#propertyName,#pageable}")
     public List<PostResponseDTO> getPopularPostByProperty(
             @RequestParam("prop") String propertyName,
             @PageableDefault Pageable pageable) {
@@ -112,10 +111,7 @@ public class PostController {
     @PutMapping(value = "/post/{id}")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
-    @Caching(evict = {
-            @CacheEvict(value = "post_detail", allEntries = true),
-            @CacheEvict(value = "post_homepage", allEntries = true)
-    })
+    @CacheEvict(allEntries = true)
     public Object updatePost(
             @PathVariable("id") int postId,
             @Valid PostRequestDTO postRequestDTO,
@@ -129,12 +125,9 @@ public class PostController {
         return Collections.singletonMap("slug", updatedSlug);
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "post_homepage", allEntries = true),
-            @CacheEvict(value = "post_detail", allEntries = true)
-    })
     @DeleteMapping(value = "/post/{id}")
     @PreAuthorize("isAuthenticated()")
+    @CacheEvict(allEntries = true)
     public ResponseEntity<Object> deletePost(
             @PathVariable("id") int postId,
             Authentication authentication) {
@@ -160,9 +153,9 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @Cacheable(value = "post_detail", key = "{#postId,#authentication}", unless = "#result == null")
     @GetMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Cacheable(key = "{#postId,@securityUtils.getUsername()}", unless = "#result == null")
     public ResponseEntity<Object> getDraftById(
             @PathVariable("id") int postId,
             Authentication authentication) {
@@ -174,12 +167,9 @@ public class PostController {
         return ResponseEntity.ok(postResponseDTO);
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "post_detail", allEntries = true),
-            @CacheEvict(value = "post_homepage", allEntries = true)
-    })
     @PutMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
+    @CacheEvict(allEntries = true)
     public ResponseEntity<Object> updateDraft(
             @PathVariable("id") int postId,
             @Valid PostRequestDTO postRequestDTO,

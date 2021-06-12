@@ -6,6 +6,7 @@ import com.langthang.services.ICategoryServices;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @RestController
+@CacheConfig(cacheNames = "categoryCache")
 public class CategoryController {
 
     private final ICategoryServices categoryServices;
@@ -27,7 +29,7 @@ public class CategoryController {
     private final IPostServices postServices;
 
     @GetMapping("/category")
-    @Cacheable(value = "categories", key = "{#pageable.pageSize}")
+    @Cacheable(key = "{#root.methodName,#pageable}")
     public ResponseEntity<Object> getListOfCategory(
             @PageableDefault(sort = {"name"},
                     size = Integer.MAX_VALUE) Pageable pageable) {
@@ -49,7 +51,7 @@ public class CategoryController {
 
     @PostMapping("/category")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(allEntries = true)
     public ResponseEntity<Object> addNewCategory(
             @RequestParam("name") @NotBlank
             @Max(value = 150, message = "Short name please! Category name cannot exceed 150 characters")
@@ -62,7 +64,7 @@ public class CategoryController {
 
     @DeleteMapping("/category/{category_id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(allEntries = true)
     public ResponseEntity<Object> deleteCategory(
             @PathVariable("category_id") int categoryId) {
 
@@ -74,12 +76,11 @@ public class CategoryController {
 
     @PutMapping("/category/{category_id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(allEntries = true)
     public ResponseEntity<Object> modifyCategoryName(
             @PathVariable("category_id") int categoryId,
-            @RequestParam("name") @NotBlank
-            @Max(value = 150, message = "Short name please! Category name cannot exceed 150 characters")
-                    String newName) {
+            @RequestParam("name") @Max(value = 150, message = "Category name cannot exceed 150 characters")
+            @NotBlank String newName) {
 
         categoryServices.modifyCategory(categoryId, newName);
 
