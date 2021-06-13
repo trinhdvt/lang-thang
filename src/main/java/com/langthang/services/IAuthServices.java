@@ -18,9 +18,7 @@ public interface IAuthServices {
 
     void validateRegisterToken(String token);
 
-    Account findAccountByEmail(String email);
-
-    String createPasswordResetToken(Account account);
+    String createPasswordResetToken(String email);
 
     void validatePasswordResetToken(String token);
 

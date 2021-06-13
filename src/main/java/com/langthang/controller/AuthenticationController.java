@@ -103,16 +103,10 @@ public class AuthenticationController {
     public ResponseEntity<Object> resetPassword(
             @RequestParam("email") @ValidEmail String email) {
 
-        Account account = authServices.findAccountByEmail(email);
-
-        if (account == null) {
-            return new ResponseEntity<>("Email not found", HttpStatus.NOT_FOUND);
-        }
-
-        String resetPasswordToken = authServices.createPasswordResetToken(account);
+        String resetPasswordToken = authServices.createPasswordResetToken(email);
 
         String confirmUrl = CLIENT_BASE_URL + "/auth/resetPassword/" + resetPasswordToken;
-        mailSender.sendResetPasswordEmail(account.getEmail(), confirmUrl);
+        mailSender.sendResetPasswordEmail(email, confirmUrl);
 
         return ResponseEntity.accepted().build();
     }

@@ -65,7 +65,7 @@ public class AuthServicesImpl implements IAuthServices {
             return accessToken;
 
         } catch (DisabledException ex) {
-            throw new CustomException("Please active your account!"
+            throw new CustomException("Account is not verified!"
                     , HttpStatus.FORBIDDEN);
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid email / password"
@@ -136,23 +136,26 @@ public class AuthServicesImpl implements IAuthServices {
         accountRepository.save(account);
     }
 
-    @Override
-    public Account findAccountByEmail(String email) {
-        return accountRepository.findAccountByEmailAndEnabled(email, true);
-    }
 
     @Override
-    public String createPasswordResetToken(Account account) {
+    public String createPasswordResetToken(String email) {
+        Account account = accountRepository.findAccountByEmail(email);
+        if (account == null) {
+            throw new CustomException("Email not found!", HttpStatus.NOT_FOUND);
+        }
+        if (!account.isEnabled()) {
+            throw new CustomException("Account is not verified!", HttpStatus.FORBIDDEN);
+        }
+
         PasswordResetToken existingToken = passwordResetTokenRepo.findByAccount(account);
-
         if (existingToken == null) {
             String token = UUID.randomUUID().toString();
             existingToken = new PasswordResetToken(token, account);
         } else {
             existingToken.refreshExpiration();
         }
-        passwordResetTokenRepo.save(existingToken);
 
+        passwordResetTokenRepo.save(existingToken);
         return existingToken.getToken();
     }
 
