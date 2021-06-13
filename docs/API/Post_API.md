@@ -353,7 +353,9 @@ Sửa một bài viết đã công khai hoặc chuyển bản nháp thành bài 
 ## Xóa bài viết hoặc bản nháp
 
 ----
-Xoá một bài viết hoặc bản nháp do mình sở hữu. Riêng ADMIN có quyền xoá bài viết của người dùng
+- Xoá một bài viết hoặc bản nháp do mình sở hữu.
+  
+- ADMIN có quyền xoá bài viết của người dùng khi đó là bài viết bị report và report đấy vẫn chưa được giải quyết
 
 * **URL**: `/post/{id}`
 
@@ -369,7 +371,7 @@ Xoá một bài viết hoặc bản nháp do mình sở hữu. Riêng ADMIN có 
 
     * **Code:** `404 NOT_FOUND` - Bài viết / bài nháp không tồn tại
 
-    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / không sở hữu
+    * **Code:** `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập, admin xoá bài không phải bài bị report  / Không có quyền xoá 
 
 ## Thêm bản nháp mới
 

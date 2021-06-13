@@ -47,17 +47,7 @@ Trả về token hợp lệ
     
     * **Code:** 401 UNAUTHORIZED - Sai email hoặc password
 
-    * **Example:**
-
-    ```json5
-    {
-    "timestamp": "2021-05-06T07:50:25.212+00:00",
-    "status": 401,
-    "error": "Unauthorized",
-    "message": "Invalid email / password",
-    "path": "/auth/login"
-    }
-  ```
+    * **Code:** 403 FORBIDDEN - Email đã đăng ký nhưng chưa kích hoạt
 
 ## Đăng nhập bằng tài khoản Google
 
@@ -151,7 +141,7 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
     * **Code:** 409 CONFLICT - Email đã tồn tại
 
-    * **Code:** 401 UNAUTHORIZED - Email đã đăng ký nhưng chưa kích hoạt
+    * **Code:** 403 FORBIDDEN - Email đã đăng ký nhưng chưa kích hoạt
 
 ## Xác thực đăng ký
 
@@ -200,6 +190,8 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 * **Error Response:**
 
     * **Code:** 400 BAD REQUEST - Email không đúng định dạng
+  
+    * **Code:** 403 FORBIDDEN - Tài khoản chưa kích hoạt
 
     * **Code:** 404 NOT_FOUND - Email không tồn tại
 
