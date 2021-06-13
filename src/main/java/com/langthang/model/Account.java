@@ -43,6 +43,12 @@ public class Account {
 
     private String instagramLink;
 
+    @OneToOne(mappedBy = "account")
+    private RegisterToken registerToken;
+
+    @OneToOne(mappedBy = "account")
+    private PasswordResetToken passwordResetToken;
+
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
