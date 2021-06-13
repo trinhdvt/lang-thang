@@ -5,6 +5,7 @@ import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.dto.JwtTokenDTO;
 import com.langthang.dto.PasswordDTO;
+import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.MyMailSender;
@@ -81,11 +82,17 @@ public class AuthenticationController {
             @Valid @PasswordMatches AccountRegisterDTO accountRegisterDTO) {
 
         Account account = authServices.registerNewAccount(accountRegisterDTO);
+        boolean isExistButNotActive = account.getRegisterToken() != null;
 
         String registrationToken = authServices.createRegistrationToken(account);
 
         String confirmUrl = CLIENT_BASE_URL + "/auth/active/" + registrationToken;
         mailSender.sendRegisterTokenEmail(account.getEmail(), confirmUrl);
+
+        if (isExistButNotActive) {
+            throw new CustomException("Please check your email to verify your account!"
+                    , HttpStatus.FORBIDDEN);
+        }
 
         return ResponseEntity.accepted().build();
     }

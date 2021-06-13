@@ -42,7 +42,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     private final AuthenticationManager authManager;
 
-    private final RegisterTokenRepository tokenRepository;
+    private final RegisterTokenRepository registerTokenRepo;
 
     private final PasswordResetTokenRepository passwordResetTokenRepo;
 
@@ -100,8 +100,7 @@ public class AuthServicesImpl implements IAuthServices {
                 throw new CustomException("Email already existed: " + accountRegisterDTO.getEmail()
                         , HttpStatus.CONFLICT);
             } else if (!existAcc.isEnabled()) {
-                throw new CustomException("Please check your email to verify your account!"
-                        , HttpStatus.FORBIDDEN);
+                return existAcc;
             }
         }
 
@@ -115,15 +114,19 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public String createRegistrationToken(Account account) {
+        RegisterToken existingToken = account.getRegisterToken();
+        if (existingToken != null)
+            return existingToken.getToken();
+
         String token = UUID.randomUUID().toString();
-        RegisterToken myToken = new RegisterToken(token, account);
-        tokenRepository.save(myToken);
+        existingToken = new RegisterToken(token, account);
+        registerTokenRepo.save(existingToken);
         return token;
     }
 
     @Override
     public void validateRegisterToken(String token) {
-        RegisterToken registerToken = tokenRepository.findByToken(token);
+        RegisterToken registerToken = registerTokenRepo.findByToken(token);
 
         if (registerToken == null) {
             throw new CustomException("Invalid token"
@@ -132,7 +135,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         Account account = registerToken.getAccount();
         account.setEnabled(true);
-        tokenRepository.delete(registerToken);
+        registerTokenRepo.delete(registerToken);
         accountRepository.save(account);
     }
 
