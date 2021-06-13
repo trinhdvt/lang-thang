@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,6 +64,9 @@ public class AuthServicesImpl implements IAuthServices {
 
             return accessToken;
 
+        } catch (DisabledException ex) {
+            throw new CustomException("Please active your account!"
+                    , HttpStatus.FORBIDDEN);
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid email / password"
                     , HttpStatus.UNAUTHORIZED);
@@ -97,7 +101,7 @@ public class AuthServicesImpl implements IAuthServices {
                         , HttpStatus.CONFLICT);
             } else if (!existAcc.isEnabled()) {
                 throw new CustomException("Please check your email to verify your account!"
-                        , HttpStatus.UNAUTHORIZED);
+                        , HttpStatus.FORBIDDEN);
             }
         }
 
@@ -134,7 +138,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public Account findAccountByEmail(String email) {
-        return accountRepository.findAccountByEmail(email);
+        return accountRepository.findAccountByEmailAndEnabled(email, true);
     }
 
     @Override
@@ -207,11 +211,11 @@ public class AuthServicesImpl implements IAuthServices {
 
             } else {
                 throw new CustomException("Verify Google Token failed"
-                        , HttpStatus.BAD_REQUEST);
+                        , HttpStatus.UNAUTHORIZED);
             }
         } catch (GeneralSecurityException | IOException e) {
             throw new CustomException("Invalid Google Token"
-                    , HttpStatus.BAD_REQUEST);
+                    , HttpStatus.UNAUTHORIZED);
         }
     }
 }
