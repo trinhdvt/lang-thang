@@ -181,16 +181,10 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public void deletePostById(int postId, String authorEmail, boolean isAdmin) {
+    public void deletePostById(int postId, String authorEmail) {
         Post post = postRepo.findPostById(postId);
-
-        if (isAdmin && post != null && post.isPublished()) {
-            postRepo.delete(post);
-        } else {
-            verifyResourceOwner(post, authorEmail);
-
-            postRepo.delete(post);
-        }
+        verifyResourceOwner(post, authorEmail);
+        postRepo.delete(post);
     }
 
     @Override
@@ -222,6 +216,26 @@ public class PostServicesImpl implements IPostServices {
         existingPost.setPublished(false);
 
         postRepo.saveAndFlush(existingPost);
+    }
+
+    @Override
+    public void deleteReportedPost(int postId, String adminEmail) {
+        Post post = postRepo.findPostById(postId);
+
+        try {
+            verifyResourceOwner(post, adminEmail);
+            postRepo.delete(post);
+
+        } catch (CustomException ex) {
+            if (post != null && post.isPublished()) {
+                boolean isReportPost = post.getPostReports().stream().anyMatch(rp -> !rp.isSolved());
+                if (isReportPost) {
+                    postRepo.delete(post);
+                    return;
+                }
+            }
+            throw new CustomException("Cannot delete this post", HttpStatus.FORBIDDEN);
+        }
     }
 
     private PostResponseDTO entityToDTO(Post post) {

@@ -135,7 +135,11 @@ public class PostController {
         String requestEmail = authentication.getName();
         boolean isAdmin = authentication.getAuthorities().contains(Role.ROLE_ADMIN);
 
-        postServices.deletePostById(postId, requestEmail, isAdmin);
+        if (isAdmin) {
+            postServices.deleteReportedPost(postId, requestEmail);
+        } else {
+            postServices.deletePostById(postId, requestEmail);
+        }
 
         return ResponseEntity.noContent().build();
     }

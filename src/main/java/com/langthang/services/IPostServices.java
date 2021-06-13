@@ -33,7 +33,9 @@ public interface IPostServices {
 
     PostResponseDTO getPostOrDraftContent(String slug, String authorEmail);
 
-    void deletePostById(int postId, String authorEmail, boolean isAdmin);
+    void deletePostById(int postId, String authorEmail);
+
+    void deleteReportedPost(int postId, String adminEmail);
 
     String updatePostById(int postId, String authorEmail, PostRequestDTO postRequestDTO);
 
