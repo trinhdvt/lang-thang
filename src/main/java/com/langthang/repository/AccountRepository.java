@@ -1,10 +1,11 @@
 package com.langthang.repository;
 
 import com.langthang.model.Account;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,5 +45,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "from FollowingRelationship fr left join Account acc " +
             "on fr.accountId=acc.id " +
             "where fr.followingAccountId=?1")
-    Page<Account> getFollowedAccount(int accountId, PageRequest pageable);
+    @Transactional(readOnly = true)
+    Slice<Account> getFollowedAccount(int accountId, PageRequest pageable);
 }
