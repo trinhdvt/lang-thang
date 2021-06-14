@@ -47,7 +47,7 @@ Trả về token hợp lệ
     
     * **Code:** 401 UNAUTHORIZED - Sai email hoặc password
 
-    * **Code:** 403 FORBIDDEN - Email đã đăng ký nhưng chưa kích hoạt
+    * **Code:** 423 LOCKED - Email đã đăng ký nhưng chưa kích hoạt
 
 ## Đăng nhập bằng tài khoản Google
 
@@ -82,7 +82,7 @@ Trả về token hợp lệ
 
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST - Google token không hợp lệ
+    * **Code:** 401 UNAUTHORIZED - Google token không hợp lệ
 
 ## Lấy lại Token mới
 
@@ -141,7 +141,7 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
     * **Code:** 409 CONFLICT - Email đã tồn tại
 
-    * **Code:** 403 FORBIDDEN - Email đã đăng ký nhưng chưa kích hoạt
+    * **Code:** 423 LOCKED - Email đã đăng ký nhưng chưa kích hoạt
 
 ## Xác thực đăng ký
 
@@ -164,7 +164,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 
 * **Error Response:**
 
-  * **Code:** 403 FORBIDDEN - Token không hợp lệ
+  * **Code:** 401 UNAUTHORIZED - Token không hợp lệ
 
   * **Code:** 410 GONE - Token hết hạn
 
@@ -191,7 +191,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 
     * **Code:** 400 BAD REQUEST - Email không đúng định dạng
   
-    * **Code:** 403 FORBIDDEN - Tài khoản chưa kích hoạt
+    * **Code:** 423 LOCKED - Tài khoản chưa kích hoạt
 
     * **Code:** 404 NOT_FOUND - Email không tồn tại
 
@@ -216,7 +216,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 
 * **Error Response:**
 
-  * **Code:** 404 NOT_FOUND - Token không tồn tại
+  * **Code:** 401 UNAUTHORIZED - Token không tồn tại
 
   * **Code:** 410 GONE - Token hết hạn, yêu cầu quay lại trang chủ để thực hiện lại yêu cầu
 
@@ -245,6 +245,6 @@ Thay đổi mật khẩu trong trường hợp bị quên
 
   * **Code:** 400 BAD REQUEST - Mật khẩu không đủ 6 kí tự / thiếu tham số
 
-  * **Code:** 403 FORBIDDEN - Token không hợp lệ  
+  * **Code:** 401 UNAUTHORIZED - Token không hợp lệ  
   
   * **Code:** 410 GONE - Token hết hạn

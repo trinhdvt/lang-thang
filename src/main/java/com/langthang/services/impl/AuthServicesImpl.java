@@ -66,7 +66,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         } catch (DisabledException ex) {
             throw new CustomException("Account is not verified!"
-                    , HttpStatus.FORBIDDEN);
+                    , HttpStatus.LOCKED);
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid email / password"
                     , HttpStatus.UNAUTHORIZED);
@@ -130,7 +130,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         if (registerToken == null) {
             throw new CustomException("Invalid token"
-                    , HttpStatus.FORBIDDEN);
+                    , HttpStatus.UNAUTHORIZED);
         }
 
         Account account = registerToken.getAccount();
@@ -147,7 +147,7 @@ public class AuthServicesImpl implements IAuthServices {
             throw new CustomException("Email not found!", HttpStatus.NOT_FOUND);
         }
         if (!account.isEnabled()) {
-            throw new CustomException("Account is not verified!", HttpStatus.FORBIDDEN);
+            throw new CustomException("Account is not verified!", HttpStatus.LOCKED);
         }
 
         PasswordResetToken existingToken = passwordResetTokenRepo.findByAccount(account);
@@ -168,7 +168,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         if (resetToken == null) {
             throw new CustomException("Invalid password reset token"
-                    , HttpStatus.NOT_FOUND);
+                    , HttpStatus.UNAUTHORIZED);
         }
 
         if (resetToken.getExpireDate().before(Calendar.getInstance().getTime())) {
@@ -179,6 +179,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public Account findAccountByPasswordResetToken(String token) {
+        validatePasswordResetToken(token);
         return passwordResetTokenRepo.findByToken(token).getAccount();
     }
 

@@ -91,7 +91,7 @@ public class AuthenticationController {
 
         if (isExistButNotActive) {
             throw new CustomException("Please check your email to verify your account!"
-                    , HttpStatus.FORBIDDEN);
+                    , HttpStatus.LOCKED);
         }
 
         return ResponseEntity.accepted().build();
@@ -132,13 +132,7 @@ public class AuthenticationController {
             @RequestParam("token") @NotBlank String token,
             @Valid @PasswordMatches PasswordDTO passwordDTO) {
 
-        authServices.validatePasswordResetToken(token);
-
         Account account = authServices.findAccountByPasswordResetToken(token);
-
-        if (account == null) {
-            return new ResponseEntity<>("Account not found", HttpStatus.FORBIDDEN);
-        }
 
         authServices.updatePasswordAndSave(account, passwordDTO.getPassword());
 
