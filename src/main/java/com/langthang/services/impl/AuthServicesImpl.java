@@ -178,9 +178,12 @@ public class AuthServicesImpl implements IAuthServices {
     }
 
     @Override
-    public Account findAccountByPasswordResetToken(String token) {
-        validatePasswordResetToken(token);
-        return passwordResetTokenRepo.findByToken(token).getAccount();
+    public Account getAccountAndRemovePwdToken(String token) {
+         validatePasswordResetToken(token);
+        PasswordResetToken pwdResetToken = passwordResetTokenRepo.findByToken(token);
+        passwordResetTokenRepo.delete(pwdResetToken);
+
+        return pwdResetToken.getAccount();
     }
 
     @Override

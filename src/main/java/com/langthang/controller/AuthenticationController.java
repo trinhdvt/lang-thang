@@ -132,7 +132,7 @@ public class AuthenticationController {
             @RequestParam("token") @NotBlank String token,
             @Valid @PasswordMatches PasswordDTO passwordDTO) {
 
-        Account account = authServices.findAccountByPasswordResetToken(token);
+        Account account = authServices.getAccountAndRemovePwdToken(token);
 
         authServices.updatePasswordAndSave(account, passwordDTO.getPassword());
 

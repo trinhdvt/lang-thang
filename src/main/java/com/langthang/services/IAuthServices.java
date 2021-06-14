@@ -22,7 +22,7 @@ public interface IAuthServices {
 
     void validatePasswordResetToken(String token);
 
-    Account findAccountByPasswordResetToken(String token);
+    Account getAccountAndRemovePwdToken(String token);
 
     void updatePasswordAndSave(Account account, String newPassword);
 
