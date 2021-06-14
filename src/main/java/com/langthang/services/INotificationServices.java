@@ -13,9 +13,9 @@ public interface INotificationServices {
 
     void addCommentNotification(Comment comment);
 
-    Notify createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type);
+    void sendFollowersNotification(Post newPost);
 
-    Notify createNotification(int sourceAccId, int destAccId, int destPostId, NotificationType type);
+    Notify createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type);
 
     List<NotificationDTO> getNotifications(String accEmail, Pageable pageable);
 

@@ -42,15 +42,20 @@ public class PostServicesImpl implements IPostServices {
 
     private final CategoryRepository categoryRepo;
 
+    private final NotificationServicesImpl notificationServices;
+
     @Override
-    public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isDraft) {
+    public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isPublish) {
         Post post = new Post(postRequestDTO.getTitle(), postRequestDTO.getContent(), postRequestDTO.getPostThumbnail());
         post.setAccount(accRepo.findAccountByEmail(authorEmail));
-        post.setPublished(!isDraft);
-
+        post.setPublished(isPublish);
         post.setPostCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(post);
+        if (isPublish) {
+            notificationServices.sendFollowersNotification(savedPost);
+        }
+
         return new PostResponseDTO(savedPost.getId(), savedPost.getSlug());
     }
 
@@ -193,7 +198,14 @@ public class PostServicesImpl implements IPostServices {
         updatePostContent(existingPost, requestDTO);
         existingPost.setPublished(true);
 
-        return postRepo.saveAndFlush(existingPost).getSlug();
+        boolean isFirstTimePublished = existingPost.getPublishedDate() == null;
+        Post updatedPost = postRepo.saveAndFlush(existingPost);
+
+        if (isFirstTimePublished) {
+            notificationServices.sendFollowersNotification(updatedPost);
+        }
+
+        return updatedPost.getSlug();
     }
 
     @Override
