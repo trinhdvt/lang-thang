@@ -35,6 +35,6 @@ public class PasswordResetToken {
     }
 
     public void refreshExpiration() {
-        this.expireDate = DateUtils.addMinutes(this.expireDate, EXPIRATION);
+        this.expireDate = DateUtils.addMinutes(new Date(), EXPIRATION);
     }
 }
