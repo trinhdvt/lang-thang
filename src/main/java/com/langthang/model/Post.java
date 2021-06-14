@@ -37,6 +37,8 @@ public class Post {
 
     private Date publishedDate;
 
+    private Date createdDate;
+
     private String postThumbnail;
 
     @Column(name = "status")
