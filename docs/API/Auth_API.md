@@ -216,7 +216,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 
 * **Error Response:**
 
-  * **Code:** 403 FORBIDDEN - Token không hợp lệ / không tồn tại
+  * **Code:** 404 NOT_FOUND - Token không tồn tại
 
   * **Code:** 410 GONE - Token hết hạn, yêu cầu quay lại trang chủ để thực hiện lại yêu cầu
 
