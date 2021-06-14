@@ -103,7 +103,7 @@ public class PostController {
         String authorEmail = authentication.getName();
 
 //      attempting to add new post
-        PostResponseDTO savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
+        PostResponseDTO savedPost = postServices.addNewPostOrDraft(postRequestDTO, authorEmail, true);
 
         return Collections.singletonMap("slug", savedPost.getSlug());
     }
@@ -152,7 +152,7 @@ public class PostController {
 
         String authorEmail = authentication.getName();
 
-        postServices.addNewPostOrDraft(postRequestDTO, authorEmail, true);
+        postServices.addNewPostOrDraft(postRequestDTO, authorEmail, false);
 
         return ResponseEntity.ok().build();
     }
