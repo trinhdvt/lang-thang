@@ -168,7 +168,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         if (resetToken == null) {
             throw new CustomException("Invalid password reset token"
-                    , HttpStatus.FORBIDDEN);
+                    , HttpStatus.NOT_FOUND);
         }
 
         if (resetToken.getExpireDate().before(Calendar.getInstance().getTime())) {
