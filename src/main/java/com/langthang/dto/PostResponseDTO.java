@@ -35,6 +35,8 @@ public class PostResponseDTO {
 
     private Date publishedDate;
 
+    private Date createdDate;
+
     private String postThumbnail;
 
     private int bookmarkedCount;
@@ -58,6 +60,7 @@ public class PostResponseDTO {
                 .slug(entity.getSlug())
                 .content(entity.getContent())
                 .postThumbnail(entity.getPostThumbnail())
+                .createdDate(entity.getCreatedDate())
                 .publishedDate(entity.getPublishedDate())
                 .isBookmarked(entity.getBookmarkedPosts().stream()
                         .anyMatch(bp -> bp.getAccount().getEmail().equals(SecurityUtils.getUsername())))
