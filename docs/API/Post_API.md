@@ -184,6 +184,7 @@ Trả về thông tin chi tiết của một bài viết
   "postId": 1,
   "title": "Cảm nhận một xứ Huế dưới góc nhìn “cực chất” của cô nàng Kim Ngân đam mê xê dịch",
   "publishedDate": "2021-05-06 14:57",
+  "createdDate": "2021-05-06 14:57",
   "postThumbnail": "https://xxx.yyy.zzz.jpg",
   "author": {
     "accountId": 1,
