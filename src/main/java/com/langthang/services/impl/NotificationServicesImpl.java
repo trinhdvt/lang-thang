@@ -5,20 +5,19 @@ import com.langthang.exception.CustomException;
 import com.langthang.model.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
-import com.langthang.repository.PostRepository;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,12 +25,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class NotificationServicesImpl implements INotificationServices {
-
-    private final NotificationRepository notifyRepo;
-
-    private final AccountRepository accRepo;
-
-    private final PostRepository postRepo;
 
     @Value("${application.notify-template.like-comment}")
     private String likeNotificationTemplate;
@@ -44,6 +37,10 @@ public class NotificationServicesImpl implements INotificationServices {
 
     @Value("${application.notify-template.following-new-post}")
     private String newPostNotificationTemplate;
+
+    private final NotificationRepository notifyRepo;
+
+    private final AccountRepository accRepo;
 
     @Override
     @Async
@@ -74,6 +71,29 @@ public class NotificationServicesImpl implements INotificationServices {
     }
 
     @Override
+    @Async
+    public void sendFollowersNotification(Post newPost) {
+        Account author = newPost.getAccount();
+
+        int pageSize = 100, page = 0;
+        Slice<Account> followerPage;
+        do {
+            followerPage = accRepo.getFollowedAccount(author.getId(), PageRequest.of(page, pageSize, Sort.by("id")));
+            List<Notify> notifyList = new ArrayList<>();
+
+            followerPage.forEach(follower -> {
+                Notify notify = createNotification(author, follower, newPost, NotificationType.NEW_POST);
+                if (notify != null)
+                    notifyList.add(notify);
+            });
+
+            notifyRepo.saveAll(notifyList);
+            page++;
+        } while (followerPage.hasNext());
+
+    }
+
+    @Override
     public Notify createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type) {
 
         if (sourceAcc == null || destPost == null || destAcc == null) {
@@ -87,15 +107,6 @@ public class NotificationServicesImpl implements INotificationServices {
         String content = createContentByType(type, sourceAcc.getName(), destPost.getTitle());
 
         return new Notify(destAcc, destPost, sourceAcc, content);
-    }
-
-    @Override
-    public Notify createNotification(int sourceAccId, int destAccId, int destPostId, NotificationType type) {
-        Account sourceAcc = accRepo.findAccountByIdAndEnabled(sourceAccId, true);
-        Account destAcc = accRepo.findAccountByIdAndEnabled(destAccId, true);
-        Post destPost = postRepo.findPostById(destPostId);
-
-        return createNotification(sourceAcc, destAcc, destPost, type);
     }
 
     @Override
