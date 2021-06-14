@@ -87,7 +87,7 @@ public class AuthServicesImpl implements IAuthServices {
             return newAccessToken;
         } else {
             throw new CustomException("Unable to create new access token"
-                    , HttpStatus.FORBIDDEN);
+                    , HttpStatus.UNAUTHORIZED);
         }
     }
 
