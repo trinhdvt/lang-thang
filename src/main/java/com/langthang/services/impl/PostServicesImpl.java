@@ -246,7 +246,7 @@ public class PostServicesImpl implements IPostServices {
                     return;
                 }
             }
-            throw new CustomException("Cannot delete this post", HttpStatus.FORBIDDEN);
+            throw new CustomException("Cannot delete this post", HttpStatus.UNAUTHORIZED);
         }
     }
 
