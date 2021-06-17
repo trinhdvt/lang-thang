@@ -39,6 +39,7 @@ spring:
       max-request-size: 3MB
   jackson:
     date-format: yyyy-MM-dd HH:mm
+    time-zone: Asia/Ho_Chi_Minh
 
 cloud:
   aws:
