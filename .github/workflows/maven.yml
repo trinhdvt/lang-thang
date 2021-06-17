@@ -24,9 +24,9 @@ jobs:
         ./mvnw package -DskipTests
     - name: Release Jar file
       run: mkdir staging & cp target/*.jar staging
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@main
       with:
-       name: Package
+       name: langthang-backend
        path: staging
       
       
