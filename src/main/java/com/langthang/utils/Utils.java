@@ -1,6 +1,7 @@
 package com.langthang.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.HtmlUtils;
 
 import java.text.Normalizer;
@@ -41,5 +42,9 @@ public class Utils extends StringUtils {
         byte[] arr = new byte[length];
         random.nextBytes(arr);
         return Base64.getEncoder().encodeToString(arr);
+    }
+
+    public static String getAppUrl() {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
     }
 }
