@@ -28,8 +28,6 @@ import javax.validation.constraints.NotBlank;
 @RestController
 public class AuthenticationController {
 
-    private static final String CLIENT_BASE_URL = "http://localhost:3000";
-
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
 
@@ -86,7 +84,7 @@ public class AuthenticationController {
 
         String registrationToken = authServices.createRegistrationToken(account);
 
-        String confirmUrl = CLIENT_BASE_URL + "/auth/active/" + registrationToken;
+        String confirmUrl = Utils.getAppUrl() + "/auth/active/" + registrationToken;
         mailSender.sendRegisterTokenEmail(account.getEmail(), confirmUrl);
 
         if (isExistButNotActive) {
@@ -112,7 +110,7 @@ public class AuthenticationController {
 
         String resetPasswordToken = authServices.createPasswordResetToken(email);
 
-        String confirmUrl = CLIENT_BASE_URL + "/auth/resetPassword/" + resetPasswordToken;
+        String confirmUrl = Utils.getAppUrl() + "/auth/resetPassword/" + resetPasswordToken;
         mailSender.sendResetPasswordEmail(email, confirmUrl);
 
         return ResponseEntity.accepted().build();
