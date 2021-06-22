@@ -1,6 +1,9 @@
 package com.langthang.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.HtmlUtils;
 
@@ -9,6 +12,7 @@ import java.util.Base64;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+@Component
 public class Utils extends StringUtils {
 
     static Pattern vietnameseNormPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
@@ -44,7 +48,18 @@ public class Utils extends StringUtils {
         return Base64.getEncoder().encodeToString(arr);
     }
 
+    private static String appUrl;
+
     public static String getAppUrl() {
+        System.out.println(appUrl);
+        if (SystemUtils.IS_OS_LINUX)
+            return appUrl;
+
         return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+    }
+
+    @Value("${application.server.url}")
+    public void setAppUrl(String appUrl) {
+        Utils.appUrl = appUrl;
     }
 }

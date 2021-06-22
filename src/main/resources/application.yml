@@ -69,6 +69,8 @@ application:
     comment-post: "<b>{0}</b> đã bình luận về bài viết <b>{1}</b>"
     bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b>"
     following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
+  server:
+    url: http://langthang.eastasia.cloudapp.azure.com
 
 security:
   jwt:
