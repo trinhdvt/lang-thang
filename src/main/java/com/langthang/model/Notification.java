@@ -12,9 +12,9 @@ import java.util.Date;
 @Setter
 @Builder
 @Entity
-@Table(name = "notify")
+@Table(name = "notification")
 @EntityListeners(NotificationEntityListener.class)
-public class Notify {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -38,7 +38,7 @@ public class Notify {
     @Column(name = "is_seen")
     private boolean seen;
 
-    public Notify(Account account, Post post, Account sourceAccount, String content) {
+    public Notification(Account account, Post post, Account sourceAccount, String content) {
         this.account = account;
         this.post = post;
         this.sourceAccount = sourceAccount;

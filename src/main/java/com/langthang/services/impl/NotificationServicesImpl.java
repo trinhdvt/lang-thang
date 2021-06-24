@@ -49,7 +49,7 @@ public class NotificationServicesImpl implements INotificationServices {
         Post destPost = bookmarkedPost.getPost();
         Account destAccount = destPost.getAccount();
 
-        Notify bookmarkNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.BOOKMARK);
+        Notification bookmarkNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.BOOKMARK);
 //       cannot create self-notification
         if (bookmarkNotification != null) {
             notifyRepo.saveAndFlush(bookmarkNotification);
@@ -63,7 +63,7 @@ public class NotificationServicesImpl implements INotificationServices {
         Post destPost = comment.getPost();
         Account destAccount = destPost.getAccount();
 
-        Notify commentNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.COMMENT);
+        Notification commentNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.COMMENT);
 //      cannot create self-notification
         if (commentNotification != null) {
             notifyRepo.saveAndFlush(commentNotification);
@@ -79,22 +79,22 @@ public class NotificationServicesImpl implements INotificationServices {
         Slice<Account> followerPage;
         do {
             followerPage = accRepo.getFollowedAccount(author.getId(), PageRequest.of(page, pageSize, Sort.by("id")));
-            List<Notify> notifyList = new ArrayList<>();
+            List<Notification> notificationList = new ArrayList<>();
 
             followerPage.forEach(follower -> {
-                Notify notify = createNotification(author, follower, newPost, NotificationType.NEW_POST);
-                if (notify != null)
-                    notifyList.add(notify);
+                Notification notification = createNotification(author, follower, newPost, NotificationType.NEW_POST);
+                if (notification != null)
+                    notificationList.add(notification);
             });
 
-            notifyRepo.saveAll(notifyList);
+            notifyRepo.saveAll(notificationList);
             page++;
         } while (followerPage.hasNext());
 
     }
 
     @Override
-    public Notify createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type) {
+    public Notification createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type) {
 
         if (sourceAcc == null || destPost == null || destAcc == null) {
             throw new CustomException("Internal Server Error when create notifications", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -106,36 +106,36 @@ public class NotificationServicesImpl implements INotificationServices {
 
         String content = createContentByType(type, sourceAcc.getName(), destPost.getTitle());
 
-        return new Notify(destAcc, destPost, sourceAcc, content);
+        return new Notification(destAcc, destPost, sourceAcc, content);
     }
 
     @Override
     public List<NotificationDTO> getNotifications(String accEmail, Pageable pageable) {
-        Page<Notify> notifyList = notifyRepo.findAllByAccount_Email(accEmail, pageable);
+        Page<Notification> notifyList = notifyRepo.findAllByAccount_Email(accEmail, pageable);
 
         return notifyList.map(NotificationDTO::toNotificationDTO).getContent();
     }
 
     @Override
     public List<NotificationDTO> getUnseenNotifications(String accEmail) {
-        List<Notify> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail);
+        List<Notification> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail);
 
         return unseenList.stream().map(NotificationDTO::toNotificationDTO).collect(Collectors.toList());
     }
 
     @Override
     public void maskAsSeen(int notificationId, String accEmail) {
-        Notify notify = notifyRepo.findById(notificationId).orElse(null);
+        Notification notification = notifyRepo.findById(notificationId).orElse(null);
 
-        if (notify == null) {
+        if (notification == null) {
             throw new CustomException("Not found!", HttpStatus.NOT_FOUND);
         }
-        if (!notify.getAccount().getEmail().equals(accEmail)) {
+        if (!notification.getAccount().getEmail().equals(accEmail)) {
             throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
 
-        notify.setSeen(true);
-        notifyRepo.save(notify);
+        notification.setSeen(true);
+        notifyRepo.save(notification);
     }
 
     private String createContentByType(NotificationType type, String sourceName, String postTitle) {

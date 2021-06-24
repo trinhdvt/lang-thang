@@ -15,7 +15,7 @@ public interface INotificationServices {
 
     void sendFollowersNotification(Post newPost);
 
-    Notify createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type);
+    Notification createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type);
 
     List<NotificationDTO> getNotifications(String accEmail, Pageable pageable);
 

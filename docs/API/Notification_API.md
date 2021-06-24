@@ -51,7 +51,7 @@ Trả về 1 danh sách các thông báo (mặc định sắp xếp theo thời 
       "bookmarked": false,
       "owner": false
     },
-    "content": "Day la 1 notify co post_id",
+    "content": "Day la 1 notification co post_id",
     "notifyDate": "2021-04-25 15:26",
     "seen": false,
     "notificationType": null

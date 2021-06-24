@@ -64,7 +64,7 @@ public class Account {
             , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
     @OrderBy("notifyDate DESC ")
-    private List<Notify> notifies;
+    private List<Notification> notifies;
 
     @OneToMany(mappedBy = "account"
             , fetch = FetchType.LAZY

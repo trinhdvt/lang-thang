@@ -2,7 +2,7 @@ package com.langthang.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.langthang.model.Account;
-import com.langthang.model.Notify;
+import com.langthang.model.Notification;
 import com.langthang.model.Post;
 import com.langthang.utils.constraints.NotificationType;
 import lombok.Builder;
@@ -47,9 +47,9 @@ public class NotificationDTO {
      */
     private NotificationType notificationType;
 
-    public static NotificationDTO toNotificationDTO(Notify notify) {
-        Account sourceAcc = notify.getSourceAccount();
-        Post destPost = notify.getPost();
+    public static NotificationDTO toNotificationDTO(Notification notification) {
+        Account sourceAcc = notification.getSourceAccount();
+        Post destPost = notification.getPost();
 
         AccountDTO sourceAccDTO = AccountDTO.toBasicAccount(sourceAcc);
 
@@ -60,13 +60,13 @@ public class NotificationDTO {
                 .build();
 
         return NotificationDTO.builder()
-                .notificationId(notify.getId())
-                .destEmail(notify.getAccount().getEmail())
+                .notificationId(notification.getId())
+                .destEmail(notification.getAccount().getEmail())
                 .sourceAccount(sourceAccDTO)
                 .destPost(targetPostResponseDTO)
-                .content(notify.getContent())
-                .notifyDate(notify.getNotifyDate())
-                .seen(notify.isSeen())
+                .content(notification.getContent())
+                .notifyDate(notification.getNotifyDate())
+                .seen(notification.isSeen())
                 .build();
     }
 }

@@ -19,7 +19,7 @@
 
 * Các bược thực hiện:
 
-1. Sau khi người dùng đăng nhập thành công, Client `subscribe` vào địa chỉ `/topic/notify/{client_email}` để lắng nghe các thông báo mới nhất.
+1. Sau khi người dùng đăng nhập thành công, Client `subscribe` vào địa chỉ `/topic/notification/{client_email}` để lắng nghe các thông báo mới nhất.
 
     * **Lưu ý:** Khi `Subscribe` phải có kèm theo `token`
 

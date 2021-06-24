@@ -2,7 +2,7 @@ package com.langthang.event.listener;
 
 import com.langthang.dto.NotificationDTO;
 import com.langthang.event.OnNewNotificationEvent;
-import com.langthang.model.Notify;
+import com.langthang.model.Notification;
 import com.langthang.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ public class NotificationEntityListener {
     }
 
     @PrePersist
-    public void beforeSave(Notify notify) {
-        notify.setContent(Utils.escapeHtml(notify.getContent()));
+    public void beforeSave(Notification notification) {
+        notification.setContent(Utils.escapeHtml(notification.getContent()));
     }
 
     @PostPersist
-    public void afterSaved(Notify newNotify) {
-        log.debug("Created notification: {}", newNotify);
-        eventPublisher.publishEvent(new OnNewNotificationEvent(NotificationDTO.toNotificationDTO(newNotify)));
+    public void afterSaved(Notification newNotification) {
+        log.debug("Created notification: {}", newNotification);
+        eventPublisher.publishEvent(new OnNewNotificationEvent(NotificationDTO.toNotificationDTO(newNotification)));
     }
 }
