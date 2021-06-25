@@ -118,7 +118,8 @@ public class NotificationServicesImpl implements INotificationServices {
 
     @Override
     public List<NotificationDTO> getUnseenNotifications(String accEmail) {
-        List<Notification> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail);
+        List<Notification> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail,
+                Sort.by(Sort.Direction.DESC, "notifyDate"));
 
         return unseenList.stream().map(NotificationDTO::toNotificationDTO).collect(Collectors.toList());
     }

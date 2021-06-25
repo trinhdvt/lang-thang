@@ -4,6 +4,7 @@ import com.langthang.dto.NotificationDTO;
 import com.langthang.services.INotificationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,8 @@ public class NotificationController {
     @GetMapping("/notifications")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> getAllNotifications(
-            @PageableDefault(sort = {"seen", "notifyDate"}) Pageable pageable,
+            @PageableDefault(sort = {"seen", "notifyDate"},
+                    direction = Sort.Direction.DESC) Pageable pageable,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
