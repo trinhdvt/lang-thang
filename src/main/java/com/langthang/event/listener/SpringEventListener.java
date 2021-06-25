@@ -7,6 +7,7 @@ import com.langthang.dto.NotificationDTO;
 import com.langthang.event.OnNewCommentEvent;
 import com.langthang.event.OnNewNotificationEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -14,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Component
 public class SpringEventListener {
@@ -34,7 +36,7 @@ public class SpringEventListener {
         NotificationDTO notification = event.getNotification();
 
         String dest = onNewNotifyPrefix + "/" + notification.getDestEmail();
-
+        log.debug("[Socket] Notification with ID {} was sent", notification.getNotificationId());
         messagingTemplate.convertAndSend(dest, jacksonMapper.writeValueAsString(notification));
     }
 
@@ -45,6 +47,7 @@ public class SpringEventListener {
         newComment.setMyComment(false);
         String dest = onNewCommentPrefix + "/" + newComment.getPostId();
 
+        log.debug("[Socket] Comment with ID {} was sent", newComment.getCommentId());
         messagingTemplate.convertAndSend(dest, jacksonMapper.writeValueAsString(newComment));
     }
 }
