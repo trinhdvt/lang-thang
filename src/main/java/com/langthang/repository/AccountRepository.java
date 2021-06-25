@@ -17,6 +17,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     Account findAccountByIdAndEnabled(int accountId, boolean enabled);
 
+    Account findAccountByRegisterToken(String token);
+
     @Query("select count(a) from FollowingRelationship a where a.followingAccountId=?1")
     int countFollowing(int accountId);
 
@@ -47,4 +49,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "where fr.followingAccountId=?1")
     @Transactional(readOnly = true)
     Slice<Account> getFollowedAccount(int accountId, PageRequest pageable);
+
 }
+

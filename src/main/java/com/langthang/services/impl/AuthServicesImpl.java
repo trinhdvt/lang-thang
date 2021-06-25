@@ -7,10 +7,8 @@ import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.model.PasswordResetToken;
-import com.langthang.model.RegisterToken;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PasswordResetTokenRepository;
-import com.langthang.repository.RegisterTokenRepository;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.JwtTokenServices;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +39,6 @@ public class AuthServicesImpl implements IAuthServices {
     private final JwtTokenServices jwtTokenServices;
 
     private final AuthenticationManager authManager;
-
-    private final RegisterTokenRepository registerTokenRepo;
 
     private final PasswordResetTokenRepository passwordResetTokenRepo;
 
@@ -114,29 +110,28 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public String createRegistrationToken(Account account) {
-        RegisterToken existingToken = account.getRegisterToken();
+        String existingToken = account.getRegisterToken();
         if (existingToken != null)
-            return existingToken.getToken();
+            return existingToken;
 
         String token = UUID.randomUUID().toString();
-        existingToken = new RegisterToken(token, account);
-        registerTokenRepo.save(existingToken);
+        account.setRegisterToken(token);
+        accountRepository.saveAndFlush(account);
         return token;
     }
 
     @Override
     public void validateRegisterToken(String token) {
-        RegisterToken registerToken = registerTokenRepo.findByToken(token);
+        Account account = accountRepository.findAccountByRegisterToken(token);
 
-        if (registerToken == null) {
+        if (account == null) {
             throw new CustomException("Invalid token"
                     , HttpStatus.UNAUTHORIZED);
         }
 
-        Account account = registerToken.getAccount();
         account.setEnabled(true);
-        registerTokenRepo.delete(registerToken);
-        accountRepository.save(account);
+        account.setRegisterToken(null);
+        accountRepository.saveAndFlush(account);
     }
 
 
@@ -179,7 +174,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public Account getAccountAndRemovePwdToken(String token) {
-         validatePasswordResetToken(token);
+        validatePasswordResetToken(token);
         PasswordResetToken pwdResetToken = passwordResetTokenRepo.findByToken(token);
         passwordResetTokenRepo.delete(pwdResetToken);
 
