@@ -31,7 +31,7 @@ public class NotificationController {
     @GetMapping("/notifications")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> getAllNotifications(
-            @PageableDefault(sort = {"seen", "notifyDate"},
+            @PageableDefault(sort = {"notifyDate"},
                     direction = Sort.Direction.DESC) Pageable pageable,
             Authentication authentication) {
 
