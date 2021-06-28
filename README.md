@@ -13,7 +13,7 @@
 
 ## Overview
 
-This project is a website where people can join and share their travel experiences with other people. In this website, user can write their own post and publish it or interact with others people by writing comments in other posts or bookmarking it if they like. They can also follow other user to receive notifications when has something new.
+This project is a website where people can join and share their travel experiences with others people. In this website, user can write their own post and publish it, make an interaction by writing comments in someone's posts or bookmark it if they like. They can also follow others user to receive notifications when there is something new.
 
 ## Tech Stack
 
