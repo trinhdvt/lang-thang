@@ -7,10 +7,13 @@ import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.model.PasswordResetToken;
+import com.langthang.model.Role;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PasswordResetTokenRepository;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.JwtTokenServices;
+import com.langthang.utils.MyMailSender;
+import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,14 +49,12 @@ public class AuthServicesImpl implements IAuthServices {
 
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
+    private final MyMailSender mailSender;
+
     @Override
     public String login(String email, String password, HttpServletResponse resp) {
         try {
-
-            // Password will be null when user log in with Google Account
-            if (password != null) {
-                authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-            }
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             String accessToken = jwtTokenServices.createAccessToken(email);
             jwtTokenServices.addRefreshTokenCookie(email, accessToken, resp);
@@ -188,32 +189,39 @@ public class AuthServicesImpl implements IAuthServices {
     }
 
     @Override
-    public Account createAccountUseGoogleToken(String idToken) {
+    public String loginWithGoogle(String idToken, HttpServletResponse resp) {
         try {
             GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
             if (googleIdToken != null) {
                 Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
-                String name = (String) payload.get("name");
-                String avatarLink = (String) payload.get("picture");
-                Account createdAccount = Account.builder()
-                        .email(email)
-                        .name(name)
-                        .avatarLink(avatarLink)
-                        .enabled(true)
-                        .build();
 
-                Account existingAccount = accountRepository.findAccountByEmail(email);
+                // checking if account is already exists
+                Account account = accountRepository.findAccountByEmail(email);
 
-                if (existingAccount != null) {
-                    if (!existingAccount.isEnabled()) {
-                        existingAccount.setEnabled(true);
-                        return accountRepository.saveAndFlush(existingAccount);
+                if (account != null) {
+                    //  if account is already exists but not activated yet
+                    if (!account.isEnabled()) {
+                        account.setEnabled(true);
+                        accountRepository.saveAndFlush(account);
                     }
-                    return existingAccount;
-                } else
-                    return createdAccount;
+                } else {
+                    // account is not existed
+                    // create an account with random password
+                    String rawPassword = Utils.randomString(10);
+                    account = googleProfileToAccount(payload);
+                    account.setPassword(passwordEncoder.encode(rawPassword));
+                    accountRepository.saveAndFlush(account);
 
+                    // send account's info back to user
+                    mailSender.sendCreatedAccountEmail(email, rawPassword);
+                }
+
+                // create access token and refresh-token cookie as well
+                String accessToken = jwtTokenServices.createAccessToken(email);
+                jwtTokenServices.addRefreshTokenCookie(email, accessToken, resp);
+
+                return accessToken;
             } else {
                 throw new CustomException("Verify Google Token failed"
                         , HttpStatus.UNAUTHORIZED);
@@ -222,5 +230,19 @@ public class AuthServicesImpl implements IAuthServices {
             throw new CustomException("Invalid Google Token"
                     , HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    private Account googleProfileToAccount(Payload payload) {
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String avatarLink = (String) payload.get("picture");
+
+        return Account.builder()
+                .email(email)
+                .name(name)
+                .avatarLink(avatarLink)
+                .role(Role.ROLE_USER)
+                .enabled(true)
+                .build();
     }
 }

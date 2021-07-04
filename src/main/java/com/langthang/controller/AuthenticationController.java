@@ -52,15 +52,9 @@ public class AuthenticationController {
             @NotBlank String googleToken
             , HttpServletResponse resp) {
 
-        Account account = authServices.createAccountUseGoogleToken(googleToken);
+        String accessToken = authServices.loginWithGoogle(googleToken, resp);
 
-        if (Utils.isEmpty(account.getPassword())) {
-            String randomPassword = Utils.randomString(10);
-            authServices.updatePasswordAndSave(account, randomPassword);
-            mailSender.sendCreatedAccountEmail(account.getEmail(), randomPassword);
-        }
-
-        return login(account.getEmail(), null, resp);
+        return ResponseEntity.ok(new JwtTokenDTO(accessToken, TOKEN_EXPIRE_TIME));
     }
 
     @PostMapping("/auth/refreshToken")

@@ -10,6 +10,8 @@ public interface IAuthServices {
 
     String login(String email, String password, HttpServletResponse resp);
 
+    String loginWithGoogle(String googleToken, HttpServletResponse resp);
+
     String refreshToken(String clientToken, HttpServletRequest req, HttpServletResponse resp);
 
     Account registerNewAccount(AccountRegisterDTO accountRegisterDTO);
@@ -25,6 +27,4 @@ public interface IAuthServices {
     Account getAccountAndRemovePwdToken(String token);
 
     void updatePasswordAndSave(Account account, String newPassword);
-
-    Account createAccountUseGoogleToken(String googleIdToken);
 }
