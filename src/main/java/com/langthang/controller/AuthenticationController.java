@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -59,12 +58,14 @@ public class AuthenticationController {
 
     @PostMapping("/auth/refreshToken")
     public ResponseEntity<Object> refreshToken(
-            @CookieValue(name = "refresh-token", defaultValue = "")
-            @NotBlank String refreshToken,
-            HttpServletRequest req,
+            @CookieValue(name = "refresh-token") String refreshToken,
+            @RequestHeader("Authorization") String accessToken,
             HttpServletResponse resp) {
 
-        String newAccessToken = authServices.refreshToken(refreshToken, req, resp);
+        if (!accessToken.startsWith("Bearer"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid authorization header");
+
+        String newAccessToken = authServices.reCreateToken(refreshToken, accessToken.substring(7), resp);
 
         return ResponseEntity.ok(new JwtTokenDTO(newAccessToken, TOKEN_EXPIRE_TIME));
     }
