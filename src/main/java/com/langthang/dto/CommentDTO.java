@@ -38,10 +38,10 @@ public class CommentDTO {
                 .commentId(comment.getId())
                 .commentDate(comment.getCommentDate())
                 .content(comment.getContent())
-                .isMyComment(commenter.getEmail().equals(SecurityUtils.getUsername()))
+                .isMyComment(commenter.getEmail().equals(SecurityUtils.getLoggedInEmail()))
                 .likeCount(comment.getLikedAccounts().size())
                 .isLiked(comment.getLikedAccounts().stream()
-                        .anyMatch(a -> a.getEmail().equals(SecurityUtils.getUsername())))
+                        .anyMatch(a -> a.getEmail().equals(SecurityUtils.getLoggedInEmail())))
                 .build();
     }
 }

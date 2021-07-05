@@ -159,7 +159,7 @@ public class UserServicesImpl implements IUserServices {
         basicAccountDTO.setBookmarkOnOwnPostCount(accRepo.countBookmarkOnMyPost(account.getId()));
         basicAccountDTO.setCommentOnOwnPostCount(accRepo.countCommentOnMyPost(account.getId()));
 
-        String currentAccEmail = SecurityUtils.getUsername();
+        String currentAccEmail = SecurityUtils.getLoggedInEmail();
         if (currentAccEmail != null) {
             Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
             boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());

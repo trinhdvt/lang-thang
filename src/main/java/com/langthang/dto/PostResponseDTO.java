@@ -63,7 +63,7 @@ public class PostResponseDTO {
                 .createdDate(entity.getCreatedDate())
                 .publishedDate(entity.getPublishedDate())
                 .isBookmarked(entity.getBookmarkedPosts().stream()
-                        .anyMatch(bp -> bp.getAccount().getEmail().equals(SecurityUtils.getUsername())))
+                        .anyMatch(bp -> bp.getAccount().getEmail().equals(SecurityUtils.getLoggedInEmail())))
                 .bookmarkedCount(entity.getBookmarkedPosts().size())
                 .commentCount(entity.getComments().size())
                 .categories(entity.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))

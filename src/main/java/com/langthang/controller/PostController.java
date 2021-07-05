@@ -32,7 +32,7 @@ public class PostController {
     private final IPostServices postServices;
 
     @GetMapping("/post/{id}")
-    @Cacheable(key = "{#id,@securityUtils.getUsername()}", unless = "#result == null")
+    @Cacheable(key = "{#id,@securityUtils.loggedInEmail()}", unless = "#result == null")
     public ResponseEntity<Object> getPostDetailById(
             @PathVariable(value = "id") int id) {
 
@@ -42,7 +42,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/post", params = {"slug"})
-    @Cacheable(key = "{#slug,@securityUtils.getUsername()}", unless = "#result == null")
+    @Cacheable(key = "{#slug,@securityUtils.loggedInEmail()}", unless = "#result == null")
     public ResponseEntity<Object> getPostDetailBySlug(
             @RequestParam("slug") String slug) {
 
@@ -159,7 +159,7 @@ public class PostController {
 
     @GetMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
-    @Cacheable(key = "{#postId,@securityUtils.getUsername()}", unless = "#result == null")
+    @Cacheable(key = "{#postId,@securityUtils.loggedInEmail()}", unless = "#result == null")
     public ResponseEntity<Object> getDraftById(
             @PathVariable("id") int postId,
             Authentication authentication) {

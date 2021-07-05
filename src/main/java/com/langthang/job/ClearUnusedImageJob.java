@@ -55,7 +55,7 @@ public class ClearUnusedImageJob {
 
     private final JobBuilderFactory jobBuilderFactory;
 
-    private static Set<String > imageInDB = null;
+    private static Set<String> imageInDB = null;
 
     @PostConstruct
     protected void init() {
@@ -108,7 +108,6 @@ public class ClearUnusedImageJob {
 
                 log.debug("File in AWS S3: {}", imageInS3Storage.size());
                 log.debug("File in db: {}", imageInDB.size());
-                imageInDB.forEach(System.out::println);
 
                 imageInS3Storage.removeAll(imageInDB);
                 log.debug("File should be remove {}", imageInS3Storage.size());

@@ -259,7 +259,7 @@ public class PostServicesImpl implements IPostServices {
 
         PostResponseDTO postResponse = PostResponseDTO.toPostResponseDTO(post);
         postResponse.setAuthor(authorDTO);
-        postResponse.setOwner(author.getEmail().equals(SecurityUtils.getUsername()));
+        postResponse.setOwner(author.getEmail().equals(SecurityUtils.getLoggedInEmail()));
 
         return postResponse;
     }

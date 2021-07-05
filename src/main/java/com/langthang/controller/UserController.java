@@ -54,7 +54,7 @@ public class UserController {
 
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
-    @Cacheable(key = "{@securityUtils.getUsername()}")
+    @Cacheable(key = "{@securityUtils.loggedInEmail()}")
     public ResponseEntity<Object> getCurrentUserInfo(
             Authentication authentication) {
 
@@ -127,7 +127,7 @@ public class UserController {
 
     @PutMapping("/user/update/info")
     @PreAuthorize("isAuthenticated()")
-    @CacheEvict(key = "{@securityUtils.getUsername()}")
+    @CacheEvict(key = "{@securityUtils.loggedInEmail()}")
     public ResponseEntity<Object> updateUserBasicInfo(
             @Valid AccountInfoDTO newInfo,
             Authentication authentication) {

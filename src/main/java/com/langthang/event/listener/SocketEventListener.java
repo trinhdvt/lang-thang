@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Component
-public class SpringEventListener {
+public class SocketEventListener {
 
     private final ObjectMapper jacksonMapper;
 
