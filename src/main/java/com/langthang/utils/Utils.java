@@ -10,6 +10,7 @@ import org.springframework.web.util.HtmlUtils;
 import java.text.Normalizer;
 import java.util.Base64;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Component
@@ -46,6 +47,10 @@ public class Utils extends StringUtils {
         byte[] arr = new byte[length];
         random.nextBytes(arr);
         return Base64.getEncoder().encodeToString(arr);
+    }
+
+    public static String randomUUID() {
+        return UUID.randomUUID().toString();
     }
 
     private static String appUrl;
