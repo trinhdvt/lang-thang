@@ -5,6 +5,7 @@ import com.langthang.exception.CustomException;
 import com.langthang.model.RefreshToken;
 import com.langthang.repository.RefreshTokenRepository;
 import com.langthang.services.impl.UserDetailsServiceImpl;
+import com.langthang.utils.Utils;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Random;
 
 @Component
 @Transactional
@@ -35,12 +33,6 @@ public class JwtTokenServices {
 
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
-
-    @Value("${security.jwt.refresh-token.cookie-name}")
-    private String REFRESH_TOKEN_COOKIE_NAME;
-
-    @Value("${security.jwt.refresh-token.cookie-length}")
-    private int REFRESH_TOKEN_COOKIE_LENGTH;
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -78,14 +70,9 @@ public class JwtTokenServices {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    private String createRefreshToken() {
-        byte[] rfToken = new byte[10];
-        new Random().nextBytes(rfToken);
+    public String createRefreshToken(String email, String accessToken) {
+        String refreshToken = Utils.randomString(10);
 
-        return Base64.getEncoder().encodeToString(rfToken);
-    }
-
-    public void saveRefreshToken(String email, String accessToken, String refreshToken) {
         RefreshToken rf = refreshTokenRepo.findByEmail(email);
 
         if (rf == null) {
@@ -95,20 +82,7 @@ public class JwtTokenServices {
             rf.setAccessToken(accessToken);
         }
 
-        refreshTokenRepo.saveAndFlush(rf);
-    }
-
-    public void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
-        String refreshToken = createRefreshToken();
-
-        saveRefreshToken(email, accessToken, refreshToken);
-
-        // add refresh token cookie to response
-        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(REFRESH_TOKEN_COOKIE_LENGTH); // ms -> s
-        cookie.setPath("/");
-        resp.addCookie(cookie);
+        return refreshTokenRepo.saveAndFlush(rf).getRefreshToken();
     }
 
     public boolean isValidToCreateNewAccessToken(String email, String refreshToken, String accessToken) {

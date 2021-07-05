@@ -16,6 +16,7 @@ import com.langthang.utils.MyMailSender;
 import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
@@ -25,7 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -51,13 +52,20 @@ public class AuthServicesImpl implements IAuthServices {
 
     private final MyMailSender mailSender;
 
+    @Value("${security.jwt.refresh-token.cookie-name}")
+    private String REFRESH_TOKEN_COOKIE_NAME;
+
+    @Value("${security.jwt.refresh-token.cookie-length}")
+    private int REFRESH_TOKEN_COOKIE_LENGTH;
+
+
     @Override
     public String login(String email, String password, HttpServletResponse resp) {
         try {
             authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             String accessToken = jwtTokenServices.createAccessToken(email);
-            jwtTokenServices.addRefreshTokenCookie(email, accessToken, resp);
+            addRefreshTokenCookie(email, accessToken, resp);
 
             return accessToken;
 
@@ -70,16 +78,13 @@ public class AuthServicesImpl implements IAuthServices {
         }
     }
 
-
     @Override
-    public String refreshToken(String refreshToken, HttpServletRequest req, HttpServletResponse resp) {
-        String accessToken = jwtTokenServices.getAccessToken(req);
+    public String reCreateToken(String refreshToken, String accessToken, HttpServletResponse resp) {
         String email = jwtTokenServices.getUserName(accessToken);
 
         if (jwtTokenServices.isValidToCreateNewAccessToken(email, refreshToken, accessToken)) {
             String newAccessToken = jwtTokenServices.createAccessToken(email);
-
-            jwtTokenServices.addRefreshTokenCookie(email, newAccessToken, resp);
+            addRefreshTokenCookie(email, newAccessToken, resp);
 
             return newAccessToken;
         } else {
@@ -134,7 +139,6 @@ public class AuthServicesImpl implements IAuthServices {
         account.setRegisterToken(null);
         accountRepository.saveAndFlush(account);
     }
-
 
     @Override
     public String createPasswordResetToken(String email) {
@@ -200,6 +204,7 @@ public class AuthServicesImpl implements IAuthServices {
                 Account account = accountRepository.findAccountByEmail(email);
 
                 if (account != null) {
+
                     //  if account is already exists but not activated yet
                     if (!account.isEnabled()) {
                         account.setEnabled(true);
@@ -219,7 +224,7 @@ public class AuthServicesImpl implements IAuthServices {
 
                 // create access token and refresh-token cookie as well
                 String accessToken = jwtTokenServices.createAccessToken(email);
-                jwtTokenServices.addRefreshTokenCookie(email, accessToken, resp);
+                addRefreshTokenCookie(email, accessToken, resp);
 
                 return accessToken;
             } else {
@@ -244,5 +249,15 @@ public class AuthServicesImpl implements IAuthServices {
                 .role(Role.ROLE_USER)
                 .enabled(true)
                 .build();
+    }
+
+    private void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
+        String refreshToken = jwtTokenServices.createRefreshToken(email, accessToken);
+
+        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(REFRESH_TOKEN_COOKIE_LENGTH); // ms -> s
+        cookie.setPath("/");
+        resp.addCookie(cookie);
     }
 }

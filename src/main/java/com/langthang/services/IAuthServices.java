@@ -3,7 +3,6 @@ package com.langthang.services;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.model.Account;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface IAuthServices {
@@ -12,7 +11,7 @@ public interface IAuthServices {
 
     String loginWithGoogle(String googleToken, HttpServletResponse resp);
 
-    String refreshToken(String clientToken, HttpServletRequest req, HttpServletResponse resp);
+    String reCreateToken(String clientToken,  String accessToken, HttpServletResponse resp);
 
     Account registerNewAccount(AccountRegisterDTO accountRegisterDTO);
 
