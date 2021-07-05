@@ -1,7 +1,7 @@
 package com.langthang.services;
 
 import com.langthang.dto.AccountRegisterDTO;
-import com.langthang.model.Account;
+import com.langthang.dto.PasswordDTO;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,11 +17,10 @@ public interface IAuthServices {
 
     void validateRegisterToken(String token);
 
-    String createPasswordResetToken(String email);
+    void createPasswordResetToken(String email);
 
     void validatePasswordResetToken(String token);
 
-    Account getAccountAndRemovePwdToken(String token);
+    void resetPassword(String token, PasswordDTO passwordDTO);
 
-    void updatePasswordAndSave(Account account, String newPassword);
 }

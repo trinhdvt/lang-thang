@@ -5,10 +5,7 @@ import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.dto.JwtTokenDTO;
 import com.langthang.dto.PasswordDTO;
-import com.langthang.model.Account;
 import com.langthang.services.IAuthServices;
-import com.langthang.utils.MyMailSender;
-import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +27,6 @@ public class AuthenticationController {
     private int TOKEN_EXPIRE_TIME;
 
     private final IAuthServices authServices;
-
-    private final MyMailSender mailSender;
 
     @PostMapping("/auth/login")
     public ResponseEntity<Object> login(
@@ -91,10 +86,7 @@ public class AuthenticationController {
     public ResponseEntity<Object> resetPassword(
             @RequestParam("email") @ValidEmail String email) {
 
-        String resetPasswordToken = authServices.createPasswordResetToken(email);
-
-        String confirmUrl = Utils.getAppUrl() + "/auth/resetPassword/" + resetPasswordToken;
-        mailSender.sendResetPasswordEmail(email, confirmUrl);
+        authServices.createPasswordResetToken(email);
 
         return ResponseEntity.accepted().build();
     }
@@ -110,12 +102,10 @@ public class AuthenticationController {
 
     @PutMapping("/auth/savePassword")
     public ResponseEntity<Object> savePassword(
-            @RequestParam("token") @NotBlank String token,
+            @RequestParam("token") String token,
             @Valid @PasswordMatches PasswordDTO passwordDTO) {
 
-        Account account = authServices.getAccountAndRemovePwdToken(token);
-
-        authServices.updatePasswordAndSave(account, passwordDTO.getPassword());
+        authServices.resetPassword(token, passwordDTO);
 
         return ResponseEntity.accepted().build();
     }

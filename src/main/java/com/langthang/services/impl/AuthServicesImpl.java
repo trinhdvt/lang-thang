@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.langthang.dto.AccountRegisterDTO;
+import com.langthang.dto.PasswordDTO;
 import com.langthang.exception.CustomException;
 import com.langthang.model.Account;
 import com.langthang.model.PasswordResetToken;
@@ -31,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Calendar;
-import java.util.UUID;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -44,7 +44,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     private final AuthenticationManager authManager;
 
-    private final PasswordResetTokenRepository passwordResetTokenRepo;
+    private final PasswordResetTokenRepository pwdResetTokenRepo;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -74,6 +74,51 @@ public class AuthServicesImpl implements IAuthServices {
                     , HttpStatus.LOCKED);
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid email / password"
+                    , HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @Override
+    public String loginWithGoogle(String idToken, HttpServletResponse resp) {
+        try {
+            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
+            if (googleIdToken != null) {
+                Payload payload = googleIdToken.getPayload();
+                String email = payload.getEmail();
+
+                // checking if account is already exists
+                Account account = accountRepository.findAccountByEmail(email);
+
+                if (account != null) {
+
+                    //  if account is already exists but not activated yet
+                    if (!account.isEnabled()) {
+                        account.setEnabled(true);
+                        accountRepository.saveAndFlush(account);
+                    }
+                } else {
+                    // account is not existed
+                    // create an account with random password
+                    String rawPassword = Utils.randomString(10);
+                    account = googleProfileToAccount(payload);
+                    account.setPassword(passwordEncoder.encode(rawPassword));
+                    accountRepository.saveAndFlush(account);
+
+                    // send account's info back to user
+                    mailSender.sendCreatedAccountEmail(email, rawPassword);
+                }
+
+                // create access token and refresh-token cookie as well
+                String accessToken = jwtTokenServices.createAccessToken(email);
+                addRefreshTokenCookie(email, accessToken, resp);
+
+                return accessToken;
+            } else {
+                throw new CustomException("Verify Google Token failed"
+                        , HttpStatus.UNAUTHORIZED);
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            throw new CustomException("Invalid Google Token"
                     , HttpStatus.UNAUTHORIZED);
         }
     }
@@ -151,30 +196,45 @@ public class AuthServicesImpl implements IAuthServices {
     }
 
     @Override
-    public String createPasswordResetToken(String email) {
+    public void createPasswordResetToken(String email) {
+        // checking email
         Account account = accountRepository.findAccountByEmail(email);
+
+        // if account not found
         if (account == null) {
             throw new CustomException("Email not found!", HttpStatus.NOT_FOUND);
         }
+
+        // if account not activated yet
         if (!account.isEnabled()) {
             throw new CustomException("Account is not verified!", HttpStatus.LOCKED);
         }
 
-        PasswordResetToken existingToken = passwordResetTokenRepo.findByAccount(account);
-        if (existingToken == null) {
-            String token = UUID.randomUUID().toString();
-            existingToken = new PasswordResetToken(token, account);
+        // attempting to create pwd reset token
+        // looking for existing token
+        PasswordResetToken pwdResetToken = pwdResetTokenRepo.findByAccount(account);
+        if (pwdResetToken == null) {
+
+            // if not, then create a new one
+            String token = Utils.randomUUID();
+            pwdResetToken = new PasswordResetToken(token, account);
         } else {
-            existingToken.refreshExpiration();
+
+            // else refresh its expiry time
+            pwdResetToken.refreshExpiration();
         }
 
-        passwordResetTokenRepo.save(existingToken);
-        return existingToken.getToken();
+        // save it
+        pwdResetToken = pwdResetTokenRepo.save(pwdResetToken);
+
+        // send via email
+        String pwdResetUrl = Utils.getAppUrl() + "/auth/resetPassword/" + pwdResetToken.getToken();
+        mailSender.sendResetPasswordEmail(email, pwdResetUrl);
     }
 
     @Override
     public void validatePasswordResetToken(String token) {
-        PasswordResetToken resetToken = passwordResetTokenRepo.findByToken(token);
+        PasswordResetToken resetToken = pwdResetTokenRepo.findByToken(token);
 
         if (resetToken == null) {
             throw new CustomException("Invalid password reset token"
@@ -182,69 +242,27 @@ public class AuthServicesImpl implements IAuthServices {
         }
 
         if (resetToken.getExpireDate().before(Calendar.getInstance().getTime())) {
-            passwordResetTokenRepo.delete(resetToken);
+            pwdResetTokenRepo.delete(resetToken);
             throw new CustomException("Token expired", HttpStatus.GONE);
         }
     }
 
     @Override
-    public Account getAccountAndRemovePwdToken(String token) {
+    public void resetPassword(String token, PasswordDTO passwordDTO) {
+        // checking pwd reset token
+        // if fail, exception will be thrown
         validatePasswordResetToken(token);
-        PasswordResetToken pwdResetToken = passwordResetTokenRepo.findByToken(token);
-        passwordResetTokenRepo.delete(pwdResetToken);
 
-        return pwdResetToken.getAccount();
-    }
+        // no exception, eligible to reset password
+        PasswordResetToken pwdResetToken = pwdResetTokenRepo.findByToken(token);
 
-    @Override
-    public void updatePasswordAndSave(Account account, String newPassword) {
-        account.setPassword(passwordEncoder.encode(newPassword));
+        // get account and change its password
+        Account account = pwdResetToken.getAccount();
+        account.setPassword(passwordEncoder.encode(passwordDTO.getPassword()));
         accountRepository.saveAndFlush(account);
-    }
 
-    @Override
-    public String loginWithGoogle(String idToken, HttpServletResponse resp) {
-        try {
-            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
-            if (googleIdToken != null) {
-                Payload payload = googleIdToken.getPayload();
-                String email = payload.getEmail();
-
-                // checking if account is already exists
-                Account account = accountRepository.findAccountByEmail(email);
-
-                if (account != null) {
-
-                    //  if account is already exists but not activated yet
-                    if (!account.isEnabled()) {
-                        account.setEnabled(true);
-                        accountRepository.saveAndFlush(account);
-                    }
-                } else {
-                    // account is not existed
-                    // create an account with random password
-                    String rawPassword = Utils.randomString(10);
-                    account = googleProfileToAccount(payload);
-                    account.setPassword(passwordEncoder.encode(rawPassword));
-                    accountRepository.saveAndFlush(account);
-
-                    // send account's info back to user
-                    mailSender.sendCreatedAccountEmail(email, rawPassword);
-                }
-
-                // create access token and refresh-token cookie as well
-                String accessToken = jwtTokenServices.createAccessToken(email);
-                addRefreshTokenCookie(email, accessToken, resp);
-
-                return accessToken;
-            } else {
-                throw new CustomException("Verify Google Token failed"
-                        , HttpStatus.UNAUTHORIZED);
-            }
-        } catch (GeneralSecurityException | IOException e) {
-            throw new CustomException("Invalid Google Token"
-                    , HttpStatus.UNAUTHORIZED);
-        }
+        // delete token after done
+        pwdResetTokenRepo.delete(pwdResetToken);
     }
 
     private Account googleProfileToAccount(Payload payload) {
