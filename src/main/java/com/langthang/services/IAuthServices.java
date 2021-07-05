@@ -13,9 +13,7 @@ public interface IAuthServices {
 
     String reCreateToken(String clientToken,  String accessToken, HttpServletResponse resp);
 
-    Account registerNewAccount(AccountRegisterDTO accountRegisterDTO);
-
-    String createRegistrationToken(Account account);
+    void registerAccount(AccountRegisterDTO accountRegisterDTO);
 
     void validateRegisterToken(String token);
 

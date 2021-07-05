@@ -94,36 +94,46 @@ public class AuthServicesImpl implements IAuthServices {
     }
 
     @Override
-    public Account registerNewAccount(AccountRegisterDTO accountRegisterDTO) {
-        Account existAcc = accountRepository.findAccountByEmail(accountRegisterDTO.getEmail());
+    public void registerAccount(AccountRegisterDTO registerDTO) {
+        String registerEmail = registerDTO.getEmail();
 
+        // check if email is already registered
+        Account existAcc = accountRepository.findAccountByEmail(registerEmail);
+
+        // if email is already registered
         if (existAcc != null) {
+
+            // if email is activated
             if (existAcc.isEnabled()) {
-                throw new CustomException("Email already existed: " + accountRegisterDTO.getEmail()
+                throw new CustomException("Email already existed: " + registerEmail
                         , HttpStatus.CONFLICT);
+
             } else if (!existAcc.isEnabled()) {
-                return existAcc;
+
+                // if email isn't activated yet then re-send the activation link
+                String registerToken = existAcc.getRegisterToken();
+                String activationLink = Utils.getAppUrl() + "/auth/active/" + registerToken;
+                mailSender.sendRegisterTokenEmail(existAcc.getEmail(), activationLink);
+
+                // send back an error to warning client
+                throw new CustomException("Please check your email to verify your account!"
+                        , HttpStatus.LOCKED);
             }
         }
 
-        Account account = new Account();
-        account.setName(accountRegisterDTO.getName());
-        account.setEmail(accountRegisterDTO.getEmail());
-        account.setPassword(passwordEncoder.encode(accountRegisterDTO.getPassword()));
+        // if email is not in-use, then attempting to create new account
+        Account newAccount = Account.builder()
+                .name(registerDTO.getName())
+                .email(registerDTO.getEmail())
+                .role(Role.ROLE_USER)
+                .password(passwordEncoder.encode(registerDTO.getPassword()))
+                .registerToken(Utils.randomUUID())
+                .build();
+        newAccount = accountRepository.saveAndFlush(newAccount);
 
-        return accountRepository.save(account);
-    }
-
-    @Override
-    public String createRegistrationToken(Account account) {
-        String existingToken = account.getRegisterToken();
-        if (existingToken != null)
-            return existingToken;
-
-        String token = UUID.randomUUID().toString();
-        account.setRegisterToken(token);
-        accountRepository.saveAndFlush(account);
-        return token;
+        // send an activation link
+        String activationLink = Utils.getAppUrl() + "/auth/active/" + newAccount.getRegisterToken();
+        mailSender.sendRegisterTokenEmail(newAccount.getEmail(), activationLink);
     }
 
     @Override
