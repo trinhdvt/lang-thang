@@ -3,7 +3,7 @@ package com.langthang.services.impl;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
 import com.langthang.services.IStorageServices;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -101,11 +101,11 @@ public class AwsStorageServicesImpl implements IStorageServices {
                 fos.write(multipartFile.getBytes());
                 return convertedFile;
             } catch (IOException ex) {
-                throw new CustomException("Cannot upload this file: " + ex.getMessage(),
+                throw new HttpError("Cannot upload this file: " + ex.getMessage(),
                         HttpStatus.UNPROCESSABLE_ENTITY);
             }
         } else {
-            throw new CustomException("File name is null", HttpStatus.BAD_REQUEST);
+            throw new HttpError("File name is null", HttpStatus.BAD_REQUEST);
         }
     }
 

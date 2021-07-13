@@ -1,6 +1,7 @@
 package com.langthang.services.impl;
 
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
 import com.langthang.model.Account;
 import com.langthang.model.BookmarkedPost;
 import com.langthang.model.Post;
@@ -29,13 +30,13 @@ public class BookmarkServiceImpl implements IBookmarkServices {
     public int bookmarkPost(int postId, String currentEmail) {
         BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, currentEmail);
         if (existingBookmark != null) {
-            throw new CustomException("Already bookmarked", HttpStatus.NO_CONTENT);
+            throw new HttpError("Already bookmarked", HttpStatus.NO_CONTENT);
         }
 
         Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
-            throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with id: " + postId + " not found");
         }
 
         Account currentAcc = accRepo.findAccountByEmail(currentEmail);
@@ -51,7 +52,7 @@ public class BookmarkServiceImpl implements IBookmarkServices {
         BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, accEmail);
 
         if (existingBookmark == null) {
-            throw new CustomException("Post with id: " + postId + " not bookmarked!", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with id: " + postId + " not bookmarked!");
         }
         bookmarkRepo.delete(existingBookmark);
 

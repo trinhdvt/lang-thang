@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.http.HttpStatus;
 
 @JsonIgnoreProperties({"cause", "stackTrace", "localizedMessage", "suppressed"})
-public class CustomException extends RuntimeException {
+public class HttpError extends RuntimeException {
 
     private final String message;
 
     private final HttpStatus httpStatus;
 
-    public CustomException(String message, HttpStatus httpStatus) {
+    @lombok.Getter
+    private String path;
+
+    public HttpError(String message, HttpStatus httpStatus) {
         this.message = message;
         this.httpStatus = httpStatus;
     }
@@ -22,5 +25,9 @@ public class CustomException extends RuntimeException {
 
     public HttpStatus getHttpStatus() {
         return httpStatus;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

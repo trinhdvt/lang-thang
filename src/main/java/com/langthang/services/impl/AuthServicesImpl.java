@@ -5,7 +5,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.dto.PasswordDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
+import com.langthang.exception.UnauthorizedError;
 import com.langthang.model.Account;
 import com.langthang.model.PasswordResetToken;
 import com.langthang.model.Role;
@@ -70,11 +72,10 @@ public class AuthServicesImpl implements IAuthServices {
             return accessToken;
 
         } catch (DisabledException ex) {
-            throw new CustomException("Account is not verified!"
+            throw new HttpError("Account is not verified!"
                     , HttpStatus.LOCKED);
         } catch (AuthenticationException e) {
-            throw new CustomException("Invalid email / password"
-                    , HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Invalid email / password");
         }
     }
 
@@ -114,12 +115,10 @@ public class AuthServicesImpl implements IAuthServices {
 
                 return accessToken;
             } else {
-                throw new CustomException("Verify Google Token failed"
-                        , HttpStatus.UNAUTHORIZED);
+                throw new HttpError("Verify Google Token failed", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (GeneralSecurityException | IOException e) {
-            throw new CustomException("Invalid Google Token"
-                    , HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Invalid Google Token");
         }
     }
 
@@ -133,8 +132,7 @@ public class AuthServicesImpl implements IAuthServices {
 
             return newAccessToken;
         } else {
-            throw new CustomException("Unable to create new access token"
-                    , HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Unable to create new access token");
         }
     }
 
@@ -150,7 +148,7 @@ public class AuthServicesImpl implements IAuthServices {
 
             // if email is activated
             if (existAcc.isEnabled()) {
-                throw new CustomException("Email already existed: " + registerEmail
+                throw new HttpError("Email already existed: " + registerEmail
                         , HttpStatus.CONFLICT);
 
             } else if (!existAcc.isEnabled()) {
@@ -161,7 +159,7 @@ public class AuthServicesImpl implements IAuthServices {
                 mailSender.sendRegisterTokenEmail(existAcc.getEmail(), activationLink);
 
                 // send back an error to warning client
-                throw new CustomException("Please check your email to verify your account!"
+                throw new HttpError("Please check your email to verify your account!"
                         , HttpStatus.LOCKED);
             }
         }
@@ -186,7 +184,7 @@ public class AuthServicesImpl implements IAuthServices {
         Account account = accountRepository.findAccountByRegisterToken(token);
 
         if (account == null) {
-            throw new CustomException("Invalid token"
+            throw new HttpError("Invalid token"
                     , HttpStatus.UNAUTHORIZED);
         }
 
@@ -202,12 +200,12 @@ public class AuthServicesImpl implements IAuthServices {
 
         // if account not found
         if (account == null) {
-            throw new CustomException("Email not found!", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Email not found!");
         }
 
         // if account not activated yet
         if (!account.isEnabled()) {
-            throw new CustomException("Account is not verified!", HttpStatus.LOCKED);
+            throw new HttpError("Account is not verified!", HttpStatus.LOCKED);
         }
 
         // attempting to create pwd reset token
@@ -237,13 +235,12 @@ public class AuthServicesImpl implements IAuthServices {
         PasswordResetToken resetToken = pwdResetTokenRepo.findByToken(token);
 
         if (resetToken == null) {
-            throw new CustomException("Invalid password reset token"
-                    , HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Invalid password reset token");
         }
 
         if (resetToken.getExpireDate().before(Calendar.getInstance().getTime())) {
             pwdResetTokenRepo.delete(resetToken);
-            throw new CustomException("Token expired", HttpStatus.GONE);
+            throw new HttpError("Token expired", HttpStatus.GONE);
         }
     }
 

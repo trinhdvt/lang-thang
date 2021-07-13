@@ -1,7 +1,7 @@
 package com.langthang.services;
 
 
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
 import com.langthang.model.RefreshToken;
 import com.langthang.repository.RefreshTokenRepository;
 import com.langthang.services.impl.UserDetailsServiceImpl;
@@ -123,7 +123,7 @@ public class JwtTokenServices {
         } catch (ExpiredJwtException e) {
             return false;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new CustomException("Invalid JWT Token", HttpStatus.FORBIDDEN);
+            throw new HttpError("Invalid JWT Token", HttpStatus.FORBIDDEN);
         }
     }
 

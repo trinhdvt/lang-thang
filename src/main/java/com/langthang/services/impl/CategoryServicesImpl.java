@@ -1,7 +1,8 @@
 package com.langthang.services.impl;
 
 import com.langthang.dto.CategoryDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
 import com.langthang.model.Category;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.services.ICategoryServices;
@@ -38,8 +39,7 @@ public class CategoryServicesImpl implements ICategoryServices {
         Category category = categoryRepo.findById(categoryId).orElse(null);
 
         if (category == null) {
-            throw new CustomException("Category with id: " + categoryId + " not found"
-                    , HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Category with id: " + categoryId + " not found");
         }
 
         categoryRepo.delete(category);
@@ -50,8 +50,7 @@ public class CategoryServicesImpl implements ICategoryServices {
         Category category = categoryRepo.findById(categoryId).orElse(null);
 
         if (category == null) {
-            throw new CustomException("Category with id: " + categoryId + " not found"
-                    , HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Category with id: " + categoryId + " not found");
         }
 
         category.setName(newName);
@@ -64,7 +63,7 @@ public class CategoryServicesImpl implements ICategoryServices {
     public CategoryDTO addNewCategory(String categoryName) {
         boolean isCategoryExist = categoryRepo.existsByName(categoryName);
         if (isCategoryExist) {
-            throw new CustomException("Category with name: " + categoryName + " is already exist",
+            throw new HttpError("Category with name: " + categoryName + " is already exist",
                     HttpStatus.CONFLICT);
         }
 

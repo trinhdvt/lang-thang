@@ -2,7 +2,8 @@ package com.langthang.services.impl;
 
 import com.langthang.dto.AccountDTO;
 import com.langthang.dto.AccountInfoDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
 import com.langthang.model.Account;
 import com.langthang.model.FollowingRelationship;
 import com.langthang.model.Post;
@@ -46,7 +47,7 @@ public class UserServicesImpl implements IUserServices {
         Account account = accRepo.findAccountByIdAndEnabled(accountId, true);
 
         if (account == null) {
-            throw new CustomException("Account with id: " + accountId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Account with id: " + accountId + " not found");
         }
 
         return toDetailAccountDTO(account);
@@ -57,7 +58,7 @@ public class UserServicesImpl implements IUserServices {
         Account account = accRepo.findAccountByEmailAndEnabled(email, true);
 
         if (account == null) {
-            throw new CustomException("Account with email: " + email + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Account with email: " + email + " not found");
         }
 
         return toDetailAccountDTO(account);
@@ -70,7 +71,7 @@ public class UserServicesImpl implements IUserServices {
         Account willFollowAcc = accRepo.findAccountByIdAndEnabled(accountId, true);
 
         if (willFollowAcc == null) {
-            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Account with id: " + accountId + " not found");
         }
 
         int currentAccId = currentAcc.getId();
@@ -121,7 +122,7 @@ public class UserServicesImpl implements IUserServices {
 
         String currentPassword = account.getPassword();
         if (!passwordEncoder.matches(oldPassword, currentPassword)) {
-            throw new CustomException("Wrong old password", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new HttpError("Wrong old password", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
@@ -138,11 +139,11 @@ public class UserServicesImpl implements IUserServices {
     public void createReport(String reporterEmail, int postId, String reportContent) {
         Post reportPost = postRepo.findPostByIdAndPublished(postId, true);
         if (reportPost == null) {
-            throw new CustomException("Post with id: " + postId + " not found!", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with id: " + postId + " not found!");
         }
 
         if (reportPost.getAccount().getEmail().equals(reporterEmail)) {
-            throw new CustomException("Cannot report your-self", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new HttpError("Cannot report your-self", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         Account reporter = accRepo.findAccountByEmail(reporterEmail);

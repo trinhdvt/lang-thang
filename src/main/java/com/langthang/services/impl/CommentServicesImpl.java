@@ -1,7 +1,8 @@
 package com.langthang.services.impl;
 
 import com.langthang.dto.CommentDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.NotFoundError;
+import com.langthang.exception.UnauthorizedError;
 import com.langthang.model.Account;
 import com.langthang.model.Comment;
 import com.langthang.model.Post;
@@ -14,7 +15,6 @@ import com.langthang.utils.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +38,7 @@ public class CommentServicesImpl implements ICommentServices {
         Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
-            throw new CustomException("Post not found!", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with ID: " + postId + " not found!");
         }
 
         Account commenter = accRepo.findAccountByEmail(commenterEmail);
@@ -54,12 +54,12 @@ public class CommentServicesImpl implements ICommentServices {
         Comment oldComment = commentRepo.findById(commentId).orElse(null);
 
         if (oldComment == null) {
-            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Comment with ID: " + commentId + " not found");
         }
 
         Account commenter = oldComment.getAccount();
         if (!commenter.getEmail().equals(accEmail)) {
-            throw new CustomException("Access denied", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Permission denied");
         }
 
         oldComment.setContent(content);
@@ -73,11 +73,11 @@ public class CommentServicesImpl implements ICommentServices {
         Comment existingComment = commentRepo.findById(commentId).orElse(null);
 
         if (existingComment == null) {
-            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Comment with ID: " + commentId + " not found");
         }
 
         if (!existingComment.getAccount().getEmail().equals(accEmail)) {
-            throw new CustomException("Access denied", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Permission denied");
         }
 
         commentRepo.delete(existingComment);
@@ -88,7 +88,7 @@ public class CommentServicesImpl implements ICommentServices {
     public List<CommentDTO> getAllCommentOfPost(int postId, Pageable pageable) {
 
         if (!postRepo.existsByIdAndPublished(postId, true)) {
-            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with ID: " + postId + " not found!");
         }
 
         return commentRepo.getCommentsByPost_Id(postId, pageable)
@@ -100,7 +100,7 @@ public class CommentServicesImpl implements ICommentServices {
     public List<CommentDTO> getAllCommentOfPost(String slug, Pageable pageable) {
         Post post = postRepo.findPostBySlugAndPublished(slug, true);
         if (post == null) {
-            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with slug: " + slug + " not found!");
         }
 
         return commentRepo.getCommentsByPost_Id(post.getId(), pageable)
@@ -113,7 +113,7 @@ public class CommentServicesImpl implements ICommentServices {
         Comment comment = commentRepo.findById(commentId).orElse(null);
 
         if (comment == null) {
-            throw new CustomException("Comment not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Comment with ID: " + commentId + " not found");
         }
 
         Account currentAcc = accRepo.findAccountByEmail(currentEmail);

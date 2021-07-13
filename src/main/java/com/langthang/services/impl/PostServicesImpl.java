@@ -3,7 +3,9 @@ package com.langthang.services.impl;
 import com.langthang.dto.AccountDTO;
 import com.langthang.dto.PostRequestDTO;
 import com.langthang.dto.PostResponseDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
+import com.langthang.exception.UnauthorizedError;
 import com.langthang.model.Account;
 import com.langthang.model.Category;
 import com.langthang.model.Post;
@@ -64,7 +66,7 @@ public class PostServicesImpl implements IPostServices {
         Post post = postRepo.findPostByIdAndPublished(postId, true);
 
         if (post == null) {
-            throw new CustomException("Post with id: " + postId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with ID: " + postId + " not found!");
         }
 
         return entityToDTO(post);
@@ -75,7 +77,7 @@ public class PostServicesImpl implements IPostServices {
         Post post = postRepo.findPostBySlugAndPublished(slug, true);
 
         if (post == null) {
-            throw new CustomException("Post " + slug + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Post with slug: " + slug + " not found!");
         }
 
         return entityToDTO(post);
@@ -85,7 +87,7 @@ public class PostServicesImpl implements IPostServices {
     public PostResponseDTO getDraftById(int postId, String authorEmail) {
         Post draft = verifyResourceOwner(postId, authorEmail);
         if (!draft.isPublished()) {
-            throw new CustomException("Not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Draft with ID: " + postId + " not found!");
         }
 
         return PostResponseDTO.toPostResponseDTO(draft);
@@ -128,7 +130,7 @@ public class PostServicesImpl implements IPostServices {
 
             return responseList.map(this::entityToDTO).getContent();
         } catch (IllegalArgumentException e) {
-            throw new CustomException("Sort by " + propertyName + " is not support!"
+            throw new HttpError("Sort by " + propertyName + " is not support!"
                     , HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -138,7 +140,7 @@ public class PostServicesImpl implements IPostServices {
     public List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable) {
         Account account = accRepo.findById(accountId).orElse(null);
         if (account == null) {
-            throw new CustomException("Account with id: " + accountId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Account with id: " + accountId + " not found");
         }
 
         Page<Post> allPostOfUser = postRepo.findByAccount_IdAndPublishedIsTrue(accountId, pageable);
@@ -150,7 +152,7 @@ public class PostServicesImpl implements IPostServices {
     public List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable) {
         Account account = accRepo.findAccountByEmail(accountEmail);
         if (account == null) {
-            throw new CustomException("Account with email: " + accountEmail + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Account with email: " + accountEmail + " not found");
         }
 
         Page<Post> allPostOfUser = postRepo.getAllByAccount_EmailAndPublishedIsTrue(accountEmail, pageable);
@@ -213,7 +215,7 @@ public class PostServicesImpl implements IPostServices {
         Category category = categoryRepo.findById(categoryId).orElse(null);
 
         if (category == null) {
-            throw new CustomException("Category with id: " + categoryId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Category with id: " + categoryId + " not found");
         }
 
         Page<Post> responseList = postRepo.findPostByCategories(category, pageable);
@@ -238,7 +240,7 @@ public class PostServicesImpl implements IPostServices {
             verifyResourceOwner(post, adminEmail);
             postRepo.delete(post);
 
-        } catch (CustomException ex) {
+        } catch (HttpError ex) {
             if (post != null && post.isPublished()) {
                 boolean isReportPost = post.getPostReports().stream().anyMatch(rp -> !rp.isSolved());
                 if (isReportPost) {
@@ -246,7 +248,7 @@ public class PostServicesImpl implements IPostServices {
                     return;
                 }
             }
-            throw new CustomException("Cannot delete this post", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Permission denied");
         }
     }
 
@@ -265,28 +267,20 @@ public class PostServicesImpl implements IPostServices {
     }
 
     private Set<Category> getCategories(PostRequestDTO postDTO) {
-        Set<Category> categories = new HashSet<>();
-
-        String[] categoriesId = postDTO.getCategories();
-        if (categoriesId == null || categoriesId.length == 0) {
-            return categories;
+        List<String> categoriesId = postDTO.getCategories();
+        if (categoriesId == null || categoriesId.size() == 0) {
+            return Collections.emptySet();
         }
 
         try {
-            for (String categoryId : categoriesId) {
-                Category category = categoryRepo.findById(Integer.valueOf(categoryId)).orElse(null);
-                if (category == null) {
-                    throw new CustomException("Category with id: " + categoryId + " not found!",
-                            HttpStatus.UNPROCESSABLE_ENTITY);
-                } else {
-                    categories.add(category);
-                }
-            }
-        } catch (Exception e) {
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            List<Integer> cateIdInt = categoriesId.stream().map(Integer::valueOf).collect(Collectors.toList());
 
-        return categories;
+            List<Category> categoryList = categoryRepo.findAllById(cateIdInt);
+            return new HashSet<>(categoryList);
+
+        } catch (NumberFormatException e) {
+            throw new HttpError("Bad request", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public Post verifyResourceOwner(int postId, String authorEmail) {
@@ -297,10 +291,10 @@ public class PostServicesImpl implements IPostServices {
 
     private void verifyResourceOwner(Post post, String authorEmail) {
         if (post == null) {
-            throw new CustomException("Not found!", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Not found!");
         }
         if (!post.getAccount().getEmail().equals(authorEmail)) {
-            throw new CustomException("Access denied!", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Permission denied");
         }
     }
 

@@ -4,7 +4,8 @@ import com.langthang.dto.AccountDTO;
 import com.langthang.dto.PostReportDTO;
 import com.langthang.dto.PostResponseDTO;
 import com.langthang.dto.SystemReportDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
 import com.langthang.model.Account;
 import com.langthang.model.Post;
 import com.langthang.model.PostReport;
@@ -50,7 +51,7 @@ public class AdminServicesImpl implements IAdminServices {
         Account account = accRepo.findAccountByIdAndEnabled(userId, true);
 
         if (account == null) {
-            throw new CustomException("No enabled account with id: " + userId,
+            throw new HttpError("No enabled account with id: " + userId,
                     HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -69,7 +70,7 @@ public class AdminServicesImpl implements IAdminServices {
     public PostReportDTO getPostReportById(int reportId) {
         PostReport postReport = reportRepo.findById(reportId).orElse(null);
         if (postReport == null) {
-            throw new CustomException("Report with ID: " + reportId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Report with ID: " + reportId + " not found");
         }
 
         return toPostReportDetailDTO(postReport);
@@ -79,10 +80,10 @@ public class AdminServicesImpl implements IAdminServices {
     public PostReportDTO solveReport(int reportId, String decision) {
         PostReport report = reportRepo.findById(reportId).orElse(null);
         if (report == null) {
-            throw new CustomException("Report with ID: " + reportId + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Report with ID: " + reportId + " not found");
         }
         if (report.isSolved()) {
-            throw new CustomException("Already solved", HttpStatus.NOT_ACCEPTABLE);
+            throw new HttpError("Already solved", HttpStatus.NOT_ACCEPTABLE);
         }
 
         report.setDecision(decision);

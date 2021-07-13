@@ -1,7 +1,9 @@
 package com.langthang.services.impl;
 
 import com.langthang.dto.NotificationDTO;
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
+import com.langthang.exception.NotFoundError;
+import com.langthang.exception.UnauthorizedError;
 import com.langthang.model.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
@@ -97,7 +99,7 @@ public class NotificationServicesImpl implements INotificationServices {
     public Notification createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type) {
 
         if (sourceAcc == null || destPost == null || destAcc == null) {
-            throw new CustomException("Internal Server Error when create notifications", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpError("Internal Server Error when create notifications", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (sourceAcc.getEmail().equals(destAcc.getEmail())) {
@@ -129,10 +131,10 @@ public class NotificationServicesImpl implements INotificationServices {
         Notification notification = notifyRepo.findById(notificationId).orElse(null);
 
         if (notification == null) {
-            throw new CustomException("Not found!", HttpStatus.NOT_FOUND);
+            throw new NotFoundError("Notification with ID: " + notificationId + " not found");
         }
         if (!notification.getAccount().getEmail().equals(accEmail)) {
-            throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedError("Permission denied");
         }
 
         notification.setSeen(true);
@@ -156,7 +158,7 @@ public class NotificationServicesImpl implements INotificationServices {
             case NEW_POST:
                 return newPostNotificationTemplate;
             default:
-                throw new CustomException("Type: " + notificationType + " not support"
+                throw new HttpError("Type: " + notificationType + " not support"
                         , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

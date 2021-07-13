@@ -1,6 +1,6 @@
 package com.langthang.security;
 
-import com.langthang.exception.CustomException;
+import com.langthang.exception.HttpError;
 import com.langthang.services.JwtTokenServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -33,7 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Authentication auth = jwtTokenServices.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (CustomException e) {
+        } catch (HttpError e) {
             SecurityContextHolder.clearContext();
             resp.sendError(e.getHttpStatus().value(), e.getMessage());
             return;
