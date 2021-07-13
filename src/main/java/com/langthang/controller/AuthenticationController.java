@@ -5,11 +5,11 @@ import com.langthang.annotation.ValidEmail;
 import com.langthang.dto.AccountRegisterDTO;
 import com.langthang.dto.JwtTokenDTO;
 import com.langthang.dto.PasswordDTO;
+import com.langthang.exception.UnauthorizedError;
 import com.langthang.services.IAuthServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +57,7 @@ public class AuthenticationController {
             HttpServletResponse resp) {
 
         if (!accessToken.startsWith("Bearer"))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid authorization header");
+            throw new UnauthorizedError("Invalid authorization header");
 
         String newAccessToken = authServices.reCreateToken(refreshToken, accessToken.substring(7), resp);
 
