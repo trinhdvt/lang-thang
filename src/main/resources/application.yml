@@ -1,4 +1,5 @@
 spring:
+  env: dev
   config:
     import: classpath:application-private.yml
   batch:
