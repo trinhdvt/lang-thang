@@ -33,4 +33,4 @@ Trả về một đường dẫn public có thể truy cập được
 
     * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
   
-    * **Code**: `400 BAD_REQUEST` - File upload không phải là file ảnh, hoặc có kích thước lớn hơn `5MB`
+    * **Code**: `400 BAD_REQUEST` - File upload không phải là file ảnh hoặc có kích thước lớn hơn `2MB`
