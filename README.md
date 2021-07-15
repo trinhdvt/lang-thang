@@ -28,7 +28,7 @@ This project is a website where people can join and share their travel experienc
 
 ## Demo
 
-Here is a link to the deployed website on AWS EC2: [LangThang](http://ec2-13-212-96-88.ap-southeast-1.compute.amazonaws.com)
+Here is a link to the deployed website on AWS EC2: [LangThang](http://illusion.codes)
 
 ![landing_page](https://i.imgur.com/vU7jhua.png)
   
