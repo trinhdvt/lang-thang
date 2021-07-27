@@ -124,12 +124,12 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
 * **Request Params** `Content-Type: multipart/form-data`
 
-| Name                | Type     | Description                                   |
-| ----------          |:------:  | ------------                                  |
-| `name`              | `string` | Tên hiển thị                                  |
-| `email`             | `string` | Email của người dùng (đúng định dạng email)   |
-| `password`          | `string` | Mật khẩu (ít nhất 6 ký tự)                    |
-| `matchedPassword`   | `string` | Mật khẩu nhập lại lần 2                       |
+| Name                | Type     | Description                                    |
+| ----------          |:------:  | ------------                                   |
+| `name`              | `string` | Tên hiển thị                                   |
+| `email`             | `string` | Email của người dùng (đúng định dạng email)    |
+| `password`          | `string` | Mật khẩu (ít nhất 6 ký tự, nhiều nhất 32 kí tự)|
+| `matchedPassword`   | `string` | Mật khẩu nhập lại lần 2                        |
 
 * **Success Response:**
 
