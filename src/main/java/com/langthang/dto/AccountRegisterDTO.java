@@ -16,22 +16,22 @@ import javax.validation.constraints.Size;
 public class AccountRegisterDTO {
     @NotNull
     @NotEmpty
-    @Size(max = 50, message = "Name's length cannot exceed 50 character")
+    @Size(max = 50, message = "Name's length cannot exceed 50 characters")
     private String name;
 
     @NotNull
     @NotEmpty
-    @Size(min = 6, message = "Password must contain at least 6 character")
+    @Size(min = 6, message = "Password must contain at least 6 characters")
+    @Size(max = 32, message = "Password can't exceed 32 characters")
     private String password;
 
     @NotEmpty
     @NotNull
-    @Size(min = 6)
     private String matchedPassword;
 
     @NotNull
     @NotEmpty
     @ValidEmail
-    @Size(max = 255, message = "Email's length cannot exceed 100 character")
+    @Size(max = 100, message = "Email's length cannot exceed 100 characters")
     private String email;
 }
