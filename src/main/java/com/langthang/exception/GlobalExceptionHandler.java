@@ -1,22 +1,24 @@
 package com.langthang.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,17 +26,10 @@ public class GlobalExceptionHandler {
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
-    @Bean
-    public ErrorAttributes errorAttributes() {
-        return new DefaultErrorAttributes() {
-            @Override
-            public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-                Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
-                errorAttributes.remove("exception");
-                errorAttributes.remove("trace");
-                return errorAttributes;
-            }
-        };
+    private final ObjectMapper jacksonMapper;
+
+    public GlobalExceptionHandler(ObjectMapper jacksonMapper) {
+        this.jacksonMapper = jacksonMapper;
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
@@ -53,6 +48,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex, ex.getHttpStatus());
     }
 
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<?> handleBindException(BindException ex, HttpServletRequest req) throws JsonProcessingException {
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+        Map<String, Set<String>> map = fieldErrors.stream().collect(Collectors.groupingBy(FieldError::getField,
+                Collectors.mapping(FieldError::getDefaultMessage, Collectors.toSet())));
+
+        String message = jacksonMapper.writeValueAsString(map);
+        HttpError error = new HttpError(message, HttpStatus.BAD_REQUEST);
+        error.setPath(req.getRequestURI());
+
+        return ResponseEntity.badRequest().body(error);
+    }
 
     @ExceptionHandler({SQLException.class, DataAccessException.class})
     public ResponseEntity<Object> handleQueryException(Exception ex) {
