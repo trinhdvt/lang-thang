@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.HtmlUtils;
 
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.Base64;
-import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -38,7 +38,7 @@ public class Utils extends StringUtils {
         return StringUtils.replaceEach(HtmlUtils.htmlUnescape(html), htmlCharacter, escapedCharacter);
     }
 
-    static final Random random = new Random();
+    static final SecureRandom random = new SecureRandom();
 
     public static String randomString(int length) {
         if (length < 1)
@@ -46,7 +46,9 @@ public class Utils extends StringUtils {
 
         byte[] arr = new byte[length];
         random.nextBytes(arr);
-        return Base64.getEncoder().encodeToString(arr);
+
+        String s = Base64.getEncoder().encodeToString(arr);
+        return s.substring(0, Math.min(length, s.length()));
     }
 
     public static String randomUUID() {
@@ -56,7 +58,6 @@ public class Utils extends StringUtils {
     private static String appUrl;
 
     public static String getAppUrl() {
-        System.out.println(appUrl);
         if (SystemUtils.IS_OS_LINUX)
             return appUrl;
 
