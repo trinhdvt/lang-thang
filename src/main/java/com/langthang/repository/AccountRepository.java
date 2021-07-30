@@ -1,7 +1,7 @@
 package com.langthang.repository;
 
 import com.langthang.model.Account;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,7 +27,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "on fr.followingAccountId=a.id " +
             "group by (fr.followingAccountId) " +
             "order by count(fr.followingAccountId) DESC ")
-    List<Account> getTopFollowingAccount(PageRequest pageable);
+    List<Account> getTopFollowingAccount(Pageable pageable);
 
     @Query("select count(bp) " +
             "from BookmarkedPost bp join Post p on bp.post.id = p.id " +
@@ -48,7 +48,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "on fr.accountId=acc.id " +
             "where fr.followingAccountId=?1")
     @Transactional(readOnly = true)
-    Slice<Account> getFollowedAccount(int accountId, PageRequest pageable);
+    Slice<Account> getFollowedAccount(int accountId, Pageable pageable);
 
 }
 
