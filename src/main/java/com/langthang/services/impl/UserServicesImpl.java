@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -150,6 +151,27 @@ public class UserServicesImpl implements IUserServices {
         PostReport postReport = new PostReport(reporter, reportPost, reportContent);
 
         reportRepo.save(postReport);
+    }
+
+    @Override
+    public List<AccountDTO> getFollower(int accountId, Pageable pageable) {
+        Account acc = accRepo.findAccountByIdAndEnabled(accountId, true);
+        if (acc == null) {
+            throw new NotFoundError("Account with ID: " + accountId + " not found!");
+        }
+
+        Slice<Account> followerLst = accRepo.getFollowedAccount(accountId, pageable);
+
+        return followerLst.stream().map(account -> {
+            AccountDTO dto = AccountDTO.toBasicAccount(account);
+            String currentAccEmail = SecurityUtils.getLoggedInEmail();
+            if (currentAccEmail != null) {
+                Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
+                boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());
+                dto.setFollowed(isFollowed);
+            }
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private AccountDTO toDetailAccountDTO(Account account) {
