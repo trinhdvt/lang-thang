@@ -103,6 +103,30 @@ Danh sách các bài viết / bản nháp của User hiện tại (mặc định
 
   * **Code**: `403 FORBIDDEN` - Chưa đăng nhập
 
+## Lấy ra danh sách các người theo dõi
+
+----
+Lấy danh sách các follower của người dùng
+
+* **URL**: `/user/{account_id}/follow`
+
+* **Method:** `GET`
+
+* **Request Params**
+
+  | Name     | Type       | Description                 | Default   |
+  | -------- |:------:    | ------------                | :-------: |
+  | `page`   | `int >= 0` | Thứ tự trang                | 0         |
+  | `size`   | `int >= 1` | Số lượng record mỗi trang   | 10        |
+
+* **Response:**
+
+  * **Code**: `200 OK` - Kèm theo danh sách người theo dõi
+
+* **Error Response:**
+
+  * **Code**: `404 NOT_FOUND` - ID người dùng không tồn tại
+
 ## Follow / Unfollow 1 người nào đó
 
 ----
