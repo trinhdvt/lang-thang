@@ -29,6 +29,7 @@
         <apache.common-text.version>1.9</apache.common-text.version>
         <hibernate.search.version>5.11.9.Final</hibernate.search.version>
         <caffeine.version>2.9.0</caffeine.version>
+        <bucket4j.version>6.2.0</bucket4j.version>
     </properties>
 
     <dependencies>
@@ -147,6 +148,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${apache.common-text.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>${bucket4j.version}</version>
         </dependency>
 
         <dependency>
