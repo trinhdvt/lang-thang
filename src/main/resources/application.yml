@@ -1,5 +1,7 @@
 spring:
   env: dev
+  api-limit:
+    enabled: true
   config:
     import: classpath:application-private.yml
   batch:
