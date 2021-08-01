@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -123,6 +124,15 @@ public class UserController {
         int currentFollowCount = userServices.followOrUnfollow(currentAccount, accountId);
 
         return ResponseEntity.accepted().body(currentFollowCount);
+    }
+
+    @GetMapping("/user/{account_id}/follow")
+    @ResponseStatus(HttpStatus.OK)
+    public Object getFollowers(
+            @PathVariable("account_id") int accountId,
+            @PageableDefault(sort = {"id"}) Pageable pageable) {
+
+        return userServices.getFollower(accountId, pageable);
     }
 
     @PutMapping("/user/update/info")

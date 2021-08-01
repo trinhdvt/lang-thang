@@ -25,4 +25,6 @@ public interface IUserServices {
     void updatePassword(String currentEmail, String password);
 
     void createReport(String reportAccount, int postId, String reportContent);
+
+    List<AccountDTO> getFollower(int accountId, Pageable pageable);
 }
