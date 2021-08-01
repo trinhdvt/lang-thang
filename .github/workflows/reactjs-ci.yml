@@ -29,13 +29,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
         
     - name: Install Dependencies
       run: npm install
     
     - name: Build production code
       run: npm run build
+      env:
+        CI: false
     
     # Share artifact inside workflow
     - name: Share artifact inside workflow
