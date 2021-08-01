@@ -1,13 +1,11 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+name: FE-CI/CD
 
-name: ReactJS-FE CI
-
+# trigger manually
 on: workflow_dispatch
 
-# on:
-#   repository_dispatch:
-#     types: [update-fe]
+# Triggered when code is pushed to any branch in a repository
+# on: push
+# For more info: https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 
 jobs:
   build:
@@ -19,20 +17,25 @@ jobs:
 
     steps:
     
+    # Clone github repo
     - name: Clone FE repository
       uses: actions/checkout@v2
       with:
         repository: lcko1012/travel-blog
+        # select branch, default is master          
         ref: 'backup'
-        
+    
+    # Install NodeJS
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         
+    # Install Dependencies
     - name: Install Dependencies
-      run: npm install
+      run: npm ci
     
+    # Build ReactJS
     - name: Build production code
       run: npm run build
       env:
@@ -50,6 +53,7 @@ jobs:
     needs: build
     
     steps:
+    
       # Download previously shared build
       - name: Get build file
         uses: actions/download-artifact@v1
@@ -68,8 +72,8 @@ jobs:
           source: "react-build-file/*"
           target: "/home/ubuntu/"
       
-      # Restart Nginx
-      - name: Executing remote command
+      # Execute Remote Command
+      - name: Restart Nginx and clean resources
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -78,6 +82,6 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           script: |
             sudo systemctl stop nginx
-            sudo cp -avr /home/ubuntu/react-build-file/* /var/www/langthang/
+            sudo cp -ar /home/ubuntu/react-build-file/* /var/www/langthang/
             sudo systemctl start nginx
             sudo rm -rf /home/ubuntu/react-build-file
