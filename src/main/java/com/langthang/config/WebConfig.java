@@ -43,7 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
             ApiLimitInterceptor commonApiLimitIntercept = new ApiLimitInterceptor(apiBucketManager, 100, Duration.ofMinutes(1));
             registry.addInterceptor(commonApiLimitIntercept)
                     .addPathPatterns("/api/**")
-                    .excludePathPatterns("/api/upload", "/api/auth");
+                    .excludePathPatterns("/api/upload", "/api/auth/**");
 
             ApiLimitInterceptor uploadApiLimitIntercept = new ApiLimitInterceptor(apiBucketManager, 3, Duration.ofSeconds(10), "api-upload");
             registry.addInterceptor(uploadApiLimitIntercept)
@@ -51,7 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
 
             ApiLimitInterceptor authApiLimitIntercept = new ApiLimitInterceptor(apiBucketManager, 3, Duration.ofSeconds(5), "api-auth");
             registry.addInterceptor(authApiLimitIntercept)
-                    .addPathPatterns("/api/auth");
+                    .addPathPatterns("/api/auth/**");
         }
     }
 
