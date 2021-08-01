@@ -47,7 +47,6 @@ jobs:
   
   deploy:
     runs-on: ubuntu-lastest
-    needs: build
     
     steps:
       # Download previously shared build
@@ -59,11 +58,12 @@ jobs:
       # SCP to VPS
       - name: Copy repository contents via scp
         uses: appleboy/scp-action@master
+        
         env:
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSHKEY }}
         with:
-          source: "."
+          source: "react-build-file/*"
           target: "/home/ubuntu/test-ci-cd/"
