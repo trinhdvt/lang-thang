@@ -1,0 +1,68 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on: workflow_dispatch
+
+# on:
+#   repository_dispatch:
+#     types: [update-fe]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    
+    - name: Clone FE repository
+      uses: actions/checkout@v2
+      with:
+        repository: lcko1012/travel-blog
+        ref: 'backup'
+        
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install Dependencies
+      run: npm install
+    
+    - name: Build production code
+      run: npm run build
+    
+    # Share artifact inside workflow
+    - name: Share artifact inside workflow
+      uses: actions/upload-artifact@v1
+      with:
+        name: react-build-file
+        path: build
+  
+  deploy:
+    runs-on: ubuntu-lastest
+    needs: build
+    
+    steps:
+      # Download previously shared build
+      - name: Get build file
+        uses: actions/download-artifact@v1
+        with:
+          name: react-build-file
+          
+      # SCP to VPS
+      - name: Copy repository contents via scp
+        uses: appleboy/scp-action@master
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+        with:
+          source: "."
+          target: "/home/ubuntu/test-ci-cd/"
