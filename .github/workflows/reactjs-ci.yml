@@ -46,7 +46,7 @@ jobs:
         path: build
   
   deploy:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     
     steps:
       # Download previously shared build
