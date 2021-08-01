@@ -9,6 +9,7 @@
 - [To-do](#to-do)
 - [Authors](#authors)
 - [Documentation](#documentation)
+- [Rate Limit Policy](#rate-limit-policy)
 - [Contact](#contact)
 
 ## Overview
@@ -88,6 +89,10 @@ And restart server with `docker compose up` when everything done!
 ## Documentation
 
 [API Document](./docs/API)
+
+## Rate Limit Policy
+
+> For more detail, please read [here](./docs/README.md#rate-limit-policy)
 
 ## Contact
 
