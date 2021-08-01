@@ -48,9 +48,13 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Override
     public CategoryDTO modifyCategory(int categoryId, String newName) {
         Category category = categoryRepo.findById(categoryId).orElse(null);
-
         if (category == null) {
             throw new NotFoundError("Category with id: " + categoryId + " not found");
+        }
+
+        boolean isExisted = categoryRepo.existsByName(newName);
+        if (isExisted) {
+            throw new HttpError("Category with name: " + newName + " is already existed", HttpStatus.CONFLICT);
         }
 
         category.setName(newName);
@@ -63,7 +67,7 @@ public class CategoryServicesImpl implements ICategoryServices {
     public CategoryDTO addNewCategory(String categoryName) {
         boolean isCategoryExist = categoryRepo.existsByName(categoryName);
         if (isCategoryExist) {
-            throw new HttpError("Category with name: " + categoryName + " is already exist",
+            throw new HttpError("Category with name: " + categoryName + " is already existed",
                     HttpStatus.CONFLICT);
         }
 

@@ -139,3 +139,5 @@ Sửa tên của thể loại
   * **Code**: `404 NOT_FOUND` - Thể loại không tồn tại
 
   * **Code**: `403 FORBIDDEN` - Không có quyền
+    
+  * **Code**: `409 CONFLICT` - Thể loại đã tồn tại
