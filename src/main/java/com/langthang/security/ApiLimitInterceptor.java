@@ -35,8 +35,16 @@ public class ApiLimitInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String bucketKey = additionalKeyPrefix + request.getRemoteAddr();
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse response, Object handler) throws Exception {
+        String bucketKey = additionalKeyPrefix;
+
+        // prod env
+        if (req.getHeader("X-Forwarded-For") != null) {
+            bucketKey += req.getHeader("X-Forwarded-For");
+        } else {
+            // local env
+            bucketKey += req.getRemoteAddr();
+        }
 
         Bucket bucket = bucketManager.resolveBucket(bucketKey, limit, duration);
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
