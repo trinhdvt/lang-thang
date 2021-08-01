@@ -1,11 +1,16 @@
 name: FE-CI/CD
 
-# trigger manually
-on: workflow_dispatch
 
-# Triggered when code is pushed to any branch in a repository
-# on: push
-# For more info: https://docs.github.com/en/actions/reference/events-that-trigger-workflows
+on: 
+  # trigger manually
+  workflow_dispatch:
+  
+  # Triggers the workflow on push or pull request events but only for the master branch
+#   push:
+#     branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
+  # For more info: https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 
 jobs:
   build:
