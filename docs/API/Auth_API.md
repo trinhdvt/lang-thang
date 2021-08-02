@@ -30,7 +30,7 @@ Trả về token hợp lệ
 
     - **Code:** 200 
       
-      **Content:** `chuỗi token` kèm theo cookie được gắn vào
+      **Content:** `access_token` kèm theo cookie `refresh-token` được gắn vào
 
     * **Example:**
 
@@ -76,7 +76,7 @@ Trả về token hợp lệ
 
     * **Code:** 200 
       
-      **Content:** `chuỗi token` kèm theo cookie được gắn vào
+      **Content:** `access_token` kèm theo cookie `refresh-token` được gắn vào
     
     * **Example**: xem lại ở phần [Đăng nhập](#đăng-nhập)
 
@@ -95,23 +95,23 @@ Trả về lại một token hợp lệ khác sau khi đã đăng nhập
 
 * **Header**: `Authorization: Bearer <token hiện tại>`
 
-* **Cookie**: `refresh-token: Mã refresh token được server gắn vào sau khi đăng nhập thành công`
+* **Cookie**: `refresh-token: Mã refresh-token được server gắn vào sau khi đăng nhập thành công`
 
 * **Success Response:**
 
     * **Code:** 200 
       
-      **Content:** `chuỗi token mới` kèm theo cookie mới được gắn vào header
+      **Content:** `access_token mới` kèm theo cookie mới được gắn vào
         
     * **Example**: xem lại ở phần [Đăng nhập](#đăng-nhập)
 
 * **Error Response:**
 
-    * **Code:** 400 BAD REQUEST - Cookie rỗng
+    * **Code:** 400 BAD REQUEST - Cookie `refresh-token` rỗng (hết hạn)
       
     * **Code:** 403 FORBIDDEN - Chưa đăng nhập      
 
-    * **Code:** 401 UNAUTHORIZED - `Refresh-token` không hợp lệ    
+    * **Code:** 401 UNAUTHORIZED - `refresh-token` không hợp lệ    
 
 ## Đăng ký
 
