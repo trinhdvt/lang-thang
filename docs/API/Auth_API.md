@@ -200,7 +200,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 ----
 - Xác nhận xem thử token có hợp lệ để thực hiện yêu cầu đổi mật khẩu hay không
 
-* **URL**: `/auth/changePassword`
+* **URL**: `/auth/resetPassword`
 
 * **Method:**: `GET`
 
@@ -225,7 +225,7 @@ Xác thực đăng ký với hệ thống bằng token đã được gửi trong
 ---
 Thay đổi mật khẩu trong trường hợp bị quên
 
-* **URL**: `/auth/savePassword`
+* **URL**: `/auth/resetPassword`
 
 * **Method:**: `PUT`
 
