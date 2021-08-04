@@ -190,11 +190,11 @@ Thay đổi mật khẩu của User
 
 * **Request Body** `Content-Type: multipart/form-data`
 
-  | Name              | Type     | Description           |
-  | --------          |:------:  | ------------          |
-  | `oldPassword`     | `string` | Mật khẩu cũ           |
-  | `password`        | `string` | Mật khẩu mới          |
-  | `matchedPassword` | `string` | Nhập lại mật khẩu mới |
+  | Name              | Type     | Description                          |
+  | --------          |:------:  | ------------                         |
+  | `oldPassword`     | `string` | Mật khẩu cũ  (6 -> 32 kí tự)         |
+  | `password`        | `string` | Mật khẩu mới (6 -> 32 kí tự)         |
+  | `matchedPassword` | `string` | Nhập lại mật khẩu mới (6 -> 32 kí tự)|
 
 
 * **Success Response:**

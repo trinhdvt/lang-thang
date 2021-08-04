@@ -90,9 +90,9 @@ Thêm 1 comment vào bài viết
 
 * **Request Body** `Content-Type: multipart/form-data`
 
-  | Name       | Type       | Description            |
-  | ---------- |:------:    | ------------           |
-  | `content`  | `string`   | Nội dung của comment   |
+  | Name       | Type       | Description                              |
+  | ---------- |:------:    | ------------                             |
+  | `content`  | `string`   | Nội dung của comment (không được rỗng)   |
 
 * **Success Response:**
 
@@ -144,9 +144,9 @@ Sửa nội dung của một comment
 
 * **Request Body** `Content-Type: multipart/form-data`
 
-  | Name        | Type       | Description  |
-  | ----------  |:------:    | ------------ |
-  | `content`   | `string`   | Nội dung mới |
+  | Name        | Type       | Description                    |
+  | ----------  |:------:    | ------------                   |
+  | `content`   | `string`   | Nội dung mới (không được rỗng) |
 
 * **Response:** Giống y như phần trên
 

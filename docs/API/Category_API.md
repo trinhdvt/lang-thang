@@ -75,9 +75,9 @@ Thêm một thể loại mới
 
 * **Request Body** `Content-Type: multipart/form-data`
 
-  | Name     | Type       | Description  |
-  | -------  |:------:    | ------------ |
-  | `name`   | `string`   | Tên thể loại |
+  | Name     | Type       | Description                     |
+  | -------  |:------:    | ------------                    |
+  | `name`   | `string`   | Tên thể loại (tối đa 250 kí tự) |
 
 * **Response:**
 
@@ -125,9 +125,9 @@ Sửa tên của thể loại
 
 * **Request Body** `Content-Type: multipart/form-data`
 
-  | Name     | Type       | Description  |
-  | -------  |:------:    | ------------ |
-  | `name`   | `string`   | Tên thể loại |
+  | Name     | Type       | Description                     |
+  | -------  |:------:    | ------------                    |
+  | `name`   | `string`   | Tên thể loại (tối đa 250 kí tự) |
 
 
 * **Success Response:**

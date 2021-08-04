@@ -125,9 +125,9 @@ Lấy ra thông tin chi tiết của một báo cáo
 
 * **Request Params**
 
-  | Name        | Type    | Description                 |
-  | -------     |:------: | ------------                |
-  | `decision`  | `string`| Quyết định đã đưa ra        |
+  | Name        | Type    | Description                             |
+  | -------     |:------: | ------------                            |
+  | `decision`  | `string`| Quyết định đã đưa ra (không được rỗng)  |
 
 * **Response:**
 
@@ -154,10 +154,10 @@ Báo cáo một bài viết
 
 * **Request Params**
 
-  | Name        | Type    | Description     |
-  | -------     |:------: | ------------    |
-  | `postId`    | `string`| Id của bài viết |
-  | `content`   | `string`| Nội dung báo cáo|
+  | Name        | Type    | Description                        |
+  | -------     |:------: | ------------                       |
+  | `postId`    | `string`| Id của bài viết                    |
+  | `content`   | `string`| Nội dung báo cáo (không được rỗng) |
 
 * **Response:**
 
