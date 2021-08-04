@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -59,7 +60,7 @@ public class CommentController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> addCommentToPost(
             @PathVariable("post_id") int postId,
-            @RequestParam("content") String content,
+            @RequestParam("content") @NotBlank String content,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
@@ -73,7 +74,7 @@ public class CommentController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> modifyComment(
             @PathVariable("comment_id") int commentId,
-            @RequestParam("content") String content,
+            @RequestParam("content") @NotBlank String content,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();

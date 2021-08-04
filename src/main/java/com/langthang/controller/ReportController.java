@@ -50,7 +50,7 @@ public class ReportController {
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<Object> createReport(
             @RequestParam("postId") int postId,
-            @RequestParam("content") String reportContent,
+            @RequestParam("content") @NotBlank String reportContent,
             Authentication authentication) {
 
         String reportAccount = authentication.getName();

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Validated
@@ -31,7 +32,7 @@ public class AuthenticationController {
     @PostMapping("/auth/login")
     public ResponseEntity<Object> login(
             @RequestParam("email") @ValidEmail String email,
-            @RequestParam("password") String password,
+            @RequestParam("password") @Size(min = 6, max = 32) String password,
             HttpServletResponse resp) {
 
         String jwtToken = authServices.login(email, password, resp);

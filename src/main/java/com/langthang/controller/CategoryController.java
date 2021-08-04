@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -54,8 +54,7 @@ public class CategoryController {
     @CacheEvict(allEntries = true)
     public ResponseEntity<Object> addNewCategory(
             @RequestParam("name") @NotBlank
-            @Max(value = 150, message = "Short name please! Category name cannot exceed 150 characters")
-                    String categoryName) {
+            @Size(max = 250) String categoryName) {
 
         CategoryDTO newCategory = categoryServices.addNewCategory(categoryName);
 
@@ -79,7 +78,7 @@ public class CategoryController {
     @CacheEvict(allEntries = true)
     public ResponseEntity<Object> modifyCategoryName(
             @PathVariable("category_id") int categoryId,
-            @RequestParam("name") @Max(value = 150, message = "Category name cannot exceed 150 characters")
+            @RequestParam("name") @Size(max = 250)
             @NotBlank String newName) {
 
         categoryServices.modifyCategory(categoryId, newName);

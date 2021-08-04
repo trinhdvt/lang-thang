@@ -23,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -152,7 +153,7 @@ public class UserController {
     @PutMapping("/user/update/password")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> updateUserPassword(
-            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("oldPassword") @Size(min = 6, max = 32) String oldPassword,
             @Valid @PasswordMatches PasswordDTO newPassword,
             Authentication authentication) {
 
