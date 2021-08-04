@@ -92,7 +92,7 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping(value = "/auth/changePassword", params = {"token"})
+    @GetMapping(value = "/auth/resetPassword", params = {"token"})
     public ResponseEntity<Object> verifyResetPasswordToken(
             @RequestParam("token") String token) {
 
@@ -101,7 +101,7 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
-    @PutMapping("/auth/savePassword")
+    @PutMapping("/auth/resetPassword")
     public ResponseEntity<Object> savePassword(
             @RequestParam("token") String token,
             @Valid @PasswordMatches PasswordDTO passwordDTO) {
