@@ -141,6 +141,13 @@ public class NotificationServicesImpl implements INotificationServices {
         notifyRepo.save(notification);
     }
 
+    @Override
+    public void maskAllAsSeen(String accEmail) {
+        Account acc = accRepo.findAccountByEmail(accEmail);
+
+        notifyRepo.maskAllAsSeen(acc.getId());
+    }
+
     private String createContentByType(NotificationType type, String sourceName, String postTitle) {
         String notificationTemplate = getNotificationTemplate(type);
 

@@ -22,4 +22,6 @@ public interface INotificationServices {
     List<NotificationDTO> getUnseenNotifications(String accEmail);
 
     void maskAsSeen(int notificationId, String accEmail);
+
+    void maskAllAsSeen(String currentEmail);
 }
