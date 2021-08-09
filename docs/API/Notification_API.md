@@ -126,3 +126,24 @@ Lấy ra danh sách các thông báo chưa xem
     * **Code**: `403 FORBIDDEN / 401 UNAUTHORIZED` - Chưa đăng nhập / Không sở hữu
       
     * **Code**: `404 NOT_FOUND` - Thông báo không tồn tại
+
+## Đánh dấu tất cả thông báo là đã xem
+
+----
+Đánh dấu tất cả thông báo là đã xem
+
+* **URL**: `/notifications/seenAll`
+
+* **Method:** `PUT`
+
+* **Header**: `Authorization: Bearer <token hiện tại>`
+
+* **Response:**
+
+  * **Success Response:**
+
+    * **Code:** `204 NO_CONTENT` - Đã đánh dấu tất cả là đã xem
+
+  * **Error Response:**
+
+    * **Code**: `403 FORBIDDEN` - Chưa đăng nhập

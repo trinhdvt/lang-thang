@@ -53,6 +53,17 @@ public class NotificationController {
         return ResponseEntity.ok(unseenNotifications);
     }
 
+    @PutMapping("/notifications/seenAll")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> markAllAsSeen(Authentication authentication){
+
+        String currentEmail = authentication.getName();
+
+        notificationServices.maskAllAsSeen(currentEmail);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/notifications/{notification_id}/seen")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> maskAsSeen(
