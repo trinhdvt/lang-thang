@@ -1,0 +1,40 @@
+.report-title {
+    color: grey;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.report-content {
+    font-weight: 500;
+}
+
+.action-button {
+    float: right;
+}
+
+.group-button {
+    margin-bottom: 10px;
+}
+
+.vl {
+    border-right: 1px solid grey;
+    height: 380px;
+    margin: auto;
+}
+
+.report-detail {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    padding: 25px 0px 25px 0px;
+}
+
+.post__alert--solve {
+    border-top: 30px solid #007bff;
+}
+
+.post__alert--solvebtn {
+    color: white;
+    border-color: #007bff;
+    background-color: #007bff;
+}

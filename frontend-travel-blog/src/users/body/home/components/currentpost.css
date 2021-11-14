@@ -1,0 +1,27 @@
+.current-post__category-area {
+    display: flex;
+    flex-direction: row;
+}
+
+.current-post__category {
+    font-size: 14px;
+    /* padding: 1px 7px; */
+    /* border: 1px solid #b3d7ff; */
+    /* background: rgb(0 123 255 / 50%); */
+    /* background-color: #8e97ff; */
+    border-radius: 3px;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.current-post__title {
+    text-transform: none;
+    font-style: normal;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* .current-post {
+    padding: 10px 10px 10px 0;
+    background-color: white;
+} */

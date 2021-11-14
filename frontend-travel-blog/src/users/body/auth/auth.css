@@ -1,0 +1,182 @@
+.main__auth{
+    background-color: #F7F8F9;
+    position: relative;
+    height: 100vh;
+}
+
+button {
+    cursor: pointer;
+}
+
+.register {
+    background-color: var(--color-white);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    padding: 20px;
+    width: 35%;
+    box-shadow: 0px 0px 40px 0px rgb(0 0 0 / 5%);
+    box-sizing: border-box;
+}
+
+@media(max-width: 1024px){
+    .register {
+        background-color: var(--color-white);
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        padding: 20px;
+        width: 60%;
+        box-shadow: 0px 0px 40px 0px rgb(0 0 0 / 5%);
+        box-sizing: border-box;
+    }
+}
+
+@media(max-width: 768px) {
+    .register {
+        background-color: var(--color-white);
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        padding: 20px;
+        width: 80%;
+        box-shadow: 0px 0px 40px 0px rgb(0 0 0 / 5%);
+        box-sizing: border-box;
+    }
+}
+
+/*Iphone(480 x 640)*/
+@media screen and (max-width: 480px){
+    .register {
+        background-color: var(--color-white);
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 10px;
+        padding: 20px;
+        width: 80%;
+        box-shadow: 0px 0px 40px 0px rgb(0 0 0 / 5%);
+        box-sizing: border-box;
+    }
+    .register__social {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .register__social--facebook {
+        margin-bottom: 5px;
+    }
+}
+/*Smart phone nhỏ*/
+@media screen and (max-width: 240px){
+
+}
+
+
+.register h3 {
+    text-align: center;
+    padding-bottom: 20px;
+    font-size: 28px;
+
+}
+
+.register form {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.register form input{
+    height: 40px;
+    font-size: 14px;
+    padding-left: 18px;
+    border-radius: 15px;
+    outline: none;
+    border: 1px solid rgb(225, 225, 225);
+    margin-bottom: 20px;
+}
+
+.register form a {
+    margin-top: 10px;
+    width: fit-content;
+}
+
+
+.register form button {
+    padding: 6px 8px;
+    border-radius: 15px;
+    border: 1px solid var(--color-muted);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: 14px;
+}
+
+
+.register__divider {
+    margin: 8px 0;
+    /* justify-content: center; */
+    position: relative;
+    text-align: center;
+}
+
+.register__divider::before {
+    content: "";
+    position:absolute;
+    border-top: 1px solid #ddd;
+    top: 50%;
+    right: 0;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.register__divider span  {
+    position: relative;
+    background-color: var(--color-white);
+    padding: 0 15px;  
+}
+
+
+
+.register__social {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.register__social a {
+    color: var(--color-white);
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.register__social a i {
+    margin-right: 8px;
+}
+
+.register__social--facebook {
+    background-color: #3B5598;
+    margin-right: 10px;
+}
+
+.register__social--google {
+    background-color: #D85040;
+
+}
+
+
+.register__link {
+    color: var(--color-primary);
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+}

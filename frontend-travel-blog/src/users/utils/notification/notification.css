@@ -1,0 +1,33 @@
+.errMsg { 
+    background: #F1D7D7;
+    color: #A95252;
+    text-align: center;
+    padding: 10px 0;
+    letter-spacing: 1.3px;
+    border-radius: 16px; 
+    border: 1px solid rgb(225, 225, 225);
+    margin-bottom: 10px;
+}
+
+.successMsg { 
+    background: rgba(9, 158, 54, 0.788);
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    letter-spacing: 1.3px;
+    border-radius: 16px; 
+    border: 1px solid rgb(225, 225, 225);
+    margin-bottom: 10px;
+}
+
+.errMsg-80 {
+    width: 80%;
+    border-radius: 10px; 
+    
+}
+
+.successMsg-80 {
+    width: 80%;
+    border-radius: 10px; 
+
+}

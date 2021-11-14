@@ -1,0 +1,19 @@
+.button-up {
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    outline: none;
+    animation: btnUp 1s linear infinite;
+    transition: .8s ease;
+    z-index: 100;
+}
+
+.button-up:focus {
+    outline: none;
+}

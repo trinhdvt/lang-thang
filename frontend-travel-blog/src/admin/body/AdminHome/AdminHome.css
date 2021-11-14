@@ -1,0 +1,203 @@
+.left-panel {
+    background-color: white;
+}
+
+.right-panel {
+    padding: 30px;
+    background-color: var(--color-background);
+    height: auto;
+}
+
+.right-panel-100vh {
+    padding: 30px;
+    background-color: var(--color-background);
+    height: 100vh;
+}
+
+.inline-item {
+    display: inline-block;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.right-align {
+    float: right;
+}
+
+.pd-15 {
+    padding: 15px;
+}
+
+.pd-l-3 {
+    padding-left: 5px;
+}
+
+.mr-5 {
+    margin-right: 5px;
+}
+
+.ml-5 {
+    margin-left: 5px;
+}
+
+.icon {
+    text-align: center;
+    padding: 10px 0px;
+}
+
+.number {
+    text-align: center;
+}
+
+.title {
+    margin-left: auto;
+    text-align: center;
+}
+
+.admin__home--card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    transition: 0.25s;
+}
+
+.admin__home--hieuung:hover {
+    transform: translateY(-5px);
+}
+
+.admin__home .admin__favoriteposts {
+    margin-right: 30px;
+    margin-top: 50px;
+
+    background-color: white;
+    border-radius: 5px;
+}
+
+.admin__favoriteposts--title {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 20px 0 10px 0;
+}
+
+.most-favorite-post-table {
+    padding: 0px 15px 0px 15px;
+}
+
+.table-item {
+    padding: 15px 0px 15px 0px;
+}
+
+.admin__home .admin__topusers {
+    margin-top: 50px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.most-followed-user-table {
+    padding: 0px 15px 0px 15px;
+}
+
+.most-followed-user-title {
+    margin-top: 50px;
+}
+
+.most-followed-user-hr {
+    width: 30%;
+    border: solid 2px;
+}
+
+.most-followed-user-item {
+    background-color: white;
+    border-radius: 10px;
+    width: 80%;
+    height: 110px;
+    margin-top: 30px;
+}
+
+.most-followed-user-item:hover {
+    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition-duration: 0.25s;
+}
+
+.most-followed-user-item-avatar {
+    display: inline-block;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-size: cover;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 20px;
+}
+
+.most-followed-user-item-name {
+    display: inline-block;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.most-followed-user-item-number {
+    font-size: medium;
+}
+
+.post-list {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.list-name {
+    padding-left: 25px;
+}
+
+.web-name {
+    padding-left: 25px;
+    font-weight: 200;
+}
+
+.post-table {
+    padding: 10px 25px 10px 25px;
+}
+
+.admin__pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.content {
+    margin-left: 250px;
+    height: 900px;
+    background-color: #f2f5f5;
+    overflow-x: hidden;
+}
+
+.user-avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    margin: auto;
+    background-position: center;
+}
+
+.thead {
+    @media screen and (min-width: 768px) {
+        visibility: visible !important;
+    }
+}
+
+.tr {
+    @media screen and (min-width: 768px) {
+        display: table-row !important;
+    }
+}
+
+.td {
+    @media screen and (min-width: 768px) {
+        display: table-cell !important;
+    }
+}
