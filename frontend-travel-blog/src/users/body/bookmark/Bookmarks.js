@@ -2,8 +2,8 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import Empty from '../../utils/Empty/Empty'
 import Loading from '../../utils/Loading/Loading'
-import CurrentPost from '../home/components/CurrentPost'
-import bookmarkApis from './enum/bookmark-apis'
+import CurrentPost from '../home/components/CurrentPost.js'
+import bookmarkApis from './enum/bookmark-apis.js'
 
 const Bookmarks = () => {
     const [listBookmarks, setListBookmarks] = useState([])

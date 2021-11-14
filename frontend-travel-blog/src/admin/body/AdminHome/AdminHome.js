@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactHtmlParse from "react-html-parser";
 import { Link } from 'react-router-dom'
-import homeApis from './enum/home-apis';
+import homeApis from './enum/home-apis.js';
 
 function AdminHome() {
     const initialState = {

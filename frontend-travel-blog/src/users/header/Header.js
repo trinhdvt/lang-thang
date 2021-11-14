@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { dispatchLogout } from '../../redux/actions/authAction'
+import { dispatchLogout } from '../../redux/actions/authAction.js'
 import ReactHtmlParser from 'react-html-parser'
-import Notification from '../body/notification/Notification'
-import CookiesService from '../../services/CookiesService'
-import useSocketDataObject from '../../real-time/useSocketDataObject'
+import Notification from '../body/notification/Notification.js'
+import CookiesService from '../../services/CookiesService.js'
+import useSocketDataObject from '../../real-time/useSocketDataObject.js'
 
 function Header() {
     const dispatch = useDispatch()

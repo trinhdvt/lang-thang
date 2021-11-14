@@ -3,10 +3,10 @@ import axios from 'axios';
 import "./home.css"
 import { Link } from 'react-router-dom';
 import ReactHtmlParser from 'react-html-parser'
-import CurrentPost from './components/CurrentPost';
-import CommentPost from './components/CommentPost'
+import CurrentPost from './components/CurrentPost.js';
+import CommentPost from './components/CommentPost.js'
 import Loading from '../../utils/Loading/Loading';
-import homeApis from './enum/home-apis';
+import homeApis from './enum/home-apis.js';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 

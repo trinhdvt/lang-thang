@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ReactHtmlParser from 'react-html-parser'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { dispatchDeleteCmt, dispatchLikeCmt, dispatchEditCmt } from '../../../../../redux/actions/commentAction'
+import { dispatchDeleteCmt, dispatchLikeCmt, dispatchEditCmt } from '../../../../../redux/actions/commentAction.js'
 import TextareaAutosize from 'react-textarea-autosize';
 
 const Comment = ({ comment }) => {

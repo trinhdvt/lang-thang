@@ -5,12 +5,12 @@ import axios from 'axios'
 import ReactHtmlParser from 'react-html-parser'
 import Loading from '../../utils/Loading/Loading'
 import Cookies from 'js-cookie'
-import Comments from './comments/Comments'
-import CommentPost from '../home/components/CommentPost'
+import Comments from './comments/Comments.js'
+import CommentPost from '../home/components/CommentPost.js'
 import { useSelector } from 'react-redux'
-import postApi from './enum/post-api'
-import { errorNotification, successNotification } from '../../utils/notification/ToastNotification'
-import NotFound from '../../utils/NotFound/NotFound'
+import postApi from './enum/post-api.js'
+import { errorNotification, successNotification } from '../../utils/notification/ToastNotification.js'
+import NotFound from '../../utils/NotFound/NotFound.js'
 
 function Post() {
   const location = useLocation()

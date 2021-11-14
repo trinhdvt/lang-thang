@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import Empty from '../../utils/Empty/Empty'
-import CurrentPost from '../home/components/CurrentPost'
+import CurrentPost from '../home/components/CurrentPost.js'
 import Loading from '../../utils/Loading/Loading'
-import categoryApis from './enum/category-apis'
+import categoryApis from './enum/category-apis.js'
 
 const Category = () => {
     const params = useParams()

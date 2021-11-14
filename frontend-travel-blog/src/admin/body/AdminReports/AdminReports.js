@@ -3,7 +3,7 @@ import './AdminReports.css';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import reportApis from './enum/report-apis';
+import reportApis from './enum/report-apis.js';
 
 function AdminReports() {
     const [reportList, setReportList] = useState([]);

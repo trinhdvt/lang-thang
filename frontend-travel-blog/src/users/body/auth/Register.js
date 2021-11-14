@@ -1,10 +1,10 @@
 import axios from 'axios'
 import React from 'react'
 import { useState } from 'react'
-import { showErrMsg, showSuccessMsg } from '../../utils/notification/Notification'
-import { isEmail, isEmpty, isLength, isMatch } from '../../utils/validation/Validation'
+import { showErrMsg, showSuccessMsg } from '../../utils/notification/Notification.js'
+import { isEmail, isEmpty, isLength, isMatch } from '../../utils/validation/Validation.js'
 import {GoogleLogin} from 'react-google-login'
-import authApis from './enum/authentication-apis'
+import authApis from './enum/authentication-apis.js'
 
 
 

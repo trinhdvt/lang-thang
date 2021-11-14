@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 import Empty from '../../utils/Empty/Empty';
 import Loading from '../../utils/Loading/Loading';
-import CurrentPost from '../home/components/CurrentPost';
-import searchApis from './enum/search-apis';
+import CurrentPost from '../home/components/CurrentPost.js';
+import searchApis from './enum/search-apis.js';
 
 const SearchPage = () => {
     const location = useLocation()

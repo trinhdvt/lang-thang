@@ -1,4 +1,4 @@
-import ACTIONS from '../actions'
+import ACTIONS from '../actions.js'
 
 
 const data = {

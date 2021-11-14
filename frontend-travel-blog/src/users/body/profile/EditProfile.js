@@ -1,13 +1,13 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { showErrMsg80, showSuccessMsg80 } from '../../utils/notification/Notification'
+import { showErrMsg80, showSuccessMsg80 } from '../../utils/notification/Notification.js'
 import ReactHtmlParser from 'react-html-parser'
-import PassPage from './components/PassPage'
-import { fetchUser, dispatchGetUser } from '../../../redux/actions/authAction'
+import PassPage from './components/PassPage.js'
+import { fetchUser, dispatchGetUser } from '../../../redux/actions/authAction.js'
 import Cookies from 'js-cookie'
-import profileApis from './enum/profile-apis'
-import { isImgFormat, isImgSize } from '../../utils/validation/Validation'
+import profileApis from './enum/profile-apis.js'
+import { isImgFormat, isImgSize } from '../../utils/validation/Validation.js'
 
 const EditProfile = () => {
     const initialState = {

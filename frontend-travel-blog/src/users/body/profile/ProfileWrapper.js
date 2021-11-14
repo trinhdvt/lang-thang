@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Profile from './Profile'
-import MyProfile from './MyProfile'
+import MyProfile from './MyProfile.js'
 
 function ProfileWrapper() {
     const auth = useSelector(state => state.auth)

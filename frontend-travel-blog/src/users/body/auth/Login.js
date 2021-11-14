@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import axios from 'axios'
-import {dispatchLogin} from '../../../redux/actions/authAction'
+import {dispatchLogin} from '../../../redux/actions/authAction.js'
 import {useDispatch} from 'react-redux'
-import {showErrMsg, showSuccessMsg} from '../../utils/notification/Notification'
-import { isEmail, isEmpty, isLength } from '../../utils/validation/Validation'
+import {showErrMsg, showSuccessMsg} from '../../utils/notification/Notification.js'
+import { isEmail, isEmpty, isLength } from '../../utils/validation/Validation.js'
 import {GoogleLogin} from 'react-google-login'
-import CookiesService from '../../../services/CookiesService'
-import useSocketDataObject from '../../../real-time/useSocketDataObject'
-import authApis from './enum/authentication-apis'
+import CookiesService from '../../../services/CookiesService.js'
+import useSocketDataObject from '../../../real-time/useSocketDataObject.js'
+import authApis from './enum/authentication-apis.js'
 
 
 const initialState = {

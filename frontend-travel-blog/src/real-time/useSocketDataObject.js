@@ -2,9 +2,9 @@ import Cookies from 'js-cookie'
 import { useDispatch, useSelector } from 'react-redux'
 import SockJS from 'sockjs-client'
 import * as Stomp from 'stompjs'
-import { dispatchSetWs, dispatchSetNoti, dispatchRemoveNoti, dispatchRemovePost, dispatchSetPost } from '../redux/actions/realtimeAction'
-import { dispatchIncreaseCount } from '../redux/actions/notificationAction'
-import { dispatchAddCmt } from '../redux/actions/commentAction'
+import { dispatchSetWs, dispatchSetNoti, dispatchRemoveNoti, dispatchRemovePost, dispatchSetPost } from '../redux/actions/realtimeAction.js'
+import { dispatchIncreaseCount } from '../redux/actions/notificationAction.js'
+import { dispatchAddCmt } from '../redux/actions/commentAction.js'
 
 const useSocketDataObject = () => {
     let ws = null
