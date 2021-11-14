@@ -1,50 +1,56 @@
 version: '3.8'
 
 services:
-# Back-end container with Spring
+  # Back-end container with Spring
   backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: trinhvideo123/langthang:backend
+    container_name: langthang-backend
     restart: unless-stopped
-    depends_on:
-      - db
+#    depends_on:
+#      - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/do-an-lang-thang?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: illusion
       SPRING_PROFILES_ACTIVE: docker
       URL: http://localhost:8080
     networks:
       langthang:
-        aliases: 
+        aliases:
           - spring
 
-# Front-end container with Nginx
+  # Front-end container with Nginx
   frontend:
+    build:
+      context: .
+      dockerfile: Frontend.Dockerfile
     image: trinhvideo123/langthang:frontend
-    ports: 
-      - "80:80"
+    container_name: langthang-frontend
+    ports:
+      - "0.0.0.0:80:80"
     restart: unless-stopped
-    depends_on: 
+    depends_on:
       - backend
-    networks: 
+    networks:
       langthang:
-        aliases: 
+        aliases:
           - react
 
-# Database container with MYSQL
-  db:
-    image: mysql:8
-    networks:
-      - langthang
-    environment:
-      MYSQL_ROOT_PASSWORD: illusion
-      MYSQL_DATABASE: do-an-lang-thang
-    volumes:
-      - db-data:/var/lib/mysql
-    cap_add: 
-      - SYS_NICE
-
-volumes:
-  db-data:
+  # Database container with MYSQL
+#  db:
+#    image: mysql:8
+#    container_name: langthang-db
+#    networks:
+#      - langthang
+#    environment:
+#      MYSQL_ROOT_PASSWORD: illusion
+#      MYSQL_DATABASE: do-an-lang-thang
+#    volumes:
+#      - db-data:/var/lib/mysql
+#    cap_add:
+#      - SYS_NICE
+#
+#volumes:
+#  db-data:
 networks:
   langthang:
