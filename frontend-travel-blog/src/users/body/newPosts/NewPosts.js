@@ -8,10 +8,10 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router';
 import ReactHtmlParser from 'react-html-parser'
-import newpostApis from './enum/newpost-apis';
-import { errorNotification, successNotification } from '../../utils/notification/ToastNotification';
+import newpostApis from './enum/newpost-apis.js';
+import { errorNotification, successNotification } from '../../utils/notification/ToastNotification.js';
 import image from '../../../asset/editor-imgs/image.svg'
-import { isImgFormat, isImgSize } from '../../utils/validation/Validation';
+import { isImgFormat, isImgSize } from '../../utils/validation/Validation.js';
 import { useSelector } from 'react-redux';
 
 

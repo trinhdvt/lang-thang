@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import authApis from './enum/authentication-apis'
+import authApis from './enum/authentication-apis.js'
 
 
 const ActiveGmail = () => {

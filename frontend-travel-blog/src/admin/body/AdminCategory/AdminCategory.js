@@ -2,8 +2,8 @@ import './AdminCategory.css';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import categoryApis from './enum/category-apis';
-import { errorNotification, successNotification } from '../../../users/utils/notification/ToastNotification';
+import categoryApis from './enum/category-apis.js';
+import { errorNotification, successNotification } from '../../../users/utils/notification/ToastNotification.js';
 
 function AdminCategory() {
     const [cateList, setCateList] = useState([]);

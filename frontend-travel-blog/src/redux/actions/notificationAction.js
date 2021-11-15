@@ -1,4 +1,4 @@
-import ACTIONS from './index'
+import ACTIONS from './index.js'
 import axios from 'axios'
 
 

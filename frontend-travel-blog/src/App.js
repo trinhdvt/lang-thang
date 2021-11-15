@@ -2,14 +2,14 @@ import React, { useEffect } from 'react'
 import './App.css';
 import { BrowserRouter as Router } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
-import { dispatchGetUser, dispatchLogin, fetchUser } from './redux/actions/authAction'
-import useSocketDataObject from './real-time/useSocketDataObject'
-import CookiesService from './services/CookiesService'
+import { dispatchGetUser, dispatchLogin, fetchUser } from './redux/actions/authAction.js'
+import useSocketDataObject from './real-time/useSocketDataObject.js'
+import CookiesService from './services/CookiesService.js'
 import { ToastContainer } from 'react-toastify';
-import Routes from './routes';
-import ScrollToTop from './routes/ScrollToTop';
+import Routes from './routes.js';
+import ScrollToTop from './routes/ScrollToTop.js';
 import ReactGA from 'react-ga'
-import ButtonUp from './users/utils/ButtonUp/ButtonUp';
+import ButtonUp from './users/utils/ButtonUp/ButtonUp.js';
 
 function App() {
   const dispatch = useDispatch()

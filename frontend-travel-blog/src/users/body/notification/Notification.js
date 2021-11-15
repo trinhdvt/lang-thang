@@ -1,13 +1,13 @@
 import axios from 'axios'
 import React, { forwardRef, useEffect, useState } from 'react'
-import withClickOutsideNotification from './withClickOutsideNotification'
+import withClickOutsideNotification from './withClickOutsideNotification.js'
 import ReactHtmlParser from 'react-html-parser'
 import { Link } from 'react-router-dom'
-import { dispatchCountNoti, fetchUnseenNoti, dispatchDecreaseCount, dispatchRemoveCountNoti } from '../../../redux/actions/notificationAction'
+import { dispatchCountNoti, fetchUnseenNoti, dispatchDecreaseCount, dispatchRemoveCountNoti } from '../../../redux/actions/notificationAction.js'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import notificationApis from './enum/notification-apis'
+import notificationApis from './enum/notification-apis.js'
 
 const Notification = forwardRef(({ openNotification, setOpenNotification }, ref) => {
     const [notifications, setNotifications] = useState([])

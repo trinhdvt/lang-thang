@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ReactHtmlParse from "react-html-parser";
-import userApis from "./enum/user-apis";
-import { errorNotification, successNotification } from "../../../users/utils/notification/ToastNotification";
+import userApis from "./enum/user-apis.js";
+import { errorNotification, successNotification } from "../../../users/utils/notification/ToastNotification.js";
 import { Link } from "react-router-dom";
 
 

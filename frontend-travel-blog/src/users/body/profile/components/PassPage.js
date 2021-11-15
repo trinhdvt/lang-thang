@@ -1,8 +1,8 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import { showErrMsg80, showSuccessMsg80 } from '../../../utils/notification/Notification'
-import { isEmpty, isLength, isMatch } from '../../../utils/validation/Validation'
-import profileApis from '../enum/profile-apis'
+import { showErrMsg80, showSuccessMsg80 } from '../../../utils/notification/Notification.js'
+import { isEmpty, isLength, isMatch } from '../../../utils/validation/Validation.js'
+import profileApis from '../enum/profile-apis.js'
 
 const PassPage = () => {
     const [data, setData] = useState({

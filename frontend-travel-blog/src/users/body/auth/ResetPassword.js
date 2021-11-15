@@ -1,11 +1,11 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { showErrMsg, showSuccessMsg } from '../../utils/notification/Notification'
-import { isLength, isMatch } from '../../utils/validation/Validation'
+import { showErrMsg, showSuccessMsg } from '../../utils/notification/Notification.js'
+import { isLength, isMatch } from '../../utils/validation/Validation.js'
 import { useHistory } from 'react-router-dom'
-import authApis from './enum/authentication-apis'
-import { successNotification } from '../../utils/notification/ToastNotification'
+import authApis from './enum/authentication-apis.js'
+import { successNotification } from '../../utils/notification/ToastNotification.js'
 
 
 function ResetPassword() {

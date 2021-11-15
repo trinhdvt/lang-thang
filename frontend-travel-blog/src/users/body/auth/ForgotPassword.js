@@ -1,9 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
-import { showErrMsg, showSuccessMsg } from '../../utils/notification/Notification'
+import { showErrMsg, showSuccessMsg } from '../../utils/notification/Notification.js'
 import axios from 'axios'
-import { isEmail, isEmpty } from '../../utils/validation/Validation'
-import authApis from './enum/authentication-apis'
+import { isEmail, isEmpty } from '../../utils/validation/Validation.js'
+import authApis from './enum/authentication-apis.js'
 
 
 function ForgotPassword() {

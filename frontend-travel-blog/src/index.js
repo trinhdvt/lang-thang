@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
-import DataProvider from './redux/store'
-import  './services/AxiosInterceptors'
+import reportWebVitals from './reportWebVitals.js';
+import DataProvider from './redux/store.js'
+import  './services/AxiosInterceptors.js'
 
 
 ReactDOM.render(

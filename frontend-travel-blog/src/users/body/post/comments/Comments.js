@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Comment from './components/Comment'
+import Comment from './components/Comment.js'
 import Cookies from 'js-cookie'
 import ReactHtmlParser from 'react-html-parser'
 import { useHistory } from 'react-router'
 import {
   dispatchGetComments, dispatchNextCommentsPage,
   dispatchSubmitComments, dispatchClearCmts
-} from '../../../../redux/actions/commentAction'
-import useSocketDataObject from '../../../../real-time/useSocketDataObject'
-import { showErrMsg } from '../../../utils/notification/Notification'
+} from '../../../../redux/actions/commentAction.js'
+import useSocketDataObject from '../../../../real-time/useSocketDataObject.js'
+import { showErrMsg } from '../../../utils/notification/Notification.js'
 import TextareaAutosize from 'react-textarea-autosize';
 import { Redirect, useLocation } from 'react-router-dom'
 

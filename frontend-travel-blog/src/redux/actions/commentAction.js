@@ -1,7 +1,7 @@
-import ACTIONS from './index'
+import ACTIONS from './index.js'
 import axios from 'axios'
-import commentApis from '../../users/body/post/enum/comment-apis'
-import { errorNotification } from '../../users/utils/notification/ToastNotification'
+import commentApis from '../../users/body/post/enum/comment-apis.js'
+import { errorNotification } from '../../users/utils/notification/ToastNotification.js'
 
 
 export const dispatchNextCommentsPage = (id, page) => async dispatch => {

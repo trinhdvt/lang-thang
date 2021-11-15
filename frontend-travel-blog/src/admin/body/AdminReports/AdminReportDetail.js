@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ReactHtmlParser from 'react-html-parser'
 import Loading from '../../../users/utils/Loading/Loading'
-import reportApis from "./enum/report-apis";
-import { errorNotification, successNotification } from "../../../users/utils/notification/ToastNotification";
+import reportApis from "./enum/report-apis.js";
+import { errorNotification, successNotification } from "../../../users/utils/notification/ToastNotification.js";
 
 function AdminReportDetails() {
     const [report, setReport] = useState(false);

@@ -1,7 +1,7 @@
-import CookiesService from "./CookiesService"
+import CookiesService from "./CookiesService.js"
 import axios from 'axios';
-import { store } from '../redux/store'
-import { dispatchLogout } from '../redux/actions/authAction'
+import { store } from '../redux/store.js'
+import { dispatchLogout } from '../redux/actions/authAction.js'
 
 const cookiesService = CookiesService.getService()
 let isRefreshing = false;

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, forwardRef } from 'react'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
-import CurrentPost from '../home/components/CurrentPost'
+import CurrentPost from '../home/components/CurrentPost.js'
 import Empty from '../../utils/Empty/Empty'
 import ReactHtmlParser from 'react-html-parser'
 import { Link, useHistory } from 'react-router-dom'
-import profileApis from './enum/profile-apis'
-import withClickOutsideFollowerDialog from './withClickOutsideFollower'
+import profileApis from './enum/profile-apis.js'
+import withClickOutsideFollowerDialog from './withClickOutsideFollower.js'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 
