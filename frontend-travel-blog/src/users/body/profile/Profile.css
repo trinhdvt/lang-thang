@@ -137,7 +137,7 @@
     border-radius: 16px;
     padding: 16px;
     transition: 0.3s;
-    box-shadow: 3px 3px 03px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 3px 3px 03px 0 rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -155,7 +155,7 @@
 }
 
 .myprofile__draft:hover {
-    transform: translate(0px, -3px);
+    transform: translate(0, -3px);
 }
 
 .myprofile__draft button{
@@ -188,13 +188,13 @@
 
 .myprofile__choice .child-2 {
     flex-basis: 50%;
-    border-radius: 0px 5px 5px 0px;
+    border-radius: 0 5px 5px 0;
 }
 
 .myprofile__choice .child-1 {
     flex-basis: 50%;
-    border-right: 0px;
-    border-radius: 5px 0px 0px 5px;
+    border-right: 0;
+    border-radius: 5px 0 0 5px;
 }
 
 .myprofile__choice .active {
@@ -220,11 +220,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    box-shadow: 0px 0px 2px rgba(131, 131, 131, 0.822);
+    box-shadow: 0 0 2px rgba(131, 131, 131, 0.822);
 }
 
 .profile__follower-dialog--header {
-    padding: 0 10px 5px 10px;
+    padding: 0 10px 5px;
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #bbb;

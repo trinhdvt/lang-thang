@@ -44,7 +44,7 @@
 
 .icon {
     text-align: center;
-    padding: 10px 0px;
+    padding: 10px 0;
 }
 
 .number {
@@ -78,15 +78,15 @@
 .admin__favoriteposts--title {
     background-color: var(--color-primary);
     color: white;
-    padding: 20px 0 10px 0;
+    padding: 20px 0 10px;
 }
 
 .most-favorite-post-table {
-    padding: 0px 15px 0px 15px;
+    padding: 0 15px;
 }
 
 .table-item {
-    padding: 15px 0px 15px 0px;
+    padding: 15px 0;
 }
 
 .admin__home .admin__topusers {
@@ -96,7 +96,7 @@
 }
 
 .most-followed-user-table {
-    padding: 0px 15px 0px 15px;
+    padding: 0 15px;
 }
 
 .most-followed-user-title {
@@ -117,7 +117,7 @@
 }
 
 .most-followed-user-item:hover {
-    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
     transition-duration: 0.25s;
 }
@@ -146,7 +146,7 @@
 .post-list {
     background-color: white;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .list-name {
@@ -159,7 +159,7 @@
 }
 
 .post-table {
-    padding: 10px 25px 10px 25px;
+    padding: 10px 25px;
 }
 
 .admin__pagination {
