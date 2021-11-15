@@ -25,8 +25,8 @@
 .report-detail {
     background-color: white;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    padding: 25px 0px 25px 0px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 25px 0;
 }
 
 .post__alert--solve {

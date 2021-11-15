@@ -219,7 +219,7 @@ header {
     background-color:#fff;
     right: 1px;
     min-width: 150px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
     z-index: 99;
     color: rgba(0,0,0,0.75) ;
     border-radius: 12px;
@@ -275,7 +275,7 @@ header {
     position: absolute;
     background-color: #fff;
     right: 1px;
-    box-shadow: 0px 8px 16px 0px rgb(0 0 0 / 20%);
+    box-shadow: 0 8px 16px 0 rgb(0 0 0 / 20%);
     z-index: 99;
     color: var(--color-muted);
     border-radius: 12px;
@@ -285,7 +285,7 @@ header {
 }
 
 .menu__notify--content {
-    padding: 0px 10px 0px 10px;
+    padding: 0 10px;
 }
 
 .menu__notify--dropdown .fa-circle {
@@ -298,7 +298,7 @@ header {
 .menu__notify--unseen {
     display: inline-block;
     position: absolute;
-    top: 0px;
+    top: 0;
     right: 8px;
     background-color: var(--color-primary);
     border-radius: 50%;
