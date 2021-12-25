@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ICommentServices {
 
-    CommentDTO addNewComment(int postId, String content, String accEmail);
+    CommentDTO addNewComment(int postId, Integer parentId, String content, String accEmail);
 
     CommentDTO modifyComment(int commentId, String content, String accEmail);
 

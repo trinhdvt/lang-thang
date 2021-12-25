@@ -7,28 +7,27 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
 public class CommentDTO {
 
-    private int commentId;
-
+    private Integer commentId;
+    private Integer parentId;
     private AccountDTO commenter;
-
     private int postId;
-
     private boolean isMyComment;
-
     private Date commentDate;
-
     private String content;
-
     private boolean isLiked;
-
     private int likeCount;
+    private List<CommentDTO> childComments;
 
     public static CommentDTO toCommentDTO(Comment comment) {
+        if (comment == null)
+            return null;
+
         Account commenter = comment.getAccount();
         AccountDTO commenterDTO = AccountDTO.toBasicAccount(commenter);
 
@@ -36,6 +35,7 @@ public class CommentDTO {
                 .commenter(commenterDTO)
                 .postId(comment.getPost().getId())
                 .commentId(comment.getId())
+                .parentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
                 .commentDate(comment.getCommentDate())
                 .content(comment.getContent())
                 .isMyComment(commenter.getEmail().equals(SecurityUtils.getLoggedInEmail()))

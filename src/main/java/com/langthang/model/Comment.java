@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -35,6 +36,15 @@ public class Comment {
     private String content;
 
     private Date commentDate;
+
+    @ManyToOne(targetEntity = Comment.class)
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment")
+    @OrderBy("commentDate ASC")
+    private List<Comment> childComments;
+
 
     public Comment(Account account, Post post, String content) {
         this.account = account;

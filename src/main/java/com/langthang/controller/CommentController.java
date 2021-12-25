@@ -61,11 +61,12 @@ public class CommentController {
     public ResponseEntity<Object> addCommentToPost(
             @PathVariable("post_id") int postId,
             @RequestParam("content") @NotBlank String content,
+            @RequestParam(value = "parentId", required = false) Integer parentId,
             Authentication authentication) {
 
-        String currentEmail = authentication.getName();
+        String commenterEmail = authentication.getName();
 
-        CommentDTO newComment = commentServices.addNewComment(postId, content, currentEmail);
+        CommentDTO newComment = commentServices.addNewComment(postId, parentId, content, commenterEmail);
 
         return ResponseEntity.ok(newComment);
     }

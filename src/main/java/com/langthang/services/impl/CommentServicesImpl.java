@@ -13,16 +13,19 @@ import com.langthang.services.ICommentServices;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
+@Slf4j
 public class CommentServicesImpl implements ICommentServices {
 
     private final CommentRepository commentRepo;
@@ -34,19 +37,24 @@ public class CommentServicesImpl implements ICommentServices {
     private final INotificationServices notificationServices;
 
     @Override
-    public CommentDTO addNewComment(int postId, String content, String commenterEmail) {
+    public CommentDTO addNewComment(int postId, Integer parentId, String content, String commenterEmail) {
         Post post = postRepo.findPostByIdAndPublished(postId, true);
-
         if (post == null) {
-            throw new NotFoundError("Post with ID: " + postId + " not found!");
+            throw new NotFoundError("Post not found!");
         }
 
         Account commenter = accRepo.findAccountByEmail(commenterEmail);
-        Comment comment = new Comment(commenter, post, content);
+        Comment newComment = new Comment(commenter, post, content);
+        if (parentId != null) {
+            Comment parentComment = commentRepo.findById(parentId).orElseThrow(() -> new NotFoundError("Comment not found!"));
+            if (parentComment.getParentComment() != null) {
+                throw new NotFoundError("Comment not found!");
+            }
+            newComment.setParentComment(parentComment);
+        }
 
-        Comment savedComment = commentRepo.save(comment);
-
-        return CommentDTO.toCommentDTO(savedComment);
+        newComment = commentRepo.save(newComment);
+        return CommentDTO.toCommentDTO(newComment);
     }
 
     @Override
@@ -92,7 +100,15 @@ public class CommentServicesImpl implements ICommentServices {
         }
 
         return commentRepo.getCommentsByPost_Id(postId, pageable)
-                .map(CommentDTO::toCommentDTO)
+                .map(comment -> {
+                    CommentDTO cmtDTO = CommentDTO.toCommentDTO(comment);
+                    if (!comment.getChildComments().isEmpty()) {
+                        cmtDTO.setChildComments(comment.getChildComments().stream()
+                                .map(CommentDTO::toCommentDTO)
+                                .collect(Collectors.toList()));
+                    }
+                    return cmtDTO;
+                })
                 .getContent();
     }
 
