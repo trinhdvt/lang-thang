@@ -27,48 +27,157 @@ Trả về 1 danh sách các comment của một bài viết (được sắp x�
 ```json5
 [
   {
-    "commentId": 7,
+    "commentId": 634,
+    "parentId": null,
     "commenter": {
-      "accountId": 4,
-      "name": "Trinhdvt2",
-      "email": "trinhdvt2@gmail.com",
+      "accountId": 32,
+      "name": "oanhkhongphaiadmin",
+      "email": "loveya227@gmail.com",
       "postCount": 0,
       "followCount": 0,
       "bookmarkOnOwnPostCount": 0,
       "commentOnOwnPostCount": 0,
-      "fbLink": null,
-      "instagramLink": null,
-      "avatarLink": "https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c",
-      "about": null,
-      "occupation": null
+      "fbLink": "https:&#x2F;&#x2F;www.facebook.com&#x2F;",
+      "instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+      "avatarLink": "https:&#x2F;&#x2F;dm6niys7elogn.cloudfront.net&#x2F;1628555664743_tumblr_ohxafbDzlJ1sdwnm3o1_1280.jpg",
+      "about": "mình là kiều oanh sinh viên đại học bách khoa đà nẵng",
+      "followed": false
     },
-    "commentDate": "2021-05-06 15:27",
-    "content": "Bình tĩnh mấy bro",
-    "likeCount": 1,
-    "liked": false,
-    "myComment": true
+    "postId": 1,
+    "commentDate": "2021-08-07 20:59",
+    "content": "ok bạn",
+    "likeCount": 0,
+    "childComments": [
+      {
+        "commentId": 60,
+        "parentId": 634,
+        "commenter": {
+          "accountId": 32,
+          "name": "oanhkhongphaiadmin",
+          "email": "loveya227@gmail.com",
+          "postCount": 0,
+          "followCount": 0,
+          "bookmarkOnOwnPostCount": 0,
+          "commentOnOwnPostCount": 0,
+          "fbLink": "https:&#x2F;&#x2F;www.facebook.com&#x2F;",
+          "instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+          "avatarLink": "https:&#x2F;&#x2F;dm6niys7elogn.cloudfront.net&#x2F;1628555664743_tumblr_ohxafbDzlJ1sdwnm3o1_1280.jpg",
+          "about": "mình là kiều oanh sinh viên đại học bách khoa đà nẵng",
+          "followed": false
+        },
+        "postId": 1,
+        "commentDate": "2021-05-18 12:09",
+        "content": "ma sao khong duoc nhi",
+        "likeCount": 0,
+        "childComments": null,
+        "myComment": false,
+        "liked": false
+      },
+      {
+        "commentId": 75,
+        "parentId": 634,
+        "commenter": {
+          "accountId": 32,
+          "name": "oanhkhongphaiadmin",
+          "email": "loveya227@gmail.com",
+          "postCount": 0,
+          "followCount": 0,
+          "bookmarkOnOwnPostCount": 0,
+          "commentOnOwnPostCount": 0,
+          "fbLink": "https:&#x2F;&#x2F;www.facebook.com&#x2F;",
+          "instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+          "avatarLink": "https:&#x2F;&#x2F;dm6niys7elogn.cloudfront.net&#x2F;1628555664743_tumblr_ohxafbDzlJ1sdwnm3o1_1280.jpg",
+          "about": "mình là kiều oanh sinh viên đại học bách khoa đà nẵng",
+          "followed": false
+        },
+        "postId": 1,
+        "commentDate": "2021-05-18 12:10",
+        "content": "?",
+        "likeCount": 0,
+        "childComments": null,
+        "myComment": false,
+        "liked": false
+      }
+    ],
+    "myComment": false,
+    "liked": false
   },
   {
-    "commentId": 11,
+    "commentId": 633,
+    "parentId": null,
     "commenter": {
-      "accountId": 4,
-      "name": "Trinhdvt2",
-      "email": "trinhdvt2@gmail.com",
+      "accountId": 6,
+      "name": "Kiều Oanh",
+      "email": "lecanhkieuoanh@gmail.com",
       "postCount": 0,
       "followCount": 0,
       "bookmarkOnOwnPostCount": 0,
       "commentOnOwnPostCount": 0,
-      "fbLink": null,
-      "instagramLink": null,
-      "avatarLink": "https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c",
-      "about": null,
-      "occupation": null
+      "fbLink": "",
+      "instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+      "avatarLink": "https:&#x2F;&#x2F;dm6niys7elogn.cloudfront.net&#x2F;1629122789406_d13546-2815-8caac21513792f0006a2-0.jpg",
+      "about": "Mình là kiều oanh học lớp 18TCLC- nhật trường đại học bách khoa đà nẽnggg",
+      "role": "ROLE_ADMIN",
+      "followed": false
     },
-    "commentDate": "2021-05-11 15:23",
-    "content": "&lt;p&gt;This is new content for my comment&lt;/p&gt;",
+    "postId": 1,
+    "commentDate": "2021-08-07 20:59",
+    "content": "ok mình thấy bạn gòi nak",
     "likeCount": 0,
-    "liked": false,
-    "myComment": true
+    "childComments": [
+      {
+        "commentId": 59,
+        "parentId": 633,
+        "commenter": {
+          "accountId": 32,
+          "name": "oanhkhongphaiadmin",
+          "email": "loveya227@gmail.com",
+          "postCount": 0,
+          "followCount": 0,
+          "bookmarkOnOwnPostCount": 0,
+          "commentOnOwnPostCount": 0,
+          "fbLink": "https:&#x2F;&#x2F;www.facebook.com&#x2F;",
+          "instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+          "avatarLink": "https:&#x2F;&#x2F;dm6niys7elogn.cloudfront.net&#x2F;1628555664743_tumblr_ohxafbDzlJ1sdwnm3o1_1280.jpg",
+          "about": "mình là kiều oanh sinh viên đại học bách khoa đà nẵng",
+          "followed": false
+        },
+        "postId": 1,
+        "commentDate": "2021-05-18 12:09",
+        "content": "hey man",
+        "likeCount": 0,
+        "childComments": null,
+        "myComment": false,
+        "liked": false
+      },
+      {
+        "commentId": 74,
+        "parentId": 633,
+        "commenter": {
+          "accountId": 32,
+          "name": "oanhkhongphaiadmin",
+          "email": "loveya227@gmail.com",
+          "postCount": 0,
+          "followCount": 0,
+          "bookmarkOnOwnPostCount": 0,
+          "commentOnOwnPostCount": 0,
+          "fbLink": "https:&#x2F;&#x2F;www.facebook.com&#x2F;",
+          "instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+          "avatarLink": "https:&#x2F;&#x2F;dm6niys7elogn.cloudfront.net&#x2F;1628555664743_tumblr_ohxafbDzlJ1sdwnm3o1_1280.jpg",
+          "about": "mình là kiều oanh sinh viên đại học bách khoa đà nẵng",
+          "followed": false
+        },
+        "postId": 1,
+        "commentDate": "2021-05-18 12:10",
+        "content": "hey",
+        "likeCount": 0,
+        "childComments": null,
+        "myComment": false,
+        "liked": false
+      }
+    ],
+    "myComment": false,
+    "liked": false
   }
 ]
 ```
@@ -90,9 +199,10 @@ Thêm 1 comment vào bài viết
 
 * **Request Body** `Content-Type: multipart/form-data`
 
-  | Name       | Type       | Description                              |
-  | ---------- |:------:    | ------------                             |
-  | `content`  | `string`   | Nội dung của comment (không được rỗng)   |
+  | Name      | Type       | Description |
+  |-----------| ---------- |:------:     | 
+  | `content` | `string`   | Nội dung của comment (không được rỗng)   |
+  | `parentId`| `int`      | ID của comment cha (nếu có)   |
 
 * **Success Response:**
 
@@ -102,32 +212,36 @@ Thêm 1 comment vào bài viết
     
 ```json5
 {
-  "commentId": 14,
-  "commenter": {
-    "accountId": 4,
-    "name": "Trinhdvt2",
-    "email": "trinhdvt2@gmail.com",
-    "postCount": 0,
-    "followCount": 0,
-    "bookmarkOnOwnPostCount": 0,
-    "commentOnOwnPostCount": 0,
-    "fbLink": null,
-    "instagramLink": null,
-    "avatarLink": "https://lh3.googleusercontent.com/a/AATXAJwep-n67Wo_25OpuJb5x2jIzRMz8tj7uCEfGMR2=s96-c",
-    "about": null,
-    "occupation": null
-  },
-  "commentDate": "2021-05-12 13:40",
-  "content": "&lt;p&gt;Hello my friend&lt;/p&gt;",
-  "likeCount": 0,
-  "liked": false,
-  "myComment": true
+	"commentId": 1297,
+	"parentId": 1293, // null nếu đây không phải là một rep comment
+	"commenter": {
+		"accountId": 1,
+		"name": "Do Van Trinh (K18 DUT)",
+		"email": "trinhvideo123@gmail.com",
+		"postCount": 0,
+		"followCount": 0,
+		"bookmarkOnOwnPostCount": 0,
+		"commentOnOwnPostCount": 0,
+		"fbLink": "https:&#x2F;&#x2F;www.facebook.com&#x2F;",
+		"instagramLink": "https:&#x2F;&#x2F;www.instagram.com&#x2F;",
+		"avatarLink": "https://dm6niys7elogn.cloudfront.net/avatar2.png",
+		"about": "Yêu màu hông, ghét sự giả dối. Thích đi du lịch, đi caffe các kiểu",
+		"role": "ROLE_ADMIN",
+		"followed": false
+	},
+	"postId": 1,
+	"commentDate": "2021-12-25 21:02",
+	"content": "&lt;p&gt;Hello my friend&lt;&#x2F;p&gt;",
+	"likeCount": 0,
+	"childComments": null,
+	"liked": false,
+	"myComment": true
 }
 ```
     
 * **Error Response:**
 
-    * **Code**: `404 NOT_FOUND` - bài viết không tồn tại
+    * **Code**: `404 NOT_FOUND` - bài viết, comment cha, ... không tồn tại
 
     * **Code**: `403 FORBIDDEN` - chưa đăng nhập
 

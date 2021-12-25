@@ -33,7 +33,7 @@
 
 - Khá tương tự, chỉ khác là sẽ `subscribe` vào địa chỉ `/topic/post/{post_id}` ngay khi người dùng click vào 1 bài viết nào đó và khi `Subscribe` không cần kèm theo `token`
 
-- Thông tin trả về giống như 1 comment ở bài viết vậy (xem lại [ở đây](Comment_API.md#Lấy-ra-danh-sách-các-comment-của-một-bài-viết))
+- Thông tin trả về giống như 1 comment ở bài viết vậy (xem lại [ở đây](Comment_API.md#Thêm-1-comment-vào-bài-viết))
 
 ### Code ví dụ
 
