@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.*;
 import com.langthang.exception.HttpError;
 import com.langthang.services.IStorageServices;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,13 @@ public class AwsStorageServicesImpl implements IStorageServices {
     @Override
     public String uploadImage(MultipartFile multipartFile) {
         File uploadFile = convertToFile(multipartFile);
-        String filename = System.currentTimeMillis() + "_" + StringUtils.deleteWhitespace(multipartFile.getOriginalFilename());
+        String originFilename = StringUtils.deleteWhitespace(multipartFile.getOriginalFilename());
+        if (originFilename == null)
+            throw new HttpError("File name is null", HttpStatus.BAD_REQUEST);
+
+        String extension = originFilename.substring(originFilename.lastIndexOf("."));
+        String filename = originFilename.replace(extension, "")
+                + "-" + RandomStringUtils.randomAlphanumeric(5) + extension;
 
         PutObjectRequest objectRequest = new PutObjectRequest(imageBucket, filename, uploadFile);
         objectRequest.withCannedAcl(CannedAccessControlList.PublicRead);

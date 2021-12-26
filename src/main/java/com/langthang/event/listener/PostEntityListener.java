@@ -4,6 +4,7 @@ package com.langthang.event.listener;
 import com.langthang.model.Post;
 import com.langthang.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.PrePersist;
@@ -17,7 +18,7 @@ public class PostEntityListener {
     @PreUpdate
     @PrePersist
     private void onAnyPostUpdate(Post post) {
-        String slug = Utils.createSlug(post.getTitle()) + "-" + System.currentTimeMillis();
+        String slug = Utils.createSlug(post.getTitle()) + "-" + RandomStringUtils.randomAlphanumeric(5);
         String encodedTitle = Utils.escapeHtml(post.getTitle());
         String encodedContent = Utils.escapeHtml(post.getContent());
         String encodedThumbnail = Utils.escapeHtml(post.getPostThumbnail());
