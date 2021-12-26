@@ -10,8 +10,6 @@ public interface IStorageServices {
 
     void uploadFile(String absPath);
 
-    void deleteImage(String filename);
-
     void deleteImages(Collection<String> filesName);
 
     Set<String> getAllImages();
