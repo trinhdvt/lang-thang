@@ -53,7 +53,6 @@ public class AwsStorageServicesImpl implements IStorageServices {
                 + "-" + RandomStringUtils.randomAlphanumeric(5) + extension;
 
         PutObjectRequest objectRequest = new PutObjectRequest(imageBucket, filename, uploadFile);
-        objectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
         s3Client.putObject(objectRequest);
 
         uploadFile.delete();
@@ -75,17 +74,11 @@ public class AwsStorageServicesImpl implements IStorageServices {
     }
 
     @Override
-    public void deleteImage(String filename) {
-        s3Client.deleteObject(imageBucket, filename);
-    }
-
-    @Override
     public void deleteImages(Collection<String> filesName) {
         try {
             DeleteObjectsRequest dor = new DeleteObjectsRequest(imageBucket)
                     .withKeys(filesName.toArray(new String[0]));
             s3Client.deleteObjects(dor);
-//            filesName.parallelStream().forEach(this::makePrivate);
         } catch (AmazonServiceException e) {
             log.error(e.getMessage());
         }
@@ -116,7 +109,4 @@ public class AwsStorageServicesImpl implements IStorageServices {
         }
     }
 
-    private void makePrivate(String objectKey) {
-        s3Client.setObjectAcl(imageBucket, objectKey, CannedAccessControlList.Private);
-    }
 }

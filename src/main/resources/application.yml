@@ -49,12 +49,12 @@ cloud:
     bucket:
       image-bucket: langthang-user-photos
       backup-bucket: lang-thang-backup
+      cloud-front: https://dm6niys7elogn.cloudfront.net
     region:
       static: ap-southeast-1
-    stack:
-      auto: false
     public:
-      base-url: https://${cloud.aws.bucket.image-bucket}.s3-${cloud.aws.region.static}.amazonaws.com
+      #      base-url: https://${cloud.aws.bucket.image-bucket}.s3-${cloud.aws.region.static}.amazonaws.com
+      base-url: ${cloud.aws.bucket.cloud-front}
 
 application:
   image:
@@ -73,7 +73,7 @@ application:
     bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b>"
     following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
   server:
-    url: http://langthang.eastasia.cloudapp.azure.com
+    url: ${HOST:https://langthang.tech}
 
 security:
   jwt:
@@ -91,6 +91,7 @@ security:
 server:
   compression:
     enabled: true
+  port: ${PORT:8080}
 
 logging:
   level:
