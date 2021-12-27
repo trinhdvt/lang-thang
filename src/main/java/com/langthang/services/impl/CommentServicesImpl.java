@@ -47,7 +47,7 @@ public class CommentServicesImpl implements ICommentServices {
         Comment newComment = new Comment(commenter, post, content);
         if (parentId != null) {
             Comment parentComment = commentRepo.findById(parentId).orElseThrow(() -> new NotFoundError("Comment not found!"));
-            if (parentComment.getParentComment() != null) {
+            if (parentComment.getParentComment() != null || parentComment.getPost().getId()!= postId) {
                 throw new NotFoundError("Comment not found!");
             }
             newComment.setParentComment(parentComment);
