@@ -5,8 +5,8 @@ import com.langthang.exception.HttpError;
 import com.langthang.model.RefreshToken;
 import com.langthang.repository.RefreshTokenRepository;
 import com.langthang.services.impl.UserDetailsServiceImpl;
-import com.langthang.utils.Utils;
 import io.jsonwebtoken.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,18 +25,14 @@ import java.util.Date;
 @Transactional
 public class JwtTokenServices {
 
+    private final UserDetailsServiceImpl userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepo;
     @Value("${security.jwt.token.prefix}")
     private String TOKEN_PREFIX;
-
     @Value("${security.jwt.token.secret-key}")
     private String SECRET_KEY;
-
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
-
-    private final UserDetailsServiceImpl userDetailsService;
-
-    private final RefreshTokenRepository refreshTokenRepo;
 
     @Autowired
     public JwtTokenServices(UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepo) {
@@ -71,7 +67,7 @@ public class JwtTokenServices {
     }
 
     public String createRefreshToken(String email, String accessToken) {
-        String refreshToken = Utils.randomString(10);
+        String refreshToken = RandomStringUtils.randomAlphanumeric(10);
 
         RefreshToken rf = refreshTokenRepo.findByEmail(email);
 

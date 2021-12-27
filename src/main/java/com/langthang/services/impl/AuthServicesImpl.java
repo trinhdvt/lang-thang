@@ -18,6 +18,7 @@ import com.langthang.services.JwtTokenServices;
 import com.langthang.utils.MyMailSender;
 import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -100,7 +101,7 @@ public class AuthServicesImpl implements IAuthServices {
                 } else {
                     // account is not existed
                     // create an account with random password
-                    String rawPassword = Utils.randomString(10);
+                    String rawPassword = RandomStringUtils.randomAlphanumeric(10);
                     account = googleProfileToAccount(payload);
                     account.setPassword(passwordEncoder.encode(rawPassword));
                     accountRepository.saveAndFlush(account);
