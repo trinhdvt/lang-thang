@@ -67,7 +67,8 @@ public class AuthServicesImpl implements IAuthServices {
         try {
             authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-            String accessToken = jwtTokenServices.createAccessToken(email);
+            Account acc = accountRepository.findAccountByEmail(email);
+            String accessToken = jwtTokenServices.createAccessToken(acc);
             addRefreshTokenCookie(email, accessToken, resp);
 
             return accessToken;
@@ -111,7 +112,7 @@ public class AuthServicesImpl implements IAuthServices {
                 }
 
                 // create access token and refresh-token cookie as well
-                String accessToken = jwtTokenServices.createAccessToken(email);
+                String accessToken = jwtTokenServices.createAccessToken(account);
                 addRefreshTokenCookie(email, accessToken, resp);
 
                 return accessToken;
@@ -128,7 +129,8 @@ public class AuthServicesImpl implements IAuthServices {
         String email = jwtTokenServices.getUserName(accessToken);
 
         if (jwtTokenServices.isValidToCreateNewAccessToken(email, refreshToken, accessToken)) {
-            String newAccessToken = jwtTokenServices.createAccessToken(email);
+            Account acc = accountRepository.findAccountByEmail(email);
+            String newAccessToken = jwtTokenServices.createAccessToken(acc);
             addRefreshTokenCookie(email, newAccessToken, resp);
 
             return newAccessToken;
@@ -152,7 +154,7 @@ public class AuthServicesImpl implements IAuthServices {
                 throw new HttpError("Email already existed: " + registerEmail
                         , HttpStatus.CONFLICT);
 
-            } else if (!existAcc.isEnabled()) {
+            } else {
 
                 // if email isn't activated yet then re-send the activation link
                 String registerToken = existAcc.getRegisterToken();
@@ -282,6 +284,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setMaxAge(REFRESH_TOKEN_COOKIE_LENGTH); // ms -> s
         cookie.setPath("/");
         resp.addCookie(cookie);

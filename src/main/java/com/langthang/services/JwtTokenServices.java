@@ -2,10 +2,14 @@ package com.langthang.services;
 
 
 import com.langthang.exception.HttpError;
+import com.langthang.model.Account;
 import com.langthang.model.RefreshToken;
 import com.langthang.repository.RefreshTokenRepository;
 import com.langthang.services.impl.UserDetailsServiceImpl;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +24,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Transactional
@@ -45,14 +51,22 @@ public class JwtTokenServices {
         SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
     }
 
-    public String createAccessToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createAccessToken(Account account) {
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("jti", account.getId());
+        payloads.put("sub", account.getEmail());
+        payloads.put("role", account.getRole());
+        payloads.put("name", account.getName());
+        payloads.put("avatarLink", account.getAvatarLink());
+        payloads.put("about", account.getAbout());
+        payloads.put("fbLink", account.getFbLink());
+        payloads.put("instagramLink", account.getInstagramLink());
 
         Date now = new Date();
         Date expireTime = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims(payloads)
                 .setIssuedAt(now)
                 .setExpiration(expireTime)
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
