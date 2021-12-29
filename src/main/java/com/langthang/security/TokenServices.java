@@ -1,11 +1,10 @@
-package com.langthang.services;
+package com.langthang.security;
 
 
 import com.langthang.exception.HttpError;
 import com.langthang.model.Account;
 import com.langthang.model.RefreshToken;
 import com.langthang.repository.RefreshTokenRepository;
-import com.langthang.services.impl.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +28,7 @@ import java.util.Map;
 
 @Component
 @Transactional
-public class JwtTokenServices {
+public class TokenServices {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepository refreshTokenRepo;
@@ -41,7 +40,7 @@ public class JwtTokenServices {
     private int TOKEN_EXPIRE_TIME;
 
     @Autowired
-    public JwtTokenServices(UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepo) {
+    public TokenServices(UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepo) {
         this.userDetailsService = userDetailsService;
         this.refreshTokenRepo = refreshTokenRepo;
     }

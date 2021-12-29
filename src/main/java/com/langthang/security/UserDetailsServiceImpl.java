@@ -1,4 +1,4 @@
-package com.langthang.services.impl;
+package com.langthang.security;
 
 import com.langthang.model.Account;
 import com.langthang.repository.AccountRepository;

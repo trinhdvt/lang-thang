@@ -1,6 +1,6 @@
 package com.langthang.config;
 
-import com.langthang.services.JwtTokenServices;
+import com.langthang.security.TokenServices;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtTokenServices tokenServices;
+    private final TokenServices tokenServices;
 
     @Autowired
-    public WebSocketConfig(JwtTokenServices tokenServices) {
+    public WebSocketConfig(TokenServices tokenServices) {
         this.tokenServices = tokenServices;
     }
 

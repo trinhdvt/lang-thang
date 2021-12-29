@@ -17,11 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final JwtTokenFilter jwtTokenFilter;
+    private final ApiAuthFilter apiAuthFilter;
 
     @Autowired
-    public SecurityConfig(JwtTokenFilter jwtTokenFilter) {
-        this.jwtTokenFilter = jwtTokenFilter;
+    public SecurityConfig(ApiAuthFilter apiAuthFilter) {
+        this.apiAuthFilter = apiAuthFilter;
     }
 
     @Bean
@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.cors().and().authorizeRequests().anyRequest().permitAll();
 
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(apiAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }

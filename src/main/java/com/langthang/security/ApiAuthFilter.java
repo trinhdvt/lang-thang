@@ -1,7 +1,6 @@
 package com.langthang.security;
 
 import com.langthang.exception.HttpError;
-import com.langthang.services.JwtTokenServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,12 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class ApiAuthFilter extends OncePerRequestFilter {
 
-    private final JwtTokenServices jwtTokenServices;
+    private final TokenServices jwtTokenServices;
 
     @Autowired
-    public JwtTokenFilter(JwtTokenServices jwtTokenServices) {
+    public ApiAuthFilter(TokenServices jwtTokenServices) {
         this.jwtTokenServices = jwtTokenServices;
     }
 

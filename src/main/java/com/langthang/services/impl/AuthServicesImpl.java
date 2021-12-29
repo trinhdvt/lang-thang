@@ -13,8 +13,8 @@ import com.langthang.model.PasswordResetToken;
 import com.langthang.model.Role;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PasswordResetTokenRepository;
+import com.langthang.security.TokenServices;
 import com.langthang.services.IAuthServices;
-import com.langthang.services.JwtTokenServices;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.MyMailSender;
 import com.langthang.utils.Utils;
@@ -44,7 +44,7 @@ public class AuthServicesImpl implements IAuthServices {
 
     private final AccountRepository accountRepository;
 
-    private final JwtTokenServices jwtTokenServices;
+    private final TokenServices jwtTokenServices;
 
     private final AuthenticationManager authManager;
 
