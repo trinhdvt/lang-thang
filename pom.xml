@@ -20,16 +20,16 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <lombok.version>1.18.18</lombok.version>
-        <aws.sdk.version>1.11.1004</aws.sdk.version>
+        <lombok.version>1.18.22</lombok.version>
+        <aws.sdk.version>1.12.130</aws.sdk.version>
         <spring.context.version>5.3.6</spring.context.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
-        <google.api.version>1.31.4</google.api.version>
+        <google.api.version>1.32.2</google.api.version>
         <apache.common-text.version>1.9</apache.common-text.version>
-        <hibernate.search.version>5.11.9.Final</hibernate.search.version>
+        <hibernate.search.version>5.11.10.Final</hibernate.search.version>
         <caffeine.version>2.9.0</caffeine.version>
-        <bucket4j.version>6.2.0</bucket4j.version>
+        <bucket4j.version>7.0.0</bucket4j.version>
     </properties>
 
     <dependencies>
@@ -113,12 +113,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.context.version}</version>
         </dependency>
 
         <dependency>
