@@ -1,8 +1,8 @@
 package com.langthang.event.listener;
 
 
-import com.langthang.model.Account;
-import com.langthang.utils.Utils;
+import com.langthang.model.entity.Account;
+import com.langthang.utils.MyStringUtils;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -18,10 +18,10 @@ public class AccountEntityListener {
             acc.setAvatarLink(defaultAvatarLink);
         }
 
-        acc.setName(Utils.escapeHtml(acc.getName()));
-        acc.setAbout(Utils.escapeHtml(acc.getAbout()));
-        acc.setAvatarLink(Utils.escapeHtml(acc.getAvatarLink()));
-        acc.setFbLink(Utils.escapeHtml(acc.getFbLink()));
-        acc.setInstagramLink(Utils.escapeHtml(acc.getInstagramLink()));
+        acc.setName(MyStringUtils.escapeHtml(acc.getName()));
+        acc.setAbout(MyStringUtils.escapeHtml(acc.getAbout()));
+        acc.setAvatarLink(MyStringUtils.escapeHtml(acc.getAvatarLink()));
+        acc.setFbLink(MyStringUtils.escapeHtml(acc.getFbLink()));
+        acc.setInstagramLink(MyStringUtils.escapeHtml(acc.getInstagramLink()));
     }
 }

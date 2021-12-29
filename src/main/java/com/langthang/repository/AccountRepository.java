@@ -1,6 +1,6 @@
 package com.langthang.repository;
 
-import com.langthang.model.Account;
+import com.langthang.model.entity.Account;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,4 +51,3 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Slice<Account> getFollowedAccount(int accountId, Pageable pageable);
 
 }
-

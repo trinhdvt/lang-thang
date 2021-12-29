@@ -1,6 +1,6 @@
 package com.langthang.controller;
 
-import com.langthang.dto.PostReportDTO;
+import com.langthang.model.dto.request.PostReportDTO;
 import com.langthang.services.IAdminServices;
 import com.langthang.services.IUserServices;
 import lombok.RequiredArgsConstructor;

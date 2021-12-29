@@ -1,14 +1,14 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.AccountDTO;
-import com.langthang.dto.PostRequestDTO;
-import com.langthang.dto.PostResponseDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.request.PostRequestDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
-import com.langthang.model.Account;
-import com.langthang.model.Category;
-import com.langthang.model.Post;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.Category;
+import com.langthang.model.entity.Post;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;

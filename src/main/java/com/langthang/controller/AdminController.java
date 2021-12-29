@@ -1,7 +1,7 @@
 package com.langthang.controller;
 
-import com.langthang.dto.AccountDTO;
-import com.langthang.dto.SystemReportDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.response.SystemReportDTO;
 import com.langthang.services.IAdminServices;
 import com.langthang.services.IUserServices;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.langthang.config;
 
-import com.langthang.security.TokenServices;
+import com.langthang.security.services.TokenServices;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

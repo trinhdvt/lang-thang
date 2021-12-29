@@ -1,7 +1,7 @@
 package com.langthang.controller;
 
-import com.langthang.dto.CategoryDTO;
-import com.langthang.dto.PostResponseDTO;
+import com.langthang.model.dto.response.CategoryDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.services.ICategoryServices;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;

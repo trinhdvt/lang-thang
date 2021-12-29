@@ -1,6 +1,6 @@
 package com.langthang.services;
 
-import com.langthang.dto.CommentDTO;
+import com.langthang.model.dto.response.CommentDTO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

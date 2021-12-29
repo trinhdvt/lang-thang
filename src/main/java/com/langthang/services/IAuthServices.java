@@ -1,7 +1,7 @@
 package com.langthang.services;
 
-import com.langthang.dto.AccountRegisterDTO;
-import com.langthang.dto.PasswordDTO;
+import com.langthang.model.dto.request.AccountRegisterDTO;
+import com.langthang.model.dto.request.PasswordDTO;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,7 +11,7 @@ public interface IAuthServices {
 
     String loginWithGoogle(String googleToken, HttpServletResponse resp);
 
-    String reCreateToken(String clientToken,  String accessToken, HttpServletResponse resp);
+    String reCreateToken(String clientToken, String accessToken, HttpServletResponse resp);
 
     void registerAccount(AccountRegisterDTO accountRegisterDTO);
 

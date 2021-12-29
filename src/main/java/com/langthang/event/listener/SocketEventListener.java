@@ -2,8 +2,8 @@ package com.langthang.event.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.langthang.dto.CommentDTO;
-import com.langthang.dto.NotificationDTO;
+import com.langthang.model.dto.response.CommentDTO;
+import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.event.OnNewCommentEvent;
 import com.langthang.event.OnNewNotificationEvent;
 import lombok.RequiredArgsConstructor;

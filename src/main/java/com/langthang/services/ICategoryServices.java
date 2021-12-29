@@ -1,6 +1,6 @@
 package com.langthang.services;
 
-import com.langthang.dto.CategoryDTO;
+import com.langthang.model.dto.response.CategoryDTO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

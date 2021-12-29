@@ -1,7 +1,7 @@
 package com.langthang.repository.impl;
 
 import com.langthang.config.HibernateIndexService;
-import com.langthang.model.Post;
+import com.langthang.model.entity.Post;
 import com.langthang.repository.FullTextSearch;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.jpa.FullTextEntityManager;

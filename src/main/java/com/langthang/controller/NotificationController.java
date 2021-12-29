@@ -1,6 +1,6 @@
 package com.langthang.controller;
 
-import com.langthang.dto.NotificationDTO;
+import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.services.INotificationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +55,7 @@ public class NotificationController {
 
     @PutMapping("/notifications/seenAll")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> markAllAsSeen(Authentication authentication){
+    public ResponseEntity<Object> markAllAsSeen(Authentication authentication) {
 
         String currentEmail = authentication.getName();
 

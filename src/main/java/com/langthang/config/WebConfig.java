@@ -1,7 +1,7 @@
 package com.langthang.config;
 
-import com.langthang.security.ApiBucketManager;
-import com.langthang.security.ApiLimitInterceptor;
+import com.langthang.security.ratelimit.ApiBucketManager;
+import com.langthang.security.ratelimit.ApiLimitInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,8 @@ import java.time.Duration;
 public class WebConfig implements WebMvcConfigurer {
 
     private final ApiBucketManager apiBucketManager;
+    @Value("${spring.api-limit.enabled}")
+    private boolean enabledApiLimit;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -33,9 +35,6 @@ public class WebConfig implements WebMvcConfigurer {
         configurer.addPathPrefix("/api",
                 HandlerTypePredicate.forAnnotation(RestController.class));
     }
-
-    @Value("${spring.api-limit.enabled}")
-    private boolean enabledApiLimit;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -56,4 +55,3 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 }
-

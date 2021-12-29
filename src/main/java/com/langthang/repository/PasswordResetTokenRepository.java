@@ -1,7 +1,7 @@
 package com.langthang.repository;
 
-import com.langthang.model.Account;
-import com.langthang.model.PasswordResetToken;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Integer> {

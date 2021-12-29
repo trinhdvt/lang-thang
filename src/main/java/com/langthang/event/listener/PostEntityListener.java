@@ -1,8 +1,8 @@
 package com.langthang.event.listener;
 
 
-import com.langthang.model.Post;
-import com.langthang.utils.Utils;
+import com.langthang.model.entity.Post;
+import com.langthang.utils.MyStringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
@@ -18,10 +18,10 @@ public class PostEntityListener {
     @PreUpdate
     @PrePersist
     private void onAnyPostUpdate(Post post) {
-        String slug = Utils.createSlug(post.getTitle()) + "-" + RandomStringUtils.randomAlphanumeric(5);
-        String encodedTitle = Utils.escapeHtml(post.getTitle());
-        String encodedContent = Utils.escapeHtml(post.getContent());
-        String encodedThumbnail = Utils.escapeHtml(post.getPostThumbnail());
+        String slug = MyStringUtils.createSlug(post.getTitle()) + "-" + RandomStringUtils.randomAlphanumeric(5);
+        String encodedTitle = MyStringUtils.escapeHtml(post.getTitle());
+        String encodedContent = MyStringUtils.escapeHtml(post.getContent());
+        String encodedThumbnail = MyStringUtils.escapeHtml(post.getPostThumbnail());
 
         if (post.getCreatedDate() == null) {
             post.setCreatedDate(new Date());

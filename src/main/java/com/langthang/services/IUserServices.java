@@ -1,7 +1,7 @@
 package com.langthang.services;
 
-import com.langthang.dto.AccountDTO;
-import com.langthang.dto.AccountInfoDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.request.AccountInfoDTO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

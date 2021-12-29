@@ -1,7 +1,7 @@
 package com.langthang.repository;
 
-import com.langthang.model.BookmarkedPost;
-import com.langthang.model.BookmarkedPostKey;
+import com.langthang.model.entity.BookmarkedPost;
+import com.langthang.model.entity.BookmarkedPostKey;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BookmarkedPostRepo extends CrudRepository<BookmarkedPost, BookmarkedPostKey> {

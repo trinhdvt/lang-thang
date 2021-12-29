@@ -1,6 +1,6 @@
 package com.langthang.scheduled;
 
-import com.langthang.job.BackupDatabaseJob;
+import com.langthang.scheduled.job.BackupDatabaseJob;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

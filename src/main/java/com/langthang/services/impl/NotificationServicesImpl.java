@@ -1,15 +1,15 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.NotificationDTO;
+import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
-import com.langthang.model.*;
+import com.langthang.model.entity.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.AssertUtils;
-import com.langthang.utils.constraints.NotificationType;
+import com.langthang.model.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

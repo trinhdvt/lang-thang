@@ -2,9 +2,9 @@ package com.langthang.controller;
 
 import com.langthang.annotation.PasswordMatches;
 import com.langthang.annotation.ValidEmail;
-import com.langthang.dto.AccountRegisterDTO;
-import com.langthang.dto.JwtTokenDTO;
-import com.langthang.dto.PasswordDTO;
+import com.langthang.model.dto.request.AccountRegisterDTO;
+import com.langthang.model.dto.response.JwtTokenDTO;
+import com.langthang.model.dto.request.PasswordDTO;
 import com.langthang.exception.UnauthorizedError;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.AssertUtils;

@@ -1,8 +1,8 @@
 package com.langthang.controller;
 
-import com.langthang.dto.PostRequestDTO;
-import com.langthang.dto.PostResponseDTO;
-import com.langthang.model.Role;
+import com.langthang.model.dto.request.PostRequestDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
+import com.langthang.model.constraints.Role;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

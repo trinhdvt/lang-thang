@@ -1,9 +1,9 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.CategoryDTO;
+import com.langthang.model.dto.response.CategoryDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
-import com.langthang.model.Category;
+import com.langthang.model.entity.Category;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.services.ICategoryServices;
 import com.langthang.utils.AssertUtils;

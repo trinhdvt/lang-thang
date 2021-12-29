@@ -1,18 +1,18 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.CommentDTO;
+import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
-import com.langthang.model.Account;
-import com.langthang.model.Comment;
-import com.langthang.model.Post;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.Comment;
+import com.langthang.model.entity.Post;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CommentRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.AssertUtils;
-import com.langthang.utils.constraints.NotificationType;
+import com.langthang.model.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

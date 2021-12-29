@@ -56,7 +56,7 @@ public class AssertUtils {
      * @throws HttpError if the object is {@code null}
      */
     public static <T extends HttpError> void notEmpty(String sequence, T exception) {
-        if (Utils.trimToEmpty(sequence).isEmpty()) {
+        if (MyStringUtils.trimToEmpty(sequence).isEmpty()) {
             throw exception;
         }
     }

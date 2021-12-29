@@ -1,13 +1,13 @@
 package com.langthang.services.impl;
 
-import com.langthang.dto.AccountDTO;
-import com.langthang.dto.AccountInfoDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.request.AccountInfoDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
-import com.langthang.model.Account;
-import com.langthang.model.FollowingRelationship;
-import com.langthang.model.Post;
-import com.langthang.model.PostReport;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.FollowingRelationship;
+import com.langthang.model.entity.Post;
+import com.langthang.model.entity.PostReport;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.FollowRelationshipRepo;
 import com.langthang.repository.PostReportRepository;

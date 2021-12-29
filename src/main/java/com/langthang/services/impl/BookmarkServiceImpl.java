@@ -2,9 +2,9 @@ package com.langthang.services.impl;
 
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
-import com.langthang.model.Account;
-import com.langthang.model.BookmarkedPost;
-import com.langthang.model.Post;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.BookmarkedPost;
+import com.langthang.model.entity.Post;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.BookmarkedPostRepo;
 import com.langthang.repository.PostRepository;

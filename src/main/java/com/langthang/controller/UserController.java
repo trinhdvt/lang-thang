@@ -2,10 +2,10 @@ package com.langthang.controller;
 
 import com.langthang.annotation.PasswordMatches;
 import com.langthang.annotation.ValidEmail;
-import com.langthang.dto.AccountDTO;
-import com.langthang.dto.AccountInfoDTO;
-import com.langthang.dto.PasswordDTO;
-import com.langthang.dto.PostResponseDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.request.AccountInfoDTO;
+import com.langthang.model.dto.request.PasswordDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
 import lombok.RequiredArgsConstructor;

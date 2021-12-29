@@ -1,5 +1,6 @@
 package com.langthang.security;
 
+import com.langthang.security.filter.ApiAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

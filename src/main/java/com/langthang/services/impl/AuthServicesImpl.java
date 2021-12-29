@@ -3,21 +3,21 @@ package com.langthang.services.impl;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.langthang.dto.AccountRegisterDTO;
-import com.langthang.dto.PasswordDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
-import com.langthang.model.Account;
-import com.langthang.model.PasswordResetToken;
-import com.langthang.model.Role;
+import com.langthang.model.constraints.Role;
+import com.langthang.model.dto.request.AccountRegisterDTO;
+import com.langthang.model.dto.request.PasswordDTO;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.PasswordResetToken;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PasswordResetTokenRepository;
-import com.langthang.security.TokenServices;
+import com.langthang.security.services.TokenServices;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.MyMailSender;
-import com.langthang.utils.Utils;
+import com.langthang.utils.MyStringUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +62,8 @@ public class AuthServicesImpl implements IAuthServices {
     @Value("${security.jwt.refresh-token.cookie-length}")
     private int REFRESH_TOKEN_COOKIE_LENGTH;
 
+    @Value("${application.server.url}")
+    private String APP_DOMAIN;
 
     @Override
     public String login(String email, String password, HttpServletResponse resp) {
@@ -151,7 +153,7 @@ public class AuthServicesImpl implements IAuthServices {
 
             // if email isn't activated yet then re-send the activation link
             String registerToken = existAcc.getRegisterToken();
-            String activationLink = Utils.getAppUrl() + "/auth/active/" + registerToken;
+            String activationLink = APP_DOMAIN + "/auth/active/" + registerToken;
             mailSender.sendRegisterTokenEmail(existAcc.getEmail(), activationLink);
 
             // send back an error to warning client
@@ -165,12 +167,12 @@ public class AuthServicesImpl implements IAuthServices {
                 .email(registerDTO.getEmail())
                 .role(Role.ROLE_USER)
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
-                .registerToken(Utils.randomUUID())
+                .registerToken(MyStringUtils.randomUUID())
                 .build();
         newAccount = accountRepository.saveAndFlush(newAccount);
 
         // send an activation link
-        String activationLink = Utils.getAppUrl() + "/auth/active/" + newAccount.getRegisterToken();
+        String activationLink = APP_DOMAIN + "/auth/active/" + newAccount.getRegisterToken();
         mailSender.sendRegisterTokenEmail(newAccount.getEmail(), activationLink);
     }
 
@@ -199,7 +201,7 @@ public class AuthServicesImpl implements IAuthServices {
         if (pwdResetToken == null) {
 
             // if not, then create a new one
-            String token = Utils.randomUUID();
+            String token = MyStringUtils.randomUUID();
             pwdResetToken = new PasswordResetToken(token, account);
         } else {
 
@@ -211,7 +213,7 @@ public class AuthServicesImpl implements IAuthServices {
         pwdResetToken = pwdResetTokenRepo.save(pwdResetToken);
 
         // send via email
-        String pwdResetUrl = Utils.getAppUrl() + "/auth/resetPassword/" + pwdResetToken.getToken();
+        String pwdResetUrl = APP_DOMAIN + "/auth/resetPassword/" + pwdResetToken.getToken();
         mailSender.sendResetPasswordEmail(email, pwdResetUrl);
     }
 

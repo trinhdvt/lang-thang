@@ -1,10 +1,10 @@
 package com.langthang.event.listener;
 
-import com.langthang.dto.CommentDTO;
+import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.event.OnNewCommentEvent;
-import com.langthang.model.Comment;
+import com.langthang.model.entity.Comment;
 import com.langthang.services.INotificationServices;
-import com.langthang.utils.Utils;
+import com.langthang.utils.MyStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class CommentEntityListener {
     @PrePersist
     @PreUpdate
     public void prePersist(Comment comment) {
-        comment.setContent(Utils.escapeHtml(comment.getContent()));
+        comment.setContent(MyStringUtils.escapeHtml(comment.getContent()));
     }
 
 

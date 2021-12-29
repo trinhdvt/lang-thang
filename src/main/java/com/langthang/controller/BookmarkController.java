@@ -1,6 +1,6 @@
 package com.langthang.controller;
 
-import com.langthang.dto.PostResponseDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.services.IBookmarkServices;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;

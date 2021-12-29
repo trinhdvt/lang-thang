@@ -1,6 +1,6 @@
 package com.langthang.event;
 
-import com.langthang.dto.CommentDTO;
+import com.langthang.model.dto.response.CommentDTO;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

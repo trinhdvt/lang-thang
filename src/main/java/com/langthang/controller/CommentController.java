@@ -1,6 +1,6 @@
 package com.langthang.controller;
 
-import com.langthang.dto.CommentDTO;
+import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.services.ICommentServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
