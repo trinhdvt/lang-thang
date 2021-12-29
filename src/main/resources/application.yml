@@ -9,9 +9,6 @@ spring:
     job:
       enabled: false
   datasource:
-    url: jdbc:mysql://localhost:3306/do-an-lang-thang
-    username: root
-    password: illusion
     hikari:
       data-source-properties:
         cachePrepStmts: true
@@ -49,11 +46,10 @@ cloud:
     bucket:
       image-bucket: langthang-user-photos
       backup-bucket: lang-thang-backup
-      cloud-front: https://dm6niys7elogn.cloudfront.net
+      cloud-front: https://cdn.langthang.tech
     region:
       static: ap-southeast-1
     public:
-      #      base-url: https://${cloud.aws.bucket.image-bucket}.s3-${cloud.aws.region.static}.amazonaws.com
       base-url: ${cloud.aws.bucket.cloud-front}
 
 application:
@@ -74,19 +70,6 @@ application:
     following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
   server:
     url: ${HOST:https://langthang.tech}
-
-security:
-  jwt:
-    token:
-      prefix: Bearer
-      secret-key: WeAreBrother
-      expire-length: 600000
-    refresh-token:
-      cookie-name: refresh-token
-      cookie-length: 15552000
-  oauth2:
-    google:
-      client-id: 545452035521-c4eljpuu1281eml2ci6kaud39s5kc9ct.apps.googleusercontent.com
 
 server:
   compression:
