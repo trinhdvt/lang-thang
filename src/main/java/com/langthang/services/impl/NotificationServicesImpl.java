@@ -8,6 +8,7 @@ import com.langthang.model.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
 import com.langthang.services.INotificationServices;
+import com.langthang.utils.AssertUtils;
 import com.langthang.utils.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +29,16 @@ import java.util.stream.Collectors;
 @Transactional
 public class NotificationServicesImpl implements INotificationServices {
 
+    private final NotificationRepository notifyRepo;
+    private final AccountRepository accRepo;
     @Value("${application.notify-template.like-comment}")
     private String likeNotificationTemplate;
-
     @Value("${application.notify-template.comment-post}")
     private String commentNotificationTemplate;
-
     @Value("${application.notify-template.bookmark-post}")
     private String bookmarkNotificationTemplate;
-
     @Value("${application.notify-template.following-new-post}")
     private String newPostNotificationTemplate;
-
-    private final NotificationRepository notifyRepo;
-
-    private final AccountRepository accRepo;
 
     @Override
     @Async
@@ -129,13 +125,8 @@ public class NotificationServicesImpl implements INotificationServices {
     @Override
     public void maskAsSeen(int notificationId, String accEmail) {
         Notification notification = notifyRepo.findById(notificationId).orElse(null);
-
-        if (notification == null) {
-            throw new NotFoundError("Notification with ID: " + notificationId + " not found");
-        }
-        if (!notification.getAccount().getEmail().equals(accEmail)) {
-            throw new UnauthorizedError("Permission denied");
-        }
+        AssertUtils.notNull(notification, new NotFoundError("Notification not found"));
+        AssertUtils.isTrue(notification.getAccount().getEmail().equals(accEmail), new UnauthorizedError("Notification not found"));
 
         notification.setSeen(true);
         notifyRepo.save(notification);

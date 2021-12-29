@@ -9,6 +9,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.BookmarkedPostRepo;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IBookmarkServices;
+import com.langthang.utils.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,15 +30,12 @@ public class BookmarkServiceImpl implements IBookmarkServices {
     @Override
     public int bookmarkPost(int postId, String currentEmail) {
         BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, currentEmail);
-        if (existingBookmark != null) {
-            throw new HttpError("Already bookmarked", HttpStatus.NO_CONTENT);
-        }
+
+        AssertUtils.isNull(existingBookmark, new HttpError("Already bookmarked", HttpStatus.NO_CONTENT));
 
         Post post = postRepo.findPostByIdAndPublished(postId, true);
 
-        if (post == null) {
-            throw new NotFoundError("Post with id: " + postId + " not found");
-        }
+        AssertUtils.notNull(post, new NotFoundError("Post not found"));
 
         Account currentAcc = accRepo.findAccountByEmail(currentEmail);
 
@@ -51,9 +49,8 @@ public class BookmarkServiceImpl implements IBookmarkServices {
     public int deleteBookmark(int postId, String accEmail) {
         BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, accEmail);
 
-        if (existingBookmark == null) {
-            throw new NotFoundError("Post with id: " + postId + " not bookmarked!");
-        }
+        AssertUtils.notNull(existingBookmark, new NotFoundError("Bookmark not found"));
+
         bookmarkRepo.delete(existingBookmark);
 
         return postRepo.countBookmarks(postId);

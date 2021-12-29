@@ -15,6 +15,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PasswordResetTokenRepository;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.JwtTokenServices;
+import com.langthang.utils.AssertUtils;
 import com.langthang.utils.MyMailSender;
 import com.langthang.utils.Utils;
 import lombok.RequiredArgsConstructor;
@@ -85,40 +86,38 @@ public class AuthServicesImpl implements IAuthServices {
     public String loginWithGoogle(String idToken, HttpServletResponse resp) {
         try {
             GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
-            if (googleIdToken != null) {
-                Payload payload = googleIdToken.getPayload();
-                String email = payload.getEmail();
+            AssertUtils.notNull(googleIdToken, new HttpError("Verify Google Token failed", HttpStatus.INTERNAL_SERVER_ERROR));
 
-                // checking if account is already exists
-                Account account = accountRepository.findAccountByEmail(email);
+            Payload payload = googleIdToken.getPayload();
+            String email = payload.getEmail();
 
-                if (account != null) {
+            // checking if account is already exists
+            Account account = accountRepository.findAccountByEmail(email);
 
-                    //  if account is already exists but not activated yet
-                    if (!account.isEnabled()) {
-                        account.setEnabled(true);
-                        accountRepository.saveAndFlush(account);
-                    }
-                } else {
-                    // account is not existed
-                    // create an account with random password
-                    String rawPassword = RandomStringUtils.randomAlphanumeric(10);
-                    account = googleProfileToAccount(payload);
-                    account.setPassword(passwordEncoder.encode(rawPassword));
+            if (account != null) {
+                //  if account is already exists but not activated yet
+                if (!account.isEnabled()) {
+                    account.setEnabled(true);
                     accountRepository.saveAndFlush(account);
-
-                    // send account's info back to user
-                    mailSender.sendCreatedAccountEmail(email, rawPassword);
                 }
 
-                // create access token and refresh-token cookie as well
-                String accessToken = jwtTokenServices.createAccessToken(account);
-                addRefreshTokenCookie(email, accessToken, resp);
-
-                return accessToken;
             } else {
-                throw new HttpError("Verify Google Token failed", HttpStatus.INTERNAL_SERVER_ERROR);
+                // account is not existed
+                // create an account with random password
+                String rawPassword = RandomStringUtils.randomAlphanumeric(10);
+                account = googleProfileToAccount(payload);
+                account.setPassword(passwordEncoder.encode(rawPassword));
+                accountRepository.saveAndFlush(account);
+
+                // send account's info back to user
+                mailSender.sendCreatedAccountEmail(email, rawPassword);
             }
+
+            // create access token and refresh-token cookie as well
+            String accessToken = jwtTokenServices.createAccessToken(account);
+            addRefreshTokenCookie(email, accessToken, resp);
+            return accessToken;
+
         } catch (GeneralSecurityException | IOException e) {
             throw new UnauthorizedError("Invalid Google Token");
         }
@@ -127,16 +126,14 @@ public class AuthServicesImpl implements IAuthServices {
     @Override
     public String reCreateToken(String refreshToken, String accessToken, HttpServletResponse resp) {
         String email = jwtTokenServices.getUserName(accessToken);
+        boolean isAble = jwtTokenServices.isValidToCreateNewAccessToken(email, refreshToken, accessToken);
 
-        if (jwtTokenServices.isValidToCreateNewAccessToken(email, refreshToken, accessToken)) {
-            Account acc = accountRepository.findAccountByEmail(email);
-            String newAccessToken = jwtTokenServices.createAccessToken(acc);
-            addRefreshTokenCookie(email, newAccessToken, resp);
+        AssertUtils.isTrue(isAble, new UnauthorizedError("Unable to create new access token"));
 
-            return newAccessToken;
-        } else {
-            throw new UnauthorizedError("Unable to create new access token");
-        }
+        Account acc = accountRepository.findAccountByEmail(email);
+        String newAccessToken = jwtTokenServices.createAccessToken(acc);
+        addRefreshTokenCookie(email, newAccessToken, resp);
+        return newAccessToken;
     }
 
     @Override
@@ -150,21 +147,16 @@ public class AuthServicesImpl implements IAuthServices {
         if (existAcc != null) {
 
             // if email is activated
-            if (existAcc.isEnabled()) {
-                throw new HttpError("Email already existed: " + registerEmail
-                        , HttpStatus.CONFLICT);
+            AssertUtils.isTrue(!existAcc.isEnabled(), new HttpError("Email already existed", HttpStatus.CONFLICT));
 
-            } else {
+            // if email isn't activated yet then re-send the activation link
+            String registerToken = existAcc.getRegisterToken();
+            String activationLink = Utils.getAppUrl() + "/auth/active/" + registerToken;
+            mailSender.sendRegisterTokenEmail(existAcc.getEmail(), activationLink);
 
-                // if email isn't activated yet then re-send the activation link
-                String registerToken = existAcc.getRegisterToken();
-                String activationLink = Utils.getAppUrl() + "/auth/active/" + registerToken;
-                mailSender.sendRegisterTokenEmail(existAcc.getEmail(), activationLink);
-
-                // send back an error to warning client
-                throw new HttpError("Please check your email to verify your account!"
-                        , HttpStatus.LOCKED);
-            }
+            // send back an error to warning client
+            throw new HttpError("Please check your email to verify your account!"
+                    , HttpStatus.LOCKED);
         }
 
         // if email is not in-use, then attempting to create new account
@@ -186,10 +178,7 @@ public class AuthServicesImpl implements IAuthServices {
     public void validateRegisterToken(String token) {
         Account account = accountRepository.findAccountByRegisterToken(token);
 
-        if (account == null) {
-            throw new HttpError("Invalid token"
-                    , HttpStatus.UNAUTHORIZED);
-        }
+        AssertUtils.notNull(account, new UnauthorizedError("Invalid token"));
 
         account.setEnabled(true);
         account.setRegisterToken(null);
@@ -198,18 +187,11 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public void createPasswordResetToken(String email) {
-        // checking email
         Account account = accountRepository.findAccountByEmail(email);
 
-        // if account not found
-        if (account == null) {
-            throw new NotFoundError("Email not found!");
-        }
-
-        // if account not activated yet
-        if (!account.isEnabled()) {
-            throw new HttpError("Account is not verified!", HttpStatus.LOCKED);
-        }
+        // assert account is not null and already activated
+        AssertUtils.notNull(account, new NotFoundError("Email not found!"));
+        AssertUtils.isTrue(account.isEnabled(), new HttpError("Account not activated yet!", HttpStatus.LOCKED));
 
         // attempting to create pwd reset token
         // looking for existing token
@@ -237,9 +219,7 @@ public class AuthServicesImpl implements IAuthServices {
     public void validatePasswordResetToken(String token) {
         PasswordResetToken resetToken = pwdResetTokenRepo.findByToken(token);
 
-        if (resetToken == null) {
-            throw new UnauthorizedError("Invalid password reset token");
-        }
+        AssertUtils.notNull(resetToken, new UnauthorizedError("Invalid token"));
 
         if (resetToken.getExpireDate().before(Calendar.getInstance().getTime())) {
             pwdResetTokenRepo.delete(resetToken);
@@ -250,7 +230,7 @@ public class AuthServicesImpl implements IAuthServices {
     @Override
     public void resetPassword(String token, PasswordDTO passwordDTO) {
         // checking pwd reset token
-        // if fail, exception will be thrown
+        // if failed, exception will be thrown
         validatePasswordResetToken(token);
 
         // no exception, eligible to reset password

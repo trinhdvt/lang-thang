@@ -14,6 +14,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PostReportRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IAdminServices;
+import com.langthang.utils.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,10 +51,9 @@ public class AdminServicesImpl implements IAdminServices {
     public void assignRoleAdminToUser(int userId) {
         Account account = accRepo.findAccountByIdAndEnabled(userId, true);
 
-        if (account == null) {
-            throw new HttpError("No enabled account with id: " + userId,
-                    HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+        AssertUtils.notNull(account,
+                new HttpError("No enabled account with id: " + userId,
+                        HttpStatus.UNPROCESSABLE_ENTITY));
 
         account.setRole(Role.ROLE_ADMIN);
         accRepo.saveAndFlush(account);
@@ -69,9 +69,8 @@ public class AdminServicesImpl implements IAdminServices {
     @Override
     public PostReportDTO getPostReportById(int reportId) {
         PostReport postReport = reportRepo.findById(reportId).orElse(null);
-        if (postReport == null) {
-            throw new NotFoundError("Report with ID: " + reportId + " not found");
-        }
+
+        AssertUtils.notNull(postReport, new NotFoundError("Report not found"));
 
         return toPostReportDetailDTO(postReport);
     }
@@ -79,12 +78,9 @@ public class AdminServicesImpl implements IAdminServices {
     @Override
     public PostReportDTO solveReport(int reportId, String decision) {
         PostReport report = reportRepo.findById(reportId).orElse(null);
-        if (report == null) {
-            throw new NotFoundError("Report with ID: " + reportId + " not found");
-        }
-        if (report.isSolved()) {
-            throw new HttpError("Already solved", HttpStatus.NOT_ACCEPTABLE);
-        }
+
+        AssertUtils.notNull(report, new NotFoundError("Report not found"));
+        AssertUtils.isTrue(!report.isSolved(), new HttpError("Already solved", HttpStatus.NOT_ACCEPTABLE));
 
         report.setDecision(decision);
         report.setSolved(true);

@@ -7,6 +7,7 @@ import com.langthang.dto.JwtTokenDTO;
 import com.langthang.dto.PasswordDTO;
 import com.langthang.exception.UnauthorizedError;
 import com.langthang.services.IAuthServices;
+import com.langthang.utils.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,10 +25,9 @@ import javax.validation.constraints.Size;
 @RestController
 public class AuthenticationController {
 
+    private final IAuthServices authServices;
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
-
-    private final IAuthServices authServices;
 
     @PostMapping("/auth/login")
     public ResponseEntity<Object> login(
@@ -57,8 +57,8 @@ public class AuthenticationController {
             @RequestHeader("Authorization") String accessToken,
             HttpServletResponse resp) {
 
-        if (!accessToken.startsWith("Bearer"))
-            throw new UnauthorizedError("Invalid authorization header");
+        AssertUtils.isTrue(accessToken.startsWith("Bearer"),
+                new UnauthorizedError("Invalid authorization header"));
 
         String newAccessToken = authServices.reCreateToken(refreshToken, accessToken.substring(7), resp);
 

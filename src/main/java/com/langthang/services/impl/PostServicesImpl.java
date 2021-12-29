@@ -13,6 +13,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IPostServices;
+import com.langthang.utils.AssertUtils;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +35,9 @@ import java.util.stream.Collectors;
 @Transactional
 public class PostServicesImpl implements IPostServices {
 
-    enum SORT_TYPE {
-        COMMENT, BOOKMARK
-    }
-
     private final PostRepository postRepo;
-
     private final AccountRepository accRepo;
-
     private final CategoryRepository categoryRepo;
-
     private final NotificationServicesImpl notificationServices;
 
     @Override
@@ -64,10 +58,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public PostResponseDTO getPostDetailById(int postId) {
         Post post = postRepo.findPostByIdAndPublished(postId, true);
-
-        if (post == null) {
-            throw new NotFoundError("Post with ID: " + postId + " not found!");
-        }
+        AssertUtils.notNull(post, new NotFoundError("Post not found!"));
 
         return entityToDTO(post);
     }
@@ -75,10 +66,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public PostResponseDTO getPostDetailBySlug(String slug) {
         Post post = postRepo.findPostBySlugAndPublished(slug, true);
-
-        if (post == null) {
-            throw new NotFoundError("Post with slug: " + slug + " not found!");
-        }
+        AssertUtils.notNull(post, new NotFoundError("Post not found!"));
 
         return entityToDTO(post);
     }
@@ -86,9 +74,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public PostResponseDTO getDraftById(int postId, String authorEmail) {
         Post draft = verifyResourceOwner(postId, authorEmail);
-        if (!draft.isPublished()) {
-            throw new NotFoundError("Draft with ID: " + postId + " not found!");
-        }
+        AssertUtils.isTrue(!draft.isPublished(), new NotFoundError("Draft not found!"));
 
         return PostResponseDTO.toPostResponseDTO(draft);
     }
@@ -107,12 +93,10 @@ public class PostServicesImpl implements IPostServices {
         return posts.stream().map(this::entityToDTO).collect(Collectors.toList());
     }
 
-
     @Override
     public List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size) {
         Page<Post> responseList;
         PageRequest pageRequest = PageRequest.of(0, size);
-
 
         try {
             switch (SORT_TYPE.valueOf(propertyName.toUpperCase())) {
@@ -138,10 +122,7 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable) {
-        Account account = accRepo.findById(accountId).orElse(null);
-        if (account == null) {
-            throw new NotFoundError("Account with id: " + accountId + " not found");
-        }
+        accRepo.findById(accountId).orElseThrow(() -> new NotFoundError("Account not found"));
 
         Page<Post> allPostOfUser = postRepo.findByAccount_IdAndPublishedIsTrue(accountId, pageable);
 
@@ -151,9 +132,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable) {
         Account account = accRepo.findAccountByEmail(accountEmail);
-        if (account == null) {
-            throw new NotFoundError("Account with email: " + accountEmail + " not found");
-        }
+        AssertUtils.notNull(account, new NotFoundError("Account not found"));
 
         Page<Post> allPostOfUser = postRepo.getAllByAccount_EmailAndPublishedIsTrue(accountEmail, pageable);
 
@@ -213,10 +192,7 @@ public class PostServicesImpl implements IPostServices {
     @Override
     public List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable) {
         Category category = categoryRepo.findById(categoryId).orElse(null);
-
-        if (category == null) {
-            throw new NotFoundError("Category with id: " + categoryId + " not found");
-        }
+        AssertUtils.notNull(category, new NotFoundError("Category not found"));
 
         Page<Post> responseList = postRepo.findPostByCategories(category, pageable);
 
@@ -290,12 +266,8 @@ public class PostServicesImpl implements IPostServices {
     }
 
     private void verifyResourceOwner(Post post, String authorEmail) {
-        if (post == null) {
-            throw new NotFoundError("Not found!");
-        }
-        if (!post.getAccount().getEmail().equals(authorEmail)) {
-            throw new UnauthorizedError("Permission denied");
-        }
+        AssertUtils.notNull(post, new NotFoundError("Post not found"));
+        AssertUtils.isTrue(post.getAccount().getEmail().equals(authorEmail), new UnauthorizedError("Post not found"));
     }
 
     private void updatePostContent(Post existingPost, PostRequestDTO requestDTO) {
@@ -303,5 +275,9 @@ public class PostServicesImpl implements IPostServices {
         existingPost.setContent(requestDTO.getContent());
         existingPost.setPostThumbnail(requestDTO.getPostThumbnail());
         existingPost.setPostCategories(getCategories(requestDTO));
+    }
+
+    enum SORT_TYPE {
+        COMMENT, BOOKMARK
     }
 }

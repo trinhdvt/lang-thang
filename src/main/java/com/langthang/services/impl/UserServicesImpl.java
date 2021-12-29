@@ -13,6 +13,7 @@ import com.langthang.repository.FollowRelationshipRepo;
 import com.langthang.repository.PostReportRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IUserServices;
+import com.langthang.utils.AssertUtils;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,7 @@ public class UserServicesImpl implements IUserServices {
     @Override
     public AccountDTO getDetailInformation(int accountId) {
         Account account = accRepo.findAccountByIdAndEnabled(accountId, true);
-
-        if (account == null) {
-            throw new NotFoundError("Account with id: " + accountId + " not found");
-        }
+        AssertUtils.notNull(account, new NotFoundError("Account not found"));
 
         return toDetailAccountDTO(account);
     }
@@ -57,10 +55,7 @@ public class UserServicesImpl implements IUserServices {
     @Override
     public AccountDTO getDetailInformation(String email) {
         Account account = accRepo.findAccountByEmailAndEnabled(email, true);
-
-        if (account == null) {
-            throw new NotFoundError("Account with email: " + email + " not found");
-        }
+        AssertUtils.notNull(account, new NotFoundError("Account not found"));
 
         return toDetailAccountDTO(account);
     }
@@ -70,10 +65,7 @@ public class UserServicesImpl implements IUserServices {
         Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
 
         Account willFollowAcc = accRepo.findAccountByIdAndEnabled(accountId, true);
-
-        if (willFollowAcc == null) {
-            throw new NotFoundError("Account with id: " + accountId + " not found");
-        }
+        AssertUtils.notNull(willFollowAcc, new NotFoundError("Account not found"));
 
         int currentAccId = currentAcc.getId();
         int willFollowAccId = willFollowAcc.getId();
@@ -93,14 +85,18 @@ public class UserServicesImpl implements IUserServices {
     public List<AccountDTO> getTopFollowUser(int num) {
         List<Account> accountList = accRepo.getTopFollowingAccount(PageRequest.of(0, num));
 
-        return accountList.stream().map(this::toDetailAccountDTO).collect(Collectors.toList());
+        return accountList.stream()
+                .map(this::toDetailAccountDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<AccountDTO> getListOfUserInSystem(Pageable pageable) {
         Page<Account> accountList = accRepo.findAll(pageable);
 
-        return accountList.map(this::toDetailAccountDTO).getContent();
+        return accountList
+                .map(this::toDetailAccountDTO)
+                .getContent();
     }
 
     @Override
@@ -122,10 +118,8 @@ public class UserServicesImpl implements IUserServices {
         Account account = accRepo.findAccountByEmail(currentEmail);
 
         String currentPassword = account.getPassword();
-        if (!passwordEncoder.matches(oldPassword, currentPassword)) {
-            throw new HttpError("Wrong old password", HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
+        AssertUtils.isTrue(passwordEncoder.matches(oldPassword, currentPassword),
+                new HttpError("Wrong old password", HttpStatus.UNPROCESSABLE_ENTITY));
     }
 
     @Override
@@ -139,9 +133,7 @@ public class UserServicesImpl implements IUserServices {
     @Override
     public void createReport(String reporterEmail, int postId, String reportContent) {
         Post reportPost = postRepo.findPostByIdAndPublished(postId, true);
-        if (reportPost == null) {
-            throw new NotFoundError("Post with id: " + postId + " not found!");
-        }
+        AssertUtils.notNull(reportPost, new NotFoundError("Post not found"));
 
         if (reportPost.getAccount().getEmail().equals(reporterEmail)) {
             throw new HttpError("Cannot report your-self", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -156,9 +148,7 @@ public class UserServicesImpl implements IUserServices {
     @Override
     public List<AccountDTO> getFollower(int accountId, Pageable pageable) {
         Account acc = accRepo.findAccountByIdAndEnabled(accountId, true);
-        if (acc == null) {
-            throw new NotFoundError("Account with ID: " + accountId + " not found!");
-        }
+        AssertUtils.notNull(acc, new NotFoundError("Account not found"));
 
         Slice<Account> followerLst = accRepo.getFollowedAccount(accountId, pageable);
 

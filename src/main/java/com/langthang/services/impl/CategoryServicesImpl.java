@@ -6,6 +6,7 @@ import com.langthang.exception.NotFoundError;
 import com.langthang.model.Category;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.services.ICategoryServices;
+import com.langthang.utils.AssertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -38,9 +39,7 @@ public class CategoryServicesImpl implements ICategoryServices {
     public void deleteCategory(int categoryId) {
         Category category = categoryRepo.findById(categoryId).orElse(null);
 
-        if (category == null) {
-            throw new NotFoundError("Category with id: " + categoryId + " not found");
-        }
+        AssertUtils.notNull(category, new NotFoundError("Category not found"));
 
         categoryRepo.delete(category);
     }
@@ -48,14 +47,10 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Override
     public CategoryDTO modifyCategory(int categoryId, String newName) {
         Category category = categoryRepo.findById(categoryId).orElse(null);
-        if (category == null) {
-            throw new NotFoundError("Category with id: " + categoryId + " not found");
-        }
+        AssertUtils.notNull(category, new NotFoundError("Category not found"));
 
         boolean isExisted = categoryRepo.existsByName(newName);
-        if (isExisted) {
-            throw new HttpError("Category with name: " + newName + " is already existed", HttpStatus.CONFLICT);
-        }
+        AssertUtils.isTrue(!isExisted, new HttpError("Category is already existed", HttpStatus.CONFLICT));
 
         category.setName(newName);
         Category savedCategory = categoryRepo.save(category);
@@ -66,10 +61,8 @@ public class CategoryServicesImpl implements ICategoryServices {
     @Override
     public CategoryDTO addNewCategory(String categoryName) {
         boolean isCategoryExist = categoryRepo.existsByName(categoryName);
-        if (isCategoryExist) {
-            throw new HttpError("Category with name: " + categoryName + " is already existed",
-                    HttpStatus.CONFLICT);
-        }
+
+        AssertUtils.isTrue(!isCategoryExist, new HttpError("Category is already existed", HttpStatus.CONFLICT));
 
         Category newCategory = new Category(categoryName);
         categoryRepo.save(newCategory);
