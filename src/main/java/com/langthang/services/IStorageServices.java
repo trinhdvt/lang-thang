@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface IStorageServices {
-    String uploadImage(MultipartFile multipartFile);
+
+    void uploadImage(MultipartFile multipartFile, String filename);
 
     void uploadFile(String absPath);
 
