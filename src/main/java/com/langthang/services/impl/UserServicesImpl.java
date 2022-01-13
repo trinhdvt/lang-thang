@@ -1,9 +1,9 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.dto.response.AccountDTO;
-import com.langthang.model.dto.request.AccountInfoDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
+import com.langthang.model.dto.request.AccountInfoDTO;
+import com.langthang.model.dto.response.AccountDTO;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.FollowingRelationship;
 import com.langthang.model.entity.Post;
@@ -53,8 +53,8 @@ public class UserServicesImpl implements IUserServices {
     }
 
     @Override
-    public AccountDTO getDetailInformation(String email) {
-        Account account = accRepo.findAccountByEmailAndEnabled(email, true);
+    public AccountDTO getDetailInformation(String slug) {
+        Account account = accRepo.findAccountBySlugAndEnabled(slug, true);
         AssertUtils.notNull(account, new NotFoundError("Account not found"));
 
         return toDetailAccountDTO(account);

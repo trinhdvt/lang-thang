@@ -1,7 +1,7 @@
 package com.langthang.services;
 
-import com.langthang.model.dto.response.AccountDTO;
 import com.langthang.model.dto.request.AccountInfoDTO;
+import com.langthang.model.dto.response.AccountDTO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public interface IUserServices {
 
     AccountDTO getDetailInformation(int accountId);
 
-    AccountDTO getDetailInformation(String email);
+    AccountDTO getDetailInformation(String slug);
 
     int followOrUnfollow(String currentAccEmail, int accountId);
 

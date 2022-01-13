@@ -13,7 +13,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     Account findAccountByEmail(String email);
 
-    Account findAccountByEmailAndEnabled(String email, boolean enabled);
+    Account findAccountBySlugAndEnabled(String slug, boolean enabled);
 
     Account findAccountByIdAndEnabled(int accountId, boolean enabled);
 

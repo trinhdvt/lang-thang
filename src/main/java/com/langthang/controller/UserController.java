@@ -1,10 +1,9 @@
 package com.langthang.controller;
 
 import com.langthang.annotation.PasswordMatches;
-import com.langthang.annotation.ValidEmail;
-import com.langthang.model.dto.response.AccountDTO;
 import com.langthang.model.dto.request.AccountInfoDTO;
 import com.langthang.model.dto.request.PasswordDTO;
+import com.langthang.model.dto.response.AccountDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.services.IPostServices;
 import com.langthang.services.IUserServices;
@@ -45,11 +44,11 @@ public class UserController {
         return ResponseEntity.ok(accountDTO);
     }
 
-    @GetMapping(value = "/user", params = {"email"})
+    @GetMapping(value = "/user", params = {"slug"})
     public ResponseEntity<Object> getInformationOfUser(
-            @RequestParam("email") @ValidEmail String email) {
+            @RequestParam("slug") String slug) {
 
-        AccountDTO accountDTO = userServices.getDetailInformation(email);
+        AccountDTO accountDTO = userServices.getDetailInformation(slug);
 
         return ResponseEntity.ok(accountDTO);
     }
