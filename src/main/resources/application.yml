@@ -5,9 +5,11 @@ spring:
   config:
     import: classpath:application-private.yml
   batch:
-    initialize-schema: always
     job:
       enabled: false
+    jdbc:
+      initialize-schema: always
+
   datasource:
     hikari:
       data-source-properties:
@@ -75,6 +77,8 @@ server:
   compression:
     enabled: true
   port: ${PORT:8080}
+  http2:
+    enabled: true
 
 logging:
   level:
