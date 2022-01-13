@@ -49,6 +49,16 @@ public class CategoryController {
         return ResponseEntity.ok(postOfCategories);
     }
 
+    @Cacheable
+    @GetMapping(value = "/category/post", params = {"slug"})
+    public ResponseEntity<?> getAllPostOfCategoryBySlug(@RequestParam("slug") String slug,
+                                                        @PageableDefault Pageable pageable) {
+
+        List<PostResponseDTO> postOfCategory = postServices.getAllPostOfCategory(slug, pageable);
+
+        return ResponseEntity.ok(postOfCategory);
+    }
+
     @PostMapping("/category")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @CacheEvict(allEntries = true)

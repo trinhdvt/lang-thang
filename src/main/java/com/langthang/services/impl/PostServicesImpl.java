@@ -1,11 +1,11 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.dto.response.AccountDTO;
-import com.langthang.model.dto.request.PostRequestDTO;
-import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
+import com.langthang.model.dto.request.PostRequestDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Category;
 import com.langthang.model.entity.Post;
@@ -168,7 +168,7 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public void deletePostById(int postId, String authorEmail) {
-        Post post = postRepo.findPostById(postId);
+        Post post = postRepo.getById(postId);
         verifyResourceOwner(post, authorEmail);
         postRepo.delete(post);
     }
@@ -194,9 +194,17 @@ public class PostServicesImpl implements IPostServices {
         Category category = categoryRepo.findById(categoryId).orElse(null);
         AssertUtils.notNull(category, new NotFoundError("Category not found"));
 
-        Page<Post> responseList = postRepo.findPostByCategories(category, pageable);
+        return postRepo.findPostByCategories(category, pageable)
+                .map(this::entityToDTO).getContent();
+    }
 
-        return responseList.map(this::entityToDTO).getContent();
+    @Override
+    public List<PostResponseDTO> getAllPostOfCategory(String slug, Pageable pageable) {
+        Category category = categoryRepo.findBySlug(slug);
+        AssertUtils.notNull(category, new NotFoundError("Category not found"));
+
+        return postRepo.findPostByCategories(category, pageable)
+                .map(this::entityToDTO).getContent();
     }
 
     @Override
@@ -210,14 +218,14 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public void deleteReportedPost(int postId, String adminEmail) {
-        Post post = postRepo.findPostById(postId);
+        Post post = postRepo.getById(postId);
 
         try {
             verifyResourceOwner(post, adminEmail);
             postRepo.delete(post);
 
         } catch (HttpError ex) {
-            if (post != null && post.isPublished()) {
+            if (post.isPublished()) {
                 boolean isReportPost = post.getPostReports().stream().anyMatch(rp -> !rp.isSolved());
                 if (isReportPost) {
                     postRepo.delete(post);
@@ -260,7 +268,7 @@ public class PostServicesImpl implements IPostServices {
     }
 
     public Post verifyResourceOwner(int postId, String authorEmail) {
-        Post post = postRepo.findPostById(postId);
+        Post post = postRepo.getById(postId);
         verifyResourceOwner(post, authorEmail);
         return post;
     }

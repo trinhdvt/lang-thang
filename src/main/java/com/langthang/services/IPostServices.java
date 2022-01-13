@@ -21,6 +21,8 @@ public interface IPostServices {
 
     List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable);
 
+    List<PostResponseDTO> getAllPostOfCategory(String slug, Pageable pageable);
+
     List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size);
 
     List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable);
