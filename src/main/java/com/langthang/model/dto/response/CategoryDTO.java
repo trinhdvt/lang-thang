@@ -12,12 +12,15 @@ public class CategoryDTO {
 
     private String categoryName;
 
+    private String slug;
+
     private int postCount;
 
     public static CategoryDTO toCategoryDTO(Category entity) {
         return CategoryDTO.builder()
                 .categoryId(entity.getId())
                 .categoryName(entity.getName())
+                .slug(entity.getSlug())
                 .postCount(entity.getPostCategories().size())
                 .build();
     }

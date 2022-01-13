@@ -23,6 +23,8 @@ public class Category {
     @NonNull
     private String name;
 
+    private String slug;
+
     @ManyToMany(mappedBy = "postCategories")
     @LazyCollection(LazyCollectionOption.EXTRA)
     private List<Post> postCategories = new ArrayList<>();
@@ -31,6 +33,7 @@ public class Category {
     @PreUpdate
     public void escapeHtml() {
         this.name = MyStringUtils.escapeHtml(name);
+        this.slug = MyStringUtils.createSlug(slug);
     }
 
     @Override

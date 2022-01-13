@@ -1,8 +1,8 @@
 package com.langthang.model.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.langthang.model.entity.Account;
 import com.langthang.model.constraints.Role;
+import com.langthang.model.entity.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +19,8 @@ public class AccountDTO {
     private String name;
 
     private String email;
+
+    private String slug;
 
     private int postCount;
 
@@ -46,6 +48,7 @@ public class AccountDTO {
                 .name(entity.getName())
                 .email(entity.getEmail())
                 .role(entity.getRole() != Role.ROLE_ADMIN ? null : entity.getRole())
+                .slug(entity.getSlug())
                 .avatarLink(entity.getAvatarLink())
                 .fbLink(entity.getFbLink())
                 .instagramLink(entity.getInstagramLink())

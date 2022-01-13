@@ -29,6 +29,8 @@ public class Account {
 
     private String name;
 
+    private String slug;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.ROLE_USER;
