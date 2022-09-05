@@ -30,7 +30,7 @@ if they like. They can also follow others user to receive notifications when the
 
 ## Demo
 
-Here is a link to the deployed website on AWS EC2: [LangThang](https://langthang.tech)
+Here is a link to the deployed website on AWS EC2: [LangThang](http://trinhdvt.tech:3000)
 
 ![landing_page](https://i.imgur.com/vU7jhua.png)
 
