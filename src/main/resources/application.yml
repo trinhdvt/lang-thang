@@ -8,37 +8,15 @@ spring:
     import: classpath:application-private.yml
   batch:
     job:
-      enabled: false
+      enabled: true
     jdbc:
       initialize-schema: always
-
-  datasource:
-    hikari:
-      data-source-properties:
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-        useServerPrepStmts: true
-        useLocalSessionState: true
-        rewriteBatchedStatements: true
-        cacheResultSetMetadata: true
-        cacheServerConfiguration: true
-        elideSetAutoCommits: true
-        maintainTimeStats: false
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        search:
-          backend:
-            directory:
-              root: lucene_index
-          default:
-            directory_provider: filesystem
-            indexBase: lucene_index
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
   servlet:
     multipart:
@@ -46,7 +24,6 @@ spring:
       max-request-size: 3MB
   jackson:
     date-format: yyyy/MM/dd HH:mm
-    time-zone: Asia/Ho_Chi_Minh
 
 cloud:
   aws:
@@ -82,8 +59,6 @@ server:
   compression:
     enabled: true
   port: ${PORT:8080}
-  http2:
-    enabled: true
 
 logging:
   level:

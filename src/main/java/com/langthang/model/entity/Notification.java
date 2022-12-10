@@ -17,7 +17,7 @@ import java.util.Date;
 @EntityListeners(NotificationEntityListener.class)
 public class Notification {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)

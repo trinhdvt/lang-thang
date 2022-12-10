@@ -1,0 +1,52 @@
+spring:
+  cache:
+    type: redis
+  data:
+    redis:
+      repositories:
+        enabled: false
+      url:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 30000
+      pool-name: SpringBootHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+security:
+  cors:
+    allowed-origins: https://langthang.trinhdvt.tech, http://trinhdvt.tech:3000, http://localhost:3000
+  jwt:
+    token:
+      prefix: Bearer
+      secret-key: WeAreBrother
+      expire-length: 600000
+    refresh-token:
+      cookie-name: refresh-token
+      cookie-length: 15552000
+  oauth2:
+    google:
+      client-id: xxxx
+
+cloud:
+  aws:
+    credentials:
+      access-key: xxxx
+      secret-key: xxxx

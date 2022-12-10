@@ -14,7 +14,7 @@ public class MyStringUtils extends StringUtils {
 
     static final String[] htmlCharacter = new String[]{"&", "<", ">", "\"", "'", "/"};
     static final String[] escapedCharacter = new String[]{"&amp;", "&lt;", "&gt;", "&quot;", "&#x27;", "&#x2F;"};
-    static Pattern vietnameseNormPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+    static final Pattern vietnameseNormPattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
     public static String createSlug(String input) {
         String temp = Normalizer.normalize(input, Normalizer.Form.NFD);

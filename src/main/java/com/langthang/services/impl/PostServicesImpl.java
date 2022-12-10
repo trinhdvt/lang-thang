@@ -17,6 +17,7 @@ import com.langthang.services.IPostServices;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,9 +30,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor_ = { @Autowired })
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
 public class PostServicesImpl implements IPostServices {
@@ -89,9 +89,11 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable) {
+        keyword = StringUtils.join(StringUtils.split(keyword, " "), " | ");
+
         List<Post> posts = postRepo.searchByKeyword(keyword, pageable);
 
-        return posts.stream().map(this::entityToDTO).collect(Collectors.toList());
+        return posts.stream().map(this::entityToDTO).toList();
     }
 
     @Override
@@ -100,16 +102,11 @@ public class PostServicesImpl implements IPostServices {
 
         try {
             switch (SORT_TYPE.valueOf(propertyName.toUpperCase())) {
-                case BOOKMARK:
-                    responseList = postRepo.getListOfPopularPostByBookmarkCount(pageable);
-                    break;
-
-                case COMMENT:
-                    responseList = postRepo.getListOfPopularPostByCommentCount(pageable);
-                    break;
-
-                default:
+                case BOOKMARK -> responseList = postRepo.getListOfPopularPostByBookmarkCount(pageable);
+                case COMMENT -> responseList = postRepo.getListOfPopularPostByCommentCount(pageable);
+                default -> {
                     return Collections.emptyList();
+                }
             }
 
             return responseList.map(this::entityToDTO).getContent();
@@ -265,12 +262,12 @@ public class PostServicesImpl implements IPostServices {
 
     private Set<Category> getCategories(PostRequestDTO postDTO) {
         List<String> categoriesId = postDTO.getCategories();
-        if (categoriesId == null || categoriesId.size() == 0) {
+        if (categoriesId == null || categoriesId.isEmpty()) {
             return Collections.emptySet();
         }
 
         try {
-            List<Integer> cateIdInt = categoriesId.stream().map(Integer::valueOf).collect(Collectors.toList());
+            List<Integer> cateIdInt = categoriesId.stream().map(Integer::valueOf).toList();
 
             List<Category> categoryList = categoryRepo.findAllById(cateIdInt);
             return new HashSet<>(categoryList);

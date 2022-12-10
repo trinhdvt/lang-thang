@@ -15,7 +15,7 @@ import java.util.Date;
 @Table(name = "post_report")
 public class PostReport {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)

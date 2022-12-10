@@ -20,7 +20,7 @@ import java.util.Set;
 @EntityListeners(PostEntityListener.class)
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String title;
