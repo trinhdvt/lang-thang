@@ -39,7 +39,7 @@ public class UserController {
     public ResponseEntity<Object> getInformationOfUser(
             @PathVariable("account_id") int accountId) {
 
-        AccountDTO accountDTO = userServices.getDetailInformation(accountId);
+        AccountDTO accountDTO = userServices.getDetailInformationById(accountId);
 
         return ResponseEntity.ok(accountDTO);
     }
@@ -48,22 +48,21 @@ public class UserController {
     public ResponseEntity<Object> getInformationOfUser(
             @RequestParam("slug") String slug) {
 
-        AccountDTO accountDTO = userServices.getDetailInformation(slug);
+        AccountDTO accountDTO = userServices.getDetailInformationBySlug(slug);
 
         return ResponseEntity.ok(accountDTO);
     }
 
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
+    @ResponseStatus(HttpStatus.OK)
     @Cacheable(key = "{@securityUtils.getLoggedInEmail()}")
-    public ResponseEntity<Object> getCurrentUserInfo(
+    public AccountDTO getCurrentUserInfo(
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
 
-        AccountDTO accountDTO = userServices.getDetailInformation(currentEmail);
-
-        return ResponseEntity.ok(accountDTO);
+        return userServices.getDetailInformationByEmail(currentEmail);
     }
 
     @GetMapping("/user/posts/{account_id}")
@@ -137,16 +136,15 @@ public class UserController {
 
     @PutMapping("/user/update/info")
     @PreAuthorize("isAuthenticated()")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @CacheEvict(key = "{@securityUtils.getLoggedInEmail()}")
-    public ResponseEntity<Object> updateUserBasicInfo(
+    public AccountDTO updateUserBasicInfo(
             @Valid AccountInfoDTO newInfo,
             Authentication authentication) {
 
         String currentEmail = authentication.getName();
 
-        AccountDTO updated = userServices.updateBasicInfo(currentEmail, newInfo);
-
-        return ResponseEntity.accepted().body(updated);
+        return userServices.updateBasicInfo(currentEmail, newInfo);
     }
 
     @PutMapping("/user/update/password")

@@ -10,7 +10,7 @@ import javax.persistence.PreUpdate;
 
 public class AccountEntityListener {
 
-    private static final String defaultAvatarLink = "https://cdn.langthang.tech/avatar2.png";
+    private static final String defaultAvatarLink = "https://cdn.trinhdvt.tech/avatar2.webp";
 
     @PrePersist
     @PreUpdate
@@ -19,11 +19,7 @@ public class AccountEntityListener {
             acc.setAvatarLink(defaultAvatarLink);
         }
 
-        acc.setName(MyStringUtils.escapeHtml(acc.getName()));
+
         acc.setSlug(MyStringUtils.createSlug(acc.getName() + "-" + RandomStringUtils.randomAlphanumeric(3)));
-        acc.setAbout(MyStringUtils.escapeHtml(acc.getAbout()));
-        acc.setAvatarLink(MyStringUtils.escapeHtml(acc.getAvatarLink()));
-        acc.setFbLink(MyStringUtils.escapeHtml(acc.getFbLink()));
-        acc.setInstagramLink(MyStringUtils.escapeHtml(acc.getInstagramLink()));
     }
 }

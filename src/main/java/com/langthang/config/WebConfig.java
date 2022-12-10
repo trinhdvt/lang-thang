@@ -2,6 +2,7 @@ package com.langthang.config;
 
 import com.langthang.security.ratelimit.ApiBucketManager;
 import com.langthang.security.ratelimit.ApiLimitInterceptor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,11 +24,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${spring.api-limit.enabled}")
     private boolean enabledApiLimit;
 
+    @Value("${security.cors.allowed-origins}")
+    private String[] allowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE");
+                .allowedOrigins(allowedOrigins)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
+                .allowCredentials(true);
     }
 
     @Override
@@ -37,7 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
         if (enabledApiLimit) {
             ApiLimitInterceptor commonApiLimitIntercept = new ApiLimitInterceptor(apiBucketManager, 100, Duration.ofMinutes(1));
             registry.addInterceptor(commonApiLimitIntercept)
@@ -53,5 +58,4 @@ public class WebConfig implements WebMvcConfigurer {
                     .addPathPatterns("/api/auth/**");
         }
     }
-
 }

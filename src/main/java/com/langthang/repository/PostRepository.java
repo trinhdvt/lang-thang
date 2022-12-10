@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.stream.Stream;
+
 public interface PostRepository extends JpaRepository<Post, Integer>, FullTextSearch<Post> {
 
     Post findPostBySlug(String slug);
@@ -14,8 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>, FullTextSe
     Post findPostByIdAndPublished(int id, boolean isPublished);
 
     Post findPostBySlugAndPublished(String slug, boolean isPublished);
-
-    Post findPostById(int postId);
 
     @Query("select count(p) from Post p where p.account.id=?1")
     int countByAccount_Id(int accountId);
@@ -57,4 +57,6 @@ public interface PostRepository extends JpaRepository<Post, Integer>, FullTextSe
     int countBookmarks(int postId);
 
     boolean existsByIdAndPublished(int postId, boolean isPublished);
+
+    Stream<Post> findAllByPublishedIsTrue();
 }

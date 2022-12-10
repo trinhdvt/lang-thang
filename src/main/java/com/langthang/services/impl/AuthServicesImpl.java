@@ -269,6 +269,7 @@ public class AuthServicesImpl implements IAuthServices {
         cookie.setSecure(true);
         cookie.setMaxAge(REFRESH_TOKEN_COOKIE_LENGTH); // ms -> s
         cookie.setPath("/");
+        cookie.setDomain("trinhdvt.tech");
         resp.addCookie(cookie);
     }
 }

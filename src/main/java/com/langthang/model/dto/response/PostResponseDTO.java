@@ -29,9 +29,9 @@ public class PostResponseDTO {
 
     private String slug;
 
-    private boolean isOwner = false;
+    private boolean isOwner;
 
-    private boolean isBookmarked = false;
+    private boolean isBookmarked;
 
     private Date publishedDate;
 

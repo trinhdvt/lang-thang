@@ -38,9 +38,9 @@ public class AccountDTO {
 
     private String about;
 
-    private Role role = null;
+    private Role role;
 
-    private boolean isFollowed = false;
+    private boolean isFollowed;
 
     public static AccountDTO toBasicAccount(Account entity) {
         return AccountDTO.builder()

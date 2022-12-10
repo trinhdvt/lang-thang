@@ -1,5 +1,6 @@
 package com.langthang.services;
 
+import com.langthang.controller.XmlUrlSet;
 import com.langthang.model.dto.request.PostRequestDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public interface IPostServices {
 
     List<PostResponseDTO> getAllPostOfCategory(String slug, Pageable pageable);
 
-    List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size);
+    List<PostResponseDTO> getPopularPostByProperty(String propertyName, Pageable pageable);
 
     List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable);
 
@@ -42,4 +43,6 @@ public interface IPostServices {
     String updatePostById(int postId, String authorEmail, PostRequestDTO postRequestDTO);
 
     void updateDraftById(int postId, String authorEmail, PostRequestDTO postRequestDTO);
+
+    XmlUrlSet genSiteMap();
 }

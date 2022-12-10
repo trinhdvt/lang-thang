@@ -45,7 +45,7 @@ public class UserServicesImpl implements IUserServices {
     private final PostReportRepository reportRepo;
 
     @Override
-    public AccountDTO getDetailInformation(int accountId) {
+    public AccountDTO getDetailInformationById(int accountId) {
         Account account = accRepo.findAccountByIdAndEnabled(accountId, true);
         AssertUtils.notNull(account, new NotFoundError("Account not found"));
 
@@ -53,7 +53,16 @@ public class UserServicesImpl implements IUserServices {
     }
 
     @Override
-    public AccountDTO getDetailInformation(String slug) {
+    public AccountDTO getDetailInformationByEmail(String email) {
+        Account account = accRepo.findAccountByEmail(email);
+        AssertUtils.notNull(account, new NotFoundError("Account not found"));
+        AssertUtils.isTrue(account.isEnabled(), new NotFoundError("Account not found"));
+
+        return toDetailAccountDTO(account);
+    }
+
+    @Override
+    public AccountDTO getDetailInformationBySlug(String slug) {
         Account account = accRepo.findAccountBySlugAndEnabled(slug, true);
         AssertUtils.notNull(account, new NotFoundError("Account not found"));
 

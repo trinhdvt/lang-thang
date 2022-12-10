@@ -1,5 +1,6 @@
 package com.langthang.utils;
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
@@ -34,6 +35,14 @@ public class MyStringUtils extends StringUtils {
 
     public static String randomUUID() {
         return UUID.randomUUID().toString();
+    }
+
+    public static String randomID() {
+        return NanoIdUtils.randomNanoId();
+    }
+
+    public static String randomID(int size) {
+        return NanoIdUtils.randomNanoId(NanoIdUtils.DEFAULT_NUMBER_GENERATOR, NanoIdUtils.DEFAULT_ALPHABET, size);
     }
 
 }

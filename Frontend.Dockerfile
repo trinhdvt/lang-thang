@@ -1,23 +1,25 @@
-FROM node:14.14-alpine3.12 as builder
+#FROM node:lts-alpine as builder
 
-WORKDIR /app
-ARG SOURCE_FOLDER=frontend-travel-blog
+#WORKDIR /app
+#ARG SOURCE_FOLDER=travel-blog
 
-COPY ${SOURCE_FOLDER}/package.json .
+#COPY ${SOURCE_FOLDER}/package.json .
+#COPY ${SOURCE_FOLDER}/package-lock.json .
 
-RUN npm install --legacy-peer-deps --only=production
+#RUN npm install --legacy-peer-deps
 
-COPY ${SOURCE_FOLDER}/src src
-COPY ${SOURCE_FOLDER}/public public
+#COPY ${SOURCE_FOLDER}/src src
+#COPY ${SOURCE_FOLDER}/public public
 
-RUN npm run build
+#RUN npm run build
 
 FROM nginx:alpine
 
 WORKDIR /app
-ARG BUILD_FOLDER=/app/build
-
-COPY --from=builder ${BUILD_FOLDER} /usr/share/nginx/build
+#ARG BUILD_FOLDER=/app/build
+ARG SOURCE_FOLDER=travel-blog
+COPY ${SOURCE_FOLDER}/build /usr/share/nginx/build
+#COPY --from=builder ${BUILD_FOLDER} /usr/share/nginx/build
 
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 

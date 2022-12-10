@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface IUserServices {
 
-    AccountDTO getDetailInformation(int accountId);
+    AccountDTO getDetailInformationById(int accountId);
 
-    AccountDTO getDetailInformation(String slug);
+    AccountDTO getDetailInformationByEmail(String email);
 
     int followOrUnfollow(String currentAccEmail, int accountId);
 
@@ -27,4 +27,6 @@ public interface IUserServices {
     void createReport(String reportAccount, int postId, String reportContent);
 
     List<AccountDTO> getFollower(int accountId, Pageable pageable);
+
+    AccountDTO getDetailInformationBySlug(String slug);
 }

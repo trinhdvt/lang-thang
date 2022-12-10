@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +30,7 @@ public class Comment {
     private Post post;
 
     @ManyToMany(mappedBy = "likedComments", fetch = FetchType.EAGER)
-    private Set<Account> likedAccounts = new HashSet<>();
+    private Set<Account> likedAccounts;
 
     private String content;
 

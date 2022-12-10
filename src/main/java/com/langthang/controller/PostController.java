@@ -1,8 +1,8 @@
 package com.langthang.controller;
 
+import com.langthang.model.constraints.Role;
 import com.langthang.model.dto.request.PostRequestDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
-import com.langthang.model.constraints.Role;
 import com.langthang.services.IPostServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,29 +31,18 @@ public class PostController {
 
     private final IPostServices postServices;
 
-    @GetMapping("/post/{id}")
-    @Cacheable(key = "{#id,@securityUtils.getLoggedInEmail()}", unless = "#result == null", condition = "@securityUtils.getLoggedInEmail() == null ")
-    public ResponseEntity<Object> getPostDetailById(
-            @PathVariable(value = "id") int id) {
-
-        PostResponseDTO responseDTO = postServices.getPostDetailById(id);
-
-        return ResponseEntity.ok(responseDTO);
-    }
-
     @GetMapping(value = "/post", params = {"slug"})
     @Cacheable(key = "{#slug,@securityUtils.getLoggedInEmail()}", unless = "#result == null", condition = "@securityUtils.getLoggedInEmail() == null ")
-    public ResponseEntity<Object> getPostDetailBySlug(
+    @ResponseStatus(HttpStatus.OK)
+    public PostResponseDTO getPostDetailBySlug(
             @RequestParam("slug") String slug) {
 
-        PostResponseDTO responseDTO = postServices.getPostDetailBySlug(slug);
-
-        return ResponseEntity.ok(responseDTO);
+        return postServices.getPostDetailBySlug(slug);
     }
 
     @GetMapping(value = "/post")
     @ResponseStatus(HttpStatus.OK)
-    @Cacheable(key = "{#root.methodName,#pageable}")
+    // @Cacheable(key = "{#root.methodName,#pageable}")
     public List<PostResponseDTO> getPreviewPost(
             @PageableDefault(sort = {"publishedDate"},
                     direction = Sort.Direction.DESC) Pageable pageable) {
@@ -77,7 +66,7 @@ public class PostController {
             @RequestParam("prop") String propertyName,
             @PageableDefault Pageable pageable) {
 
-        return postServices.getPopularPostByProperty(propertyName, pageable.getPageSize());
+        return postServices.getPopularPostByProperty(propertyName, pageable);
     }
 
     @GetMapping("/post/{slug}/edit")
@@ -159,16 +148,14 @@ public class PostController {
 
     @GetMapping("/draft/{id}")
     @PreAuthorize("isAuthenticated()")
+    @ResponseStatus(HttpStatus.OK)
     @Cacheable(key = "{#postId,@securityUtils.getLoggedInEmail()}", unless = "#result == null")
-    public ResponseEntity<Object> getDraftById(
+    public PostResponseDTO getDraftById(
             @PathVariable("id") int postId,
             Authentication authentication) {
 
         String authorEmail = authentication.getName();
-
-        PostResponseDTO postResponseDTO = postServices.getDraftById(postId, authorEmail);
-
-        return ResponseEntity.ok(postResponseDTO);
+        return postServices.getDraftById(postId, authorEmail);
     }
 
     @PutMapping("/draft/{id}")

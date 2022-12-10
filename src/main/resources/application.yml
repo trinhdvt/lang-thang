@@ -1,7 +1,9 @@
 spring:
-  env: dev
+  env: ${ENV:DEV}
   api-limit:
-    enabled: true
+    enabled: false
+  cache:
+    enabled: false
   config:
     import: classpath:application-private.yml
   batch:
@@ -40,7 +42,7 @@ spring:
       max-file-size: 2MB
       max-request-size: 3MB
   jackson:
-    date-format: yyyy-MM-dd HH:mm
+    date-format: yyyy/MM/dd HH:mm
     time-zone: Asia/Ho_Chi_Minh
 
 cloud:

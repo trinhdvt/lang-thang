@@ -19,21 +19,11 @@ public class PostEntityListener {
     @PrePersist
     private void onAnyPostUpdate(Post post) {
         String slug = MyStringUtils.createSlug(post.getTitle()) + "-" + RandomStringUtils.randomAlphanumeric(5);
-        String encodedTitle = MyStringUtils.escapeHtml(post.getTitle());
         String encodedContent = MyStringUtils.escapeHtml(post.getContent());
-        String encodedThumbnail = MyStringUtils.escapeHtml(post.getPostThumbnail());
-
-        if (post.getCreatedDate() == null) {
-            post.setCreatedDate(new Date());
-        }
-
-        if (post.isPublished() && post.getPublishedDate() == null) {
-            post.setPublishedDate(new Date());
-        }
-
-        post.setTitle(encodedTitle);
         post.setContent(encodedContent);
-        post.setSlug(slug);
-        post.setPostThumbnail(encodedThumbnail);
+
+        if (post.getCreatedDate() == null) post.setCreatedDate(new Date());
+        if (post.isPublished() && post.getPublishedDate() == null) post.setPublishedDate(new Date());
+        if (post.getSlug() == null) post.setSlug(slug);
     }
 }

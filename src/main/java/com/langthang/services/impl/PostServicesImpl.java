@@ -1,5 +1,6 @@
 package com.langthang.services.impl;
 
+import com.langthang.controller.XmlUrlSet;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
@@ -16,9 +17,9 @@ import com.langthang.services.IPostServices;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 @Service
 @Transactional
 public class PostServicesImpl implements IPostServices {
@@ -94,18 +95,17 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size) {
+    public List<PostResponseDTO> getPopularPostByProperty(String propertyName, Pageable pageable) {
         Page<Post> responseList;
-        PageRequest pageRequest = PageRequest.of(0, size);
 
         try {
             switch (SORT_TYPE.valueOf(propertyName.toUpperCase())) {
                 case BOOKMARK:
-                    responseList = postRepo.getListOfPopularPostByBookmarkCount(pageRequest);
+                    responseList = postRepo.getListOfPopularPostByBookmarkCount(pageable);
                     break;
 
                 case COMMENT:
-                    responseList = postRepo.getListOfPopularPostByCommentCount(pageRequest);
+                    responseList = postRepo.getListOfPopularPostByCommentCount(pageable);
                     break;
 
                 default:
@@ -114,8 +114,7 @@ public class PostServicesImpl implements IPostServices {
 
             return responseList.map(this::entityToDTO).getContent();
         } catch (IllegalArgumentException e) {
-            throw new HttpError("Sort by " + propertyName + " is not support!"
-                    , HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new HttpError("Sort by " + propertyName + " is not support!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
@@ -168,7 +167,7 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public void deletePostById(int postId, String authorEmail) {
-        Post post = postRepo.getById(postId);
+        Post post = postRepo.getReferenceById(postId);
         verifyResourceOwner(post, authorEmail);
         postRepo.delete(post);
     }
@@ -217,8 +216,22 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
+    public XmlUrlSet genSiteMap() {
+        final String HOST = "https://langthang.trinhdvt.tech";
+        var sitemap = new XmlUrlSet();
+        postRepo.findAllByPublishedIsTrue()
+                .map(p -> XmlUrlSet.XmlUrl.builder()
+                        .loc(HOST + "/" + p.getAccount().getSlug() + "/" + p.getSlug())
+                        .lastmod(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(p.getPublishedDate()))
+                        .build())
+                .forEach(sitemap::addUrl);
+
+        return sitemap;
+    }
+
+    @Override
     public void deleteReportedPost(int postId, String adminEmail) {
-        Post post = postRepo.getById(postId);
+        Post post = postRepo.getReferenceById(postId);
 
         try {
             verifyResourceOwner(post, adminEmail);
@@ -268,7 +281,7 @@ public class PostServicesImpl implements IPostServices {
     }
 
     public Post verifyResourceOwner(int postId, String authorEmail) {
-        Post post = postRepo.getById(postId);
+        Post post = postRepo.getReferenceById(postId);
         verifyResourceOwner(post, authorEmail);
         return post;
     }
