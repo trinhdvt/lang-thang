@@ -1,6 +1,7 @@
 package com.langthang.scheduled.job;
 
 import com.langthang.services.IStorageServices;
+import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,9 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -23,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,11 +40,11 @@ import java.util.regex.Pattern;
 @EnableBatchProcessing
 public class ClearUnusedImageJob {
     private static final int BATCH_SIZE = 500;
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
     private static Set<String> imageInDB = null;
     private final DataSource dataSource;
     private final IStorageServices storageServices;
-    private final StepBuilderFactory stepBuilderFactory;
-    private final JobBuilderFactory jobBuilderFactory;
     @Value("${application.image.pattern}")
     private String S3_IMAGE_URL_PATTERN;
     @Value("${cloud.aws.public.base-url}")
@@ -56,7 +58,7 @@ public class ClearUnusedImageJob {
 
     @Bean
     public Job clearTrashImageJob() {
-        return jobBuilderFactory.get("clearTrashImageJob")
+        return new JobBuilder("clearTrashImageJob", jobRepository)
                 .preventRestart()
                 .listener(clearTrashImageListener())
                 .start(clearTrashImageStep1())
@@ -66,8 +68,8 @@ public class ClearUnusedImageJob {
 
     @Bean
     public Step clearTrashImageStep1() {
-        return stepBuilderFactory.get("clearTrashImageStep1")
-                .<String, String>chunk(BATCH_SIZE)
+        return new StepBuilder("clearTrashImageStep1", jobRepository)
+                .<String, String>chunk(BATCH_SIZE, transactionManager)
                 .reader(accountTableImageReader())
                 .processor(extractImageUrlProcessor())
                 .writer(unusedImageFilter())
@@ -76,8 +78,8 @@ public class ClearUnusedImageJob {
 
     @Bean
     public Step clearTrashImageStep2() {
-        return stepBuilderFactory.get("clearTrashImageStep2")
-                .<String, String>chunk(BATCH_SIZE)
+        return new StepBuilder("clearTrashImageStep2", jobRepository)
+                .<String, String>chunk(BATCH_SIZE, transactionManager)
                 .reader(postTableImageReader())
                 .processor(extractImageUrlProcessor())
                 .writer(unusedImageFilter())

@@ -1,10 +1,10 @@
 package com.langthang.model.entity;
 
 import com.langthang.event.listener.BookmarkEntityListener;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data

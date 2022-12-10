@@ -6,28 +6,28 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.2</version>
+        <version>3.0.0</version>
         <relativePath/>
     </parent>
 
     <groupId>com.langthang</groupId>
     <artifactId>lang-thang</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
     <name>lang-thang</name>
 
     <description>Web Project langthang.tech</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <lombok.version>1.18.24</lombok.version>
-        <aws.sdk.version>1.12.239</aws.sdk.version>
+        <aws.sdk.version>1.12.351</aws.sdk.version>
         <spring.context.version>5.3.6</spring.context.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
-        <google.api.version>1.35.1</google.api.version>
-        <apache.common-text.version>1.9</apache.common-text.version>
-        <hibernate.search.version>5.11.10.Final</hibernate.search.version>
+        <google.api.version>2.0.1</google.api.version>
+        <apache.common-text.version>1.10.0</apache.common-text.version>
+        <hibernate.search.version>5.11.11.Final</hibernate.search.version>
         <bucket4j.version>7.6.0</bucket4j.version>
         <nanoid.version>2.0.0</nanoid.version>
     </properties>
@@ -92,13 +92,8 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.30</version>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search-orm</artifactId>
-            <version>${hibernate.search.version}</version>
         </dependency>
 
         <dependency>
@@ -117,6 +112,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -159,6 +155,19 @@
             <groupId>com.aventrix.jnanoid</groupId>
             <artifactId>jnanoid</artifactId>
             <version>${nanoid.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>4.0.1</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>

@@ -1,9 +1,9 @@
 package com.langthang.model.entity;
 
 import com.langthang.utils.MyStringUtils;
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @NoArgsConstructor

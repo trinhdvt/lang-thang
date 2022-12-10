@@ -2,11 +2,12 @@ package com.langthang.security.ratelimit;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -19,10 +20,10 @@ public class ApiLimitInterceptor implements HandlerInterceptor {
 
     public ApiLimitInterceptor(ApiBucketManager bucketManager, int limit, Duration duration) {
         if (limit <= 0) {
-            throw new RuntimeException("Limit must be greater than 0");
+            throw new IllegalArgumentException("Limit must be greater than 0");
         }
         if (duration.isNegative() || duration.isZero()) {
-            throw new RuntimeException("Duration must be greater than 0");
+            throw new IllegalArgumentException("Duration must be greater than 0");
         }
 
         this.bucketManager = bucketManager;
@@ -36,7 +37,7 @@ public class ApiLimitInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest req, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
         String bucketKey = additionalKeyPrefix;
         bucketKey += Optional.ofNullable(req.getHeader("X-Forwarded-For")).orElse(req.getRemoteAddr());
 

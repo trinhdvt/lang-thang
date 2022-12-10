@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityUtils {
 
+    private SecurityUtils() {
+    }
+
     public static String getLoggedInEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

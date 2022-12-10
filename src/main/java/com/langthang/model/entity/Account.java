@@ -2,9 +2,9 @@ package com.langthang.model.entity;
 
 import com.langthang.event.listener.AccountEntityListener;
 import com.langthang.model.constraints.Role;
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 

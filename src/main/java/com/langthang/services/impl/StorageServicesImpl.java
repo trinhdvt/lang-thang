@@ -17,14 +17,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * This class is responsible for uploading and deleting files to AWS S3
+ *
+ * @deprecated This class is deprecated because it is not used anymore
+ */
 @Service
 @Slf4j
+@Deprecated(forRemoval = true)
 public class StorageServicesImpl implements IStorageServices {
 
     private final AmazonS3 s3Client;
@@ -32,8 +40,6 @@ public class StorageServicesImpl implements IStorageServices {
     private String imageBucket;
     @Value("${cloud.aws.bucket.backup-bucket}")
     private String fileBucket;
-    @Value("${cloud.aws.public.base-url}")
-    private String basePublicURL;
 
     @Autowired
     public StorageServicesImpl(AmazonS3 s3Client) {
@@ -42,27 +48,27 @@ public class StorageServicesImpl implements IStorageServices {
 
     @Override
     @Async
-    public void uploadImage(MultipartFile multipartFile, String filename) {
+    public void uploadImage(MultipartFile multipartFile, String filename) throws IOException {
         File uploadFile = convertToFile(multipartFile);
 
         PutObjectRequest objectRequest = new PutObjectRequest(imageBucket, filename, uploadFile);
         s3Client.putObject(objectRequest);
 
-        uploadFile.delete();
+        Files.delete(uploadFile.toPath());
     }
 
     @Override
-    public void uploadFile(String absPath) {
+    public void uploadFile(String absPath) throws IOException {
         File file = new File(absPath);
         if (!file.exists() || !file.isFile()) {
-            throw new RuntimeException("File not exist");
+            throw new FileNotFoundException("File not exist");
         }
 
         String fileName = file.getName();
         PutObjectRequest objectRequest = new PutObjectRequest(fileBucket, fileName, file);
         s3Client.putObject(objectRequest);
 
-        file.delete();
+        Files.delete(file.toPath());
     }
 
     @Override

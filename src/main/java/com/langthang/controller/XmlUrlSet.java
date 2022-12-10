@@ -1,8 +1,12 @@
 package com.langthang.controller;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
 
-import javax.xml.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

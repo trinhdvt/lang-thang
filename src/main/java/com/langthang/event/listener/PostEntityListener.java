@@ -3,12 +3,12 @@ package com.langthang.event.listener;
 
 import com.langthang.model.entity.Post;
 import com.langthang.utils.MyStringUtils;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import java.util.Date;
 
 @Slf4j

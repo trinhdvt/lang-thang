@@ -3,7 +3,8 @@ package com.langthang.model.entity;
 import com.langthang.event.listener.CommentEntityListener;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;

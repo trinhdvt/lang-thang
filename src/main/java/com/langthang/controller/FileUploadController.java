@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 
 @RestController
@@ -29,14 +30,14 @@ public class FileUploadController {
     private String basePublicURL;
 
     @Autowired
-    public FileUploadController(IStorageServices IStorageServices) {
-        this.storageServices = IStorageServices;
+    public FileUploadController(IStorageServices iStorageServices) {
+        this.storageServices = iStorageServices;
     }
 
     @PostMapping(value = "/upload")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> uploadFile(
-            @RequestParam("upload") @ValidImage MultipartFile multipartFile) {
+            @RequestParam("upload") @ValidImage MultipartFile multipartFile) throws IOException {
         String originFilename = StringUtils.deleteWhitespace(multipartFile.getOriginalFilename());
         AssertUtils.notNull(originFilename, new HttpError("File name is null", HttpStatus.BAD_REQUEST));
 

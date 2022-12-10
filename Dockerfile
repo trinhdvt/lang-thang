@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jdk-alpine as builder
+FROM eclipse-temurin:17-jdk-alpine as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN ./mvnw dependency:go-offline -B -Dmaven.artifact.threads=30
 COPY src src
 RUN chmod u+x ./mvnw && ./mvnw package -DskipTests && mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 ARG DEPENDENCY=/app/target/dependency
 

@@ -4,13 +4,13 @@ import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.event.OnNewNotificationEvent;
 import com.langthang.model.entity.Notification;
 import com.langthang.utils.MyStringUtils;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
 
 @Component
 @Slf4j

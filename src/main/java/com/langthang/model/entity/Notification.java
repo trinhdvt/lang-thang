@@ -3,7 +3,8 @@ package com.langthang.model.entity;
 import com.langthang.event.listener.NotificationEntityListener;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Date;
 
 @NoArgsConstructor

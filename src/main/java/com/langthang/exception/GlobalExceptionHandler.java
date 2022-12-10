@@ -2,6 +2,7 @@ package com.langthang.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
 import java.util.List;
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<?> handleBindException(BindException ex, HttpServletRequest req) throws JsonProcessingException {
+    public ResponseEntity<Object> handleBindException(BindException ex, HttpServletRequest req) throws JsonProcessingException {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
         Map<String, Set<String>> map = fieldErrors.stream().collect(Collectors.groupingBy(FieldError::getField,
                 Collectors.mapping(FieldError::getDefaultMessage, Collectors.toSet())));

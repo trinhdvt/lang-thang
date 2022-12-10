@@ -2,8 +2,7 @@ package com.langthang.services;
 
 import com.langthang.model.dto.request.AccountRegisterDTO;
 import com.langthang.model.dto.request.PasswordDTO;
-
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface IAuthServices {
 

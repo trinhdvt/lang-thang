@@ -6,7 +6,8 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class OnNewNotificationEvent extends ApplicationEvent {
-    private final NotificationDTO notification;
+
+    private final transient NotificationDTO notification;
 
     public OnNewNotificationEvent(NotificationDTO notification) {
         super(notification);

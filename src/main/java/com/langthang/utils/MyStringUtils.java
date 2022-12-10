@@ -21,7 +21,7 @@ public class MyStringUtils extends StringUtils {
         return vietnameseNormPattern.matcher(temp)
                 .replaceAll("")
                 .toLowerCase()
-                .replaceAll("đ", "d")
+                .replace("đ", "d")
                 .replaceAll("(?!-)\\W", "-")
                 .replaceAll("^-*|-*$", "")
                 .replaceAll("-{2,}", "-");

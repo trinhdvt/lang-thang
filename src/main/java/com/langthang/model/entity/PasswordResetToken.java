@@ -3,7 +3,8 @@ package com.langthang.model.entity;
 import lombok.Getter;
 import org.apache.commons.lang3.time.DateUtils;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
