@@ -22,31 +22,34 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("select count(a) from FollowingRelationship a where a.followingAccountId=?1")
     int countFollowing(int accountId);
 
-    @Query("select a " +
-            "from FollowingRelationship fr left join Account a " +
-            "on fr.followingAccountId=a.id " +
-            "group by (fr.followingAccountId) " +
-            "order by count(fr.followingAccountId) DESC ")
+    @Query("""
+            select a
+            from Account a, (select f.followingAccountId as followingAccountId, count (f.accountId) as total
+                                    from FollowingRelationship f
+                                    group by (f.followingAccountId)) as tmp
+            where a.id = tmp.followingAccountId
+            order by tmp.total desc
+            """)
     List<Account> getTopFollowingAccount(Pageable pageable);
 
     @Query("select count(bp) " +
-            "from BookmarkedPost bp join Post p on bp.post.id = p.id " +
-            "where p.account.id = ?1")
+           "from BookmarkedPost bp join Post p on bp.post.id = p.id " +
+           "where p.account.id = ?1")
     int countBookmarkOnMyPost(int accountId);
 
     @Query("select count(c.id) " +
-            "from Comment c join Post p on c.post.id = p.id " +
-            "where p.account.id = ?1")
+           "from Comment c join Post p on c.post.id = p.id " +
+           "where p.account.id = ?1")
     int countCommentOnMyPost(int accountId);
 
     @Query("select count(p.account) " +
-            "from Post p where p.account.id=?1 and p.published=true ")
+           "from Post p where p.account.id=?1 and p.published=true ")
     int countPublishedPost(int accountId);
 
     @Query("select acc " +
-            "from FollowingRelationship fr left join Account acc " +
-            "on fr.accountId=acc.id " +
-            "where fr.followingAccountId=?1")
+           "from FollowingRelationship fr left join Account acc " +
+           "on fr.accountId=acc.id " +
+           "where fr.followingAccountId=?1")
     @Transactional(readOnly = true)
     Slice<Account> getFollowedAccount(int accountId, Pageable pageable);
 

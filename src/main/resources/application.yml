@@ -17,7 +17,16 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        generate_statistics: false
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 100
+
     open-in-view: false
+    database-platform: POSTGRES
   servlet:
     multipart:
       max-file-size: 2MB
@@ -65,5 +74,8 @@ logging:
     org:
       springframework:
         web: INFO
+      hibernate:
+        stat: DEBUG
+        SQL_SLOW: INFO
     com:
       langthang: DEBUG
