@@ -22,7 +22,7 @@ public class AccountDTO {
 
     private String slug;
 
-    private int postCount;
+    private long postCount;
 
     private int followCount;
 

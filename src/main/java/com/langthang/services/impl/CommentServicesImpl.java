@@ -1,8 +1,8 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.exception.NotFoundError;
-import com.langthang.exception.UnauthorizedError;
+import com.langthang.model.constraints.NotificationType;
+import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Comment;
 import com.langthang.model.entity.Post;
@@ -11,8 +11,6 @@ import com.langthang.repository.CommentRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
 import com.langthang.services.INotificationServices;
-import com.langthang.utils.AssertUtils;
-import com.langthang.model.constraints.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.langthang.specification.PostSpec.hasSlug;
+import static com.langthang.specification.PostSpec.isPublished;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -39,16 +39,18 @@ public class CommentServicesImpl implements ICommentServices {
 
     @Override
     public CommentDTO addNewComment(int postId, Integer parentId, String content, String commenterEmail) {
-        Post post = postRepo.findPostByIdAndPublished(postId, true);
-        AssertUtils.notNull(post, new NotFoundError("Post not found!"));
+        Post post = postRepo.findOne(isPublished(postId))
+                .orElseThrow(() -> new NotFoundError(Post.class));
 
-        Account commenter = accRepo.findAccountByEmail(commenterEmail);
+        Account commenter = accRepo.getByEmail(commenterEmail);
         Comment newComment = new Comment(commenter, post, content);
 
         if (parentId != null) {
-            Comment parentComment = commentRepo.findById(parentId).orElseThrow(() -> new NotFoundError("Comment not found!"));
+            Comment parentComment = commentRepo.findById(parentId)
+                    .orElseThrow(() -> new NotFoundError(Comment.class));
+
             if (parentComment.getParentComment() != null || parentComment.getPost().getId() != postId) {
-                throw new NotFoundError("Comment not found!");
+                throw new NotFoundError(Comment.class);
             }
             newComment.setParentComment(parentComment);
         }
@@ -59,61 +61,62 @@ public class CommentServicesImpl implements ICommentServices {
 
     @Override
     public CommentDTO modifyComment(int commentId, String content, String accEmail) {
-        Comment oldComment = commentRepo.findById(commentId).orElse(null);
-        AssertUtils.notNull(oldComment, new NotFoundError("Comment not found!"));
+        return commentRepo.findById(commentId)
+                .map(comment -> {
+                    if (!comment.getAccount().getEmail().equals(accEmail)) throw new NotFoundError(Comment.class);
 
-        Account commenter = oldComment.getAccount();
-        AssertUtils.isTrue(commenter.getEmail().equals(accEmail), new UnauthorizedError("Comment not found"));
-
-        oldComment.setContent(content);
-        Comment newComment = commentRepo.save(oldComment);
-
-        return CommentDTO.toCommentDTO(newComment);
+                    comment.setContent(content);
+                    return commentRepo.saveAndFlush(comment);
+                })
+                .map(CommentDTO::toCommentDTO)
+                .orElseThrow(() -> new NotFoundError(Comment.class));
     }
 
     @Override
     public int deleteComment(int commentId, String accEmail) {
-        Comment existingComment = commentRepo.findById(commentId).orElse(null);
-        AssertUtils.notNull(existingComment, new NotFoundError("Comment not found!"));
-        AssertUtils.isTrue(existingComment.getAccount().getEmail().equals(accEmail), new UnauthorizedError("Comment not found"));
+        return commentRepo.findById(commentId)
+                .map(comment -> {
+                    if (!comment.getAccount().getEmail().equals(accEmail)) throw new NotFoundError(Comment.class);
 
-        commentRepo.delete(existingComment);
-        return commentRepo.countCommentInPost(existingComment.getPost().getId());
+                    commentRepo.delete(comment);
+                    return commentRepo.countCommentInPost(comment.getPost().getId());
+                })
+                .orElseThrow(() -> new NotFoundError(Comment.class));
     }
 
     @Override
     public List<CommentDTO> getAllCommentOfPost(int postId, Pageable pageable) {
-        AssertUtils.isTrue(postRepo.existsByIdAndPublished(postId, true), new NotFoundError("Post not found!"));
-
-        return commentRepo.getCommentsByPost_Id(postId, pageable)
-                .map(comment -> {
-                    CommentDTO cmtDTO = CommentDTO.toCommentDTO(comment);
-                    if (!comment.getChildComments().isEmpty()) {
-                        cmtDTO.setChildComments(comment.getChildComments().stream()
-                                .map(CommentDTO::toCommentDTO)
-                                .collect(Collectors.toList()));
-                    }
-                    return cmtDTO;
-                })
-                .getContent();
+        return postRepo.findOne(isPublished(postId))
+                .map(post -> commentRepo.getCommentsByPost(post, pageable)
+                        .map(comment -> {
+                            CommentDTO cmtDTO = CommentDTO.toCommentDTO(comment);
+                            if (!comment.getChildComments().isEmpty()) {
+                                cmtDTO.setChildComments(comment.getChildComments().stream()
+                                        .map(CommentDTO::toCommentDTO)
+                                        .toList());
+                            }
+                            return cmtDTO;
+                        })
+                        .getContent())
+                .orElseThrow(() -> new NotFoundError(Post.class));
     }
 
     @Override
     public List<CommentDTO> getAllCommentOfPost(String slug, Pageable pageable) {
-        Post post = postRepo.findPostBySlugAndPublished(slug, true);
-        AssertUtils.notNull(post, new NotFoundError("Post not found!"));
-
-        return commentRepo.getCommentsByPost_Id(post.getId(), pageable)
+        return postRepo.findOne(hasSlug(slug))
+                .filter(Post::isPublished)
+                .map(post -> commentRepo.getCommentsByPost(post, pageable))
+                .orElseThrow(() -> new NotFoundError(Post.class))
                 .map(CommentDTO::toCommentDTO)
                 .getContent();
     }
 
     @Override
     public int likeOrUnlikeComment(int commentId, String currentEmail) {
-        Comment comment = commentRepo.findById(commentId).orElse(null);
-        AssertUtils.notNull(comment, new NotFoundError("Comment not found!"));
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(() -> new NotFoundError(Comment.class));
 
-        Account currentAcc = accRepo.findAccountByEmail(currentEmail);
+        Account currentAcc = accRepo.getByEmail(currentEmail);
         boolean isLiked = currentAcc.getLikedComments().removeIf(cm -> cm.getId() == commentId);
 
         if (!isLiked) {
@@ -126,7 +129,6 @@ public class CommentServicesImpl implements ICommentServices {
         }
 
         accRepo.saveAndFlush(currentAcc);
-
         return commentRepo.countCommentLike(commentId);
     }
 }

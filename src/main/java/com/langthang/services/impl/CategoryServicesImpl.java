@@ -1,8 +1,8 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.dto.response.CategoryDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
+import com.langthang.model.dto.response.CategoryDTO;
 import com.langthang.model.entity.Category;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.services.ICategoryServices;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -29,33 +28,31 @@ public class CategoryServicesImpl implements ICategoryServices {
 
     @Override
     public List<CategoryDTO> getAllCategory(Pageable pageable) {
-        return categoryRepo.findAll(pageable).stream()
+        return categoryRepo.findAll(pageable)
                 .map(CategoryDTO::toCategoryDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
     @Override
     public void deleteCategory(int categoryId) {
-        Category category = categoryRepo.findById(categoryId).orElse(null);
-
-        AssertUtils.notNull(category, new NotFoundError("Category not found"));
-
-        categoryRepo.delete(category);
+        categoryRepo.findById(categoryId)
+                .ifPresentOrElse(categoryRepo::delete, () -> {
+                    throw new NotFoundError(Category.class);
+                });
     }
 
     @Override
     public CategoryDTO modifyCategory(int categoryId, String newName) {
-        Category category = categoryRepo.findById(categoryId).orElse(null);
-        AssertUtils.notNull(category, new NotFoundError("Category not found"));
+        return categoryRepo.findById(categoryId)
+                .map(category -> {
+                    if (categoryRepo.existsByName(newName))
+                        throw new HttpError("Category is already existed", HttpStatus.CONFLICT);
 
-        boolean isExisted = categoryRepo.existsByName(newName);
-        AssertUtils.isTrue(!isExisted, new HttpError("Category is already existed", HttpStatus.CONFLICT));
-
-        category.setName(newName);
-        Category savedCategory = categoryRepo.save(category);
-
-        return CategoryDTO.toCategoryDTO(savedCategory);
+                    category.setName(newName);
+                    return categoryRepo.saveAndFlush(category);
+                }).map(CategoryDTO::toCategoryDTO)
+                .orElseThrow(() -> new NotFoundError(Category.class));
     }
 
     @Override

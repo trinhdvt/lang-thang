@@ -13,21 +13,20 @@ import com.langthang.repository.FollowRelationshipRepo;
 import com.langthang.repository.PostReportRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IUserServices;
+import com.langthang.specification.AccountSpec;
+import com.langthang.specification.PostSpec;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -46,15 +45,15 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public AccountDTO getDetailInformationById(int accountId) {
-        Account account = accRepo.findAccountByIdAndEnabled(accountId, true);
-        AssertUtils.notNull(account, new NotFoundError("Account not found"));
-
-        return toDetailAccountDTO(account);
+        return accRepo.findById(accountId)
+                .filter(Account::isEnabled)
+                .map(this::toDetailAccountDTO)
+                .orElseThrow(() -> new NotFoundError(Account.class));
     }
 
     @Override
     public AccountDTO getDetailInformationByEmail(String email) {
-        Account account = accRepo.findAccountByEmail(email);
+        Account account = accRepo.getByEmail(email);
         AssertUtils.notNull(account, new NotFoundError("Account not found"));
         AssertUtils.isTrue(account.isEnabled(), new NotFoundError("Account not found"));
 
@@ -63,18 +62,18 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public AccountDTO getDetailInformationBySlug(String slug) {
-        Account account = accRepo.findAccountBySlugAndEnabled(slug, true);
-        AssertUtils.notNull(account, new NotFoundError("Account not found"));
-
-        return toDetailAccountDTO(account);
+        return accRepo.findOne(AccountSpec.hasSlug(slug))
+                .filter(Account::isEnabled)
+                .map(this::toDetailAccountDTO)
+                .orElseThrow(() -> new NotFoundError(Account.class));
     }
 
     @Override
     public int followOrUnfollow(String currentAccEmail, int accountId) {
-        Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
+        Account currentAcc = accRepo.getByEmail(currentAccEmail);
 
-        Account willFollowAcc = accRepo.findAccountByIdAndEnabled(accountId, true);
-        AssertUtils.notNull(willFollowAcc, new NotFoundError("Account not found"));
+        Account willFollowAcc = accRepo.findById(accountId).filter(Account::isEnabled)
+                .orElseThrow(() -> new NotFoundError(Account.class));
 
         int currentAccId = currentAcc.getId();
         int willFollowAccId = willFollowAcc.getId();
@@ -92,25 +91,21 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public List<AccountDTO> getTopFollowUser(int num) {
-        List<Account> accountList = accRepo.getTopFollowingAccount(PageRequest.of(0, num));
-
-        return accountList.stream()
+        return accRepo.getTopFollowingAccount(PageRequest.of(0, num))
                 .map(this::toDetailAccountDTO)
-                .collect(Collectors.toList());
+                .getContent();
     }
 
     @Override
     public List<AccountDTO> getListOfUserInSystem(Pageable pageable) {
-        Page<Account> accountList = accRepo.findAll(pageable);
-
-        return accountList
+        return accRepo.findAll(pageable)
                 .map(this::toDetailAccountDTO)
                 .getContent();
     }
 
     @Override
     public AccountDTO updateBasicInfo(String currentEmail, AccountInfoDTO newInfo) {
-        Account account = accRepo.findAccountByEmail(currentEmail);
+        Account account = accRepo.getByEmail(currentEmail);
 
         account.setName(newInfo.getName());
         account.setAbout(newInfo.getAbout());
@@ -124,7 +119,7 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public void checkEmailAndPassword(String currentEmail, String oldPassword) {
-        Account account = accRepo.findAccountByEmail(currentEmail);
+        Account account = accRepo.getByEmail(currentEmail);
 
         String currentPassword = account.getPassword();
         AssertUtils.isTrue(passwordEncoder.matches(oldPassword, currentPassword),
@@ -133,7 +128,7 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public void updatePassword(String currentEmail, String newPassword) {
-        Account account = accRepo.findAccountByEmail(currentEmail);
+        Account account = accRepo.getByEmail(currentEmail);
 
         account.setPassword(passwordEncoder.encode(newPassword));
         accRepo.saveAndFlush(account);
@@ -141,14 +136,14 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public void createReport(String reporterEmail, int postId, String reportContent) {
-        Post reportPost = postRepo.findPostByIdAndPublished(postId, true);
-        AssertUtils.notNull(reportPost, new NotFoundError("Post not found"));
+        Post reportPost = postRepo.findOne(PostSpec.isPublished(postId))
+                .orElseThrow(() -> NotFoundError.build(Post.class));
 
         if (reportPost.getAccount().getEmail().equals(reporterEmail)) {
             throw new HttpError("Cannot report your-self", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        Account reporter = accRepo.findAccountByEmail(reporterEmail);
+        Account reporter = accRepo.getByEmail(reporterEmail);
         PostReport postReport = new PostReport(reporter, reportPost, reportContent);
 
         reportRepo.save(postReport);
@@ -156,21 +151,19 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public List<AccountDTO> getFollower(int accountId, Pageable pageable) {
-        Account acc = accRepo.findAccountByIdAndEnabled(accountId, true);
-        AssertUtils.notNull(acc, new NotFoundError("Account not found"));
-
-        Slice<Account> followerLst = accRepo.getFollowedAccount(accountId, pageable);
-
-        return followerLst.stream().map(account -> {
-            AccountDTO dto = AccountDTO.toBasicAccount(account);
-            String currentAccEmail = SecurityUtils.getLoggedInEmail();
-            if (currentAccEmail != null) {
-                Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
-                boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());
-                dto.setFollowed(isFollowed);
-            }
-            return dto;
-        }).collect(Collectors.toList());
+        return accRepo.findOne(AccountSpec.isEnabled(accountId))
+                .map(account -> accRepo.getFollowedAccount(account.getId(), pageable))
+                .map(listOfFollowers -> listOfFollowers.stream().map(account -> {
+                    AccountDTO dto = AccountDTO.toBasicAccount(account);
+                    String currentAccEmail = SecurityUtils.getLoggedInEmail();
+                    if (currentAccEmail != null) {
+                        Account currentAcc = accRepo.getByEmail(currentAccEmail);
+                        boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());
+                        dto.setFollowed(isFollowed);
+                    }
+                    return dto;
+                }).toList())
+                .orElseThrow(() -> new NotFoundError(Account.class));
     }
 
     private AccountDTO toDetailAccountDTO(Account account) {
@@ -183,7 +176,7 @@ public class UserServicesImpl implements IUserServices {
 
         String currentAccEmail = SecurityUtils.getLoggedInEmail();
         if (currentAccEmail != null) {
-            Account currentAcc = accRepo.findAccountByEmail(currentAccEmail);
+            Account currentAcc = accRepo.getByEmail(currentAccEmail);
             boolean isFollowed = followRepo.existsByAccount_IdAndFollowingAccountId(currentAcc.getId(), account.getId());
             basicAccountDTO.setFollowed(isFollowed);
         }

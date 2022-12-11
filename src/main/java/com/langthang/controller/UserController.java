@@ -80,7 +80,7 @@ public class UserController {
             @RequestParam("email") String accountEmail,
             @PageableDefault(sort = {"publishedDate"}) Pageable pageable) {
 
-        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountEmail, pageable);
+        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountEmail, pageable, true);
 
         return ResponseEntity.ok(responseList);
     }
@@ -93,7 +93,7 @@ public class UserController {
 
         String accountEmail = authentication.getName();
 
-        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountEmail, pageable);
+        List<PostResponseDTO> responseList = postServices.getAllPostOfUser(accountEmail, pageable, true);
 
         return ResponseEntity.ok(responseList);
     }
@@ -107,7 +107,7 @@ public class UserController {
 
         String accountEmail = authentication.getName();
 
-        List<PostResponseDTO> draftList = postServices.getAllDraftOfUser(accountEmail, pageable);
+        List<PostResponseDTO> draftList = postServices.getAllPostOfUser(accountEmail, pageable, false);
 
         return ResponseEntity.ok(draftList);
     }

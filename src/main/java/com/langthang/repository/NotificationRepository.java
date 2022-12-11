@@ -9,12 +9,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
 
     Page<Notification> findAllByAccount_Email(String accountEmail, Pageable pageable);
 
-    List<Notification> findAllByAccount_EmailAndSeenIsFalse(String accountEmail, Sort sort);
+    Stream<Notification> findAllByAccount_EmailAndSeenIsFalse(String accountEmail, Sort sort);
 
     @Query("update Notification nt " +
             "set nt.seen=true " +

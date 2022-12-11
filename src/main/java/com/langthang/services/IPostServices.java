@@ -10,8 +10,6 @@ import java.util.List;
 public interface IPostServices {
     PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isPublish);
 
-    PostResponseDTO getPostDetailById(int postId);
-
     PostResponseDTO getPostDetailBySlug(String slug);
 
     PostResponseDTO getDraftById(int postId, String authorEmail);
@@ -28,9 +26,7 @@ public interface IPostServices {
 
     List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable);
 
-    List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable);
-
-    List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable);
+    List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable, boolean isPublished);
 
     List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable);
 
