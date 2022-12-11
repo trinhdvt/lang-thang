@@ -26,6 +26,7 @@ public class BookmarkedPost {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Column(name = "bookmarked_date")
     private Date bookmarkedDate;
 
     public BookmarkedPost(Account account, Post post) {

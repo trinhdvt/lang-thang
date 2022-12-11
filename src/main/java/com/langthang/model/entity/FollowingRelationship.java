@@ -6,8 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
 
-import java.util.Date;
+import java.time.Instant;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,11 +31,12 @@ public class FollowingRelationship {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    private Date followingDate;
+    @Column(name = "following_date")
+    @CreatedDate
+    private Instant followingDate;
 
     public FollowingRelationship(Integer accountId, Integer followingAccountId) {
         this.accountId = accountId;
         this.followingAccountId = followingAccountId;
-        this.followingDate = new Date();
     }
 }

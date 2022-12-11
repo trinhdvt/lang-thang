@@ -6,6 +6,7 @@ import com.langthang.utils.SecurityUtils;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CommentDTO {
     private AccountDTO commenter;
     private int postId;
     private boolean isMyComment;
-    private Date commentDate;
+    private Instant commentDate;
     private String content;
     private boolean isLiked;
     private int likeCount;

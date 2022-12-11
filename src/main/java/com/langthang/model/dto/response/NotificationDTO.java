@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -38,7 +39,7 @@ public class NotificationDTO {
 
     private String content;
 
-    private Date notifyDate;
+    private Instant notifyDate;
 
     private boolean seen;
 

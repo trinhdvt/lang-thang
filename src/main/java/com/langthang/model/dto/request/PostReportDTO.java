@@ -5,7 +5,7 @@ import com.langthang.model.dto.response.AccountDTO;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Builder
 @Data
@@ -19,7 +19,7 @@ public class PostReportDTO {
 
     private String reportContent;
 
-    private Date reportDate;
+    private Instant reportDate;
 
     private boolean solved;
 

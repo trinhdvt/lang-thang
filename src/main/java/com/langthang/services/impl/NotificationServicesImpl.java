@@ -73,7 +73,8 @@ public class NotificationServicesImpl implements INotificationServices {
     public void sendFollowersNotification(Post newPost) {
         Account author = newPost.getAccount();
 
-        int pageSize = 100, page = 0;
+        int pageSize = 100;
+        int page = 0;
         Slice<Account> followerPage;
         do {
             followerPage = accRepo.getFollowedAccount(author.getId(), PageRequest.of(page, pageSize, Sort.by("id")));
@@ -146,18 +147,11 @@ public class NotificationServicesImpl implements INotificationServices {
     }
 
     private String getNotificationTemplate(NotificationType notificationType) {
-        switch (notificationType) {
-            case LIKE:
-                return likeNotificationTemplate;
-            case COMMENT:
-                return commentNotificationTemplate;
-            case BOOKMARK:
-                return bookmarkNotificationTemplate;
-            case NEW_POST:
-                return newPostNotificationTemplate;
-            default:
-                throw new HttpError("Type: " + notificationType + " not support"
-                        , HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return switch (notificationType) {
+            case LIKE -> likeNotificationTemplate;
+            case COMMENT -> commentNotificationTemplate;
+            case BOOKMARK -> bookmarkNotificationTemplate;
+            case NEW_POST -> newPostNotificationTemplate;
+        };
     }
 }

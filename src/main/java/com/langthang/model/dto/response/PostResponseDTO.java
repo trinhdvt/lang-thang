@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,9 +33,9 @@ public class PostResponseDTO {
 
     private boolean isBookmarked;
 
-    private Date publishedDate;
+    private Instant publishedDate;
 
-    private Date createdDate;
+    private Instant createdDate;
 
     private String postThumbnail;
 

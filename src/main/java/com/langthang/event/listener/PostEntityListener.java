@@ -9,7 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.Instant;
+
 
 @Slf4j
 @Component
@@ -22,8 +23,7 @@ public class PostEntityListener {
         String encodedContent = MyStringUtils.escapeHtml(post.getContent());
         post.setContent(encodedContent);
 
-        if (post.getCreatedDate() == null) post.setCreatedDate(new Date());
-        if (post.isPublished() && post.getPublishedDate() == null) post.setPublishedDate(new Date());
+        if (post.isPublished() && post.getPublishedDate() == null) post.setPublishedDate(Instant.now());
         if (post.getSlug() == null) post.setSlug(slug);
     }
 }

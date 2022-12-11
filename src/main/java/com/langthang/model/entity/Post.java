@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -23,31 +25,36 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(name = "title", columnDefinition = "TEXT")
     private String title;
 
-
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "slug", unique = true)
     private String slug;
 
-    private Date publishedDate;
+    @Column(name = "published_date")
+    private Instant publishedDate;
 
-    private Date createdDate;
+    @Column(name = "created_date")
+    @CreatedDate
+    private Instant createdDate;
 
+    @Column(name = "post_thumbnail")
     private String postThumbnail;
 
     @Column(name = "status")
     private boolean published;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "post"
-            , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
     private Set<PostReport> postReports;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "post_category",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -55,10 +62,10 @@ public class Post {
     )
     private Set<Category> postCategories;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
     private Set<BookmarkedPost> bookmarkedPosts;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
     @OrderBy("commentDate ASC")
     private List<Comment> comments;
 
@@ -71,12 +78,12 @@ public class Post {
     @Override
     public String toString() {
         return "Post{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", slug='" + slug + '\'' +
-                ", publishedDate=" + publishedDate +
-                ", postThumbnail='" + postThumbnail + '\'' +
-                ", published=" + published +
-                '}';
+               "id=" + id +
+               ", title='" + title + '\'' +
+               ", slug='" + slug + '\'' +
+               ", publishedDate=" + publishedDate +
+               ", postThumbnail='" + postThumbnail + '\'' +
+               ", published=" + published +
+               '}';
     }
 }
