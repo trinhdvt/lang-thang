@@ -2,8 +2,10 @@ package com.langthang.model.entity;
 
 import com.langthang.event.listener.AccountEntityListener;
 import com.langthang.model.constraints.Role;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.List;
 import java.util.Set;
@@ -19,7 +21,7 @@ import java.util.Set;
 public class Account {
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "email", unique = true)
@@ -36,7 +38,8 @@ public class Account {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, columnDefinition = "user_role")
+    @Type(PostgreSQLEnumType.class)
     private Role role = Role.ROLE_USER;
 
     @Builder.Default

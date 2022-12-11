@@ -2,8 +2,10 @@ package com.langthang.model.dto.response;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class SystemReportDTO {
+public class SystemReportDTO implements Serializable {
 
     /**
      * How many User registered in our website ?

@@ -6,13 +6,13 @@ import com.langthang.utils.SecurityUtils;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @Builder
-public class CommentDTO {
+public class CommentDTO implements Serializable {
 
     private Integer commentId;
     private Integer parentId;

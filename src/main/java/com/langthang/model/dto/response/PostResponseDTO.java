@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponseDTO {
+public class PostResponseDTO implements Serializable {
 
     private int postId;
 
