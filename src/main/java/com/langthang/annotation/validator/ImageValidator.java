@@ -1,11 +1,11 @@
 package com.langthang.annotation.validator;
 
 import com.langthang.annotation.ValidImage;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class ImageValidator implements ConstraintValidator<ValidImage, MultipartFile> {
 

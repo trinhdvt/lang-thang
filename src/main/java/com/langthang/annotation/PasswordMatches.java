@@ -2,8 +2,8 @@ package com.langthang.annotation;
 
 import com.langthang.annotation.validator.PasswordMatchesValidator;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.*;
+
 import java.lang.annotation.*;
 
 @Target(ElementType.PARAMETER)

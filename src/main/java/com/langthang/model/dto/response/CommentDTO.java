@@ -6,19 +6,20 @@ import com.langthang.utils.SecurityUtils;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 
 @Data
 @Builder
-public class CommentDTO {
+public class CommentDTO implements Serializable {
 
     private Integer commentId;
     private Integer parentId;
     private AccountDTO commenter;
     private int postId;
     private boolean isMyComment;
-    private Date commentDate;
+    private Instant commentDate;
     private String content;
     private boolean isLiked;
     private int likeCount;

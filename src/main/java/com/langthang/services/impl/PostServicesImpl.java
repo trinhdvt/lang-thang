@@ -1,11 +1,14 @@
 package com.langthang.services.impl;
 
+import com.langthang.controller.v1.XmlUrlSet;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
+import com.langthang.mapper.PostMapper;
 import com.langthang.model.dto.request.PostRequestDTO;
 import com.langthang.model.dto.response.AccountDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
+import com.langthang.model.dto.v2.response.PostDtoV2;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Category;
 import com.langthang.model.entity.Post;
@@ -13,22 +16,28 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CategoryRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IPostServices;
+import com.langthang.specification.PostSpec;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.sql.Date;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static com.langthang.specification.AccountSpec.hasEmail;
+import static com.langthang.specification.PostSpec.*;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -39,13 +48,14 @@ public class PostServicesImpl implements IPostServices {
     private final AccountRepository accRepo;
     private final CategoryRepository categoryRepo;
     private final NotificationServicesImpl notificationServices;
+    private final PostMapper postMapper;
 
     @Override
     public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isPublish) {
         Post post = new Post(postRequestDTO.getTitle(), postRequestDTO.getContent(), postRequestDTO.getPostThumbnail());
-        post.setAccount(accRepo.findAccountByEmail(authorEmail));
+        post.setAuthor(accRepo.getByEmail(authorEmail));
         post.setPublished(isPublish);
-        post.setPostCategories(getCategories(postRequestDTO));
+        post.setCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(post);
         if (isPublish) {
@@ -56,19 +66,10 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public PostResponseDTO getPostDetailById(int postId) {
-        Post post = postRepo.findPostByIdAndPublished(postId, true);
-        AssertUtils.notNull(post, new NotFoundError("Post not found!"));
-
-        return entityToDTO(post);
-    }
-
-    @Override
     public PostResponseDTO getPostDetailBySlug(String slug) {
-        Post post = postRepo.findPostBySlugAndPublished(slug, true);
-        AssertUtils.notNull(post, new NotFoundError("Post not found!"));
-
-        return entityToDTO(post);
+        return postRepo.findOne(hasSlug(slug).and(isPublished()))
+                .map(this::entityToDTO)
+                .orElseThrow(() -> NotFoundError.build(Post.class));
     }
 
     @Override
@@ -81,76 +82,63 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> getPreviewPost(Pageable pageable) {
-        Page<Post> postResponse = postRepo.findByAccountNotNullAndPublishedIsTrue(pageable);
-
-        return postResponse.map(this::entityToDTO).getContent();
+        return postRepo.findAll(PostSpec.isPublished(), pageable)
+                .map(this::entityToDTO)
+                .getContent();
     }
 
     @Override
-    public List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable) {
-        List<Post> posts = postRepo.searchByKeyword(keyword, pageable);
+    public List<PostDtoV2> findPostByKeyword(String keyword, Pageable pageable) {
+        keyword = StringUtils.join(StringUtils.split(keyword, " "), " | ");
 
-        return posts.stream().map(this::entityToDTO).collect(Collectors.toList());
+        return postRepo.searchByKeyword(keyword, pageable)
+                .map(postMapper::toDto)
+                .toList();
     }
 
     @Override
-    public List<PostResponseDTO> getPopularPostByProperty(String propertyName, int size) {
+    public List<PostResponseDTO> getPopularPostByProperty(String propertyName, Pageable pageable) {
         Page<Post> responseList;
-        PageRequest pageRequest = PageRequest.of(0, size);
 
         try {
             switch (SORT_TYPE.valueOf(propertyName.toUpperCase())) {
-                case BOOKMARK:
-                    responseList = postRepo.getListOfPopularPostByBookmarkCount(pageRequest);
-                    break;
-
-                case COMMENT:
-                    responseList = postRepo.getListOfPopularPostByCommentCount(pageRequest);
-                    break;
-
-                default:
+                case BOOKMARK -> responseList = postRepo.getListOfPopularPostByBookmarkCount(pageable);
+                case COMMENT -> responseList = postRepo.getListOfPopularPostByCommentCount(pageable);
+                default -> {
                     return Collections.emptyList();
+                }
             }
 
             return responseList.map(this::entityToDTO).getContent();
         } catch (IllegalArgumentException e) {
-            throw new HttpError("Sort by " + propertyName + " is not support!"
-                    , HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new HttpError("Sort by " + propertyName + " is not support!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
     }
 
     @Override
     public List<PostResponseDTO> getAllPostOfUser(int accountId, Pageable pageable) {
-        accRepo.findById(accountId).orElseThrow(() -> new NotFoundError("Account not found"));
+        Account account = accRepo.findById(accountId)
+                .orElseThrow(() -> new NotFoundError(Account.class));
 
-        Page<Post> allPostOfUser = postRepo.findByAccount_IdAndPublishedIsTrue(accountId, pageable);
-
-        return allPostOfUser.map(this::entityToDTO).getContent();
+        return postRepo.findAll(hasAuthorId(account.getId()).and(isPublished()), pageable)
+                .map(this::entityToDTO)
+                .getContent();
     }
 
     @Override
-    public List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable) {
-        Account account = accRepo.findAccountByEmail(accountEmail);
-        AssertUtils.notNull(account, new NotFoundError("Account not found"));
+    public List<PostResponseDTO> getAllPostOfUser(String accountEmail, Pageable pageable, boolean isPublished) {
+        Account account = accRepo.findOne(hasEmail(accountEmail))
+                .orElseThrow(() -> new NotFoundError(Account.class));
 
-        Page<Post> allPostOfUser = postRepo.getAllByAccount_EmailAndPublishedIsTrue(accountEmail, pageable);
-
-        return allPostOfUser.map(this::entityToDTO).getContent();
-    }
-
-    @Override
-    public List<PostResponseDTO> getAllDraftOfUser(String accountEmail, Pageable pageable) {
-        Page<Post> allDraftOfUser = postRepo.getAllByAccount_EmailAndPublishedIsFalse(accountEmail, pageable);
-
-        return allDraftOfUser.map(this::entityToDTO).getContent();
+        return postRepo.findAll(hasAuthorId(account.getId()).and(publishStatusIs(isPublished)), pageable)
+                .map(this::entityToDTO)
+                .getContent();
     }
 
     @Override
     public List<PostResponseDTO> getBookmarkedPostOfUser(String accEmail, Pageable pageable) {
-        Page<Post> responseList = postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable);
-
-        return responseList.map(p -> {
+        return postRepo.getBookmarkedPostByAccount_Email(accEmail, pageable).map(p -> {
             PostResponseDTO dto = entityToDTO(p);
             dto.setBookmarked(true);
             return dto;
@@ -159,18 +147,19 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public PostResponseDTO getPostOrDraftContent(String slug, String authorEmail) {
-        Post post = postRepo.findPostBySlug(slug);
-
-        verifyResourceOwner(post, authorEmail);
-
-        return PostResponseDTO.toPostResponseDTO(post);
+        return postRepo.findOne(hasSlug(slug))
+                .map(p -> this.verifyResourceOwner(p, authorEmail))
+                .map(PostResponseDTO::toPostResponseDTO)
+                .orElseThrow(() -> new NotFoundError(Post.class));
     }
 
     @Override
     public void deletePostById(int postId, String authorEmail) {
-        Post post = postRepo.getById(postId);
-        verifyResourceOwner(post, authorEmail);
-        postRepo.delete(post);
+        postRepo.findById(postId)
+                .ifPresent(post -> {
+                    verifyResourceOwner(post, authorEmail);
+                    postRepo.delete(post);
+                });
     }
 
     @Override
@@ -191,19 +180,19 @@ public class PostServicesImpl implements IPostServices {
 
     @Override
     public List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable) {
-        Category category = categoryRepo.findById(categoryId).orElse(null);
-        AssertUtils.notNull(category, new NotFoundError("Category not found"));
+        Category category = categoryRepo.findById(categoryId)
+                .orElseThrow(() -> new NotFoundError(Category.class));
 
-        return postRepo.findPostByCategories(category, pageable)
+        return postRepo.getAllByCategoriesIn(Set.of(category), pageable)
                 .map(this::entityToDTO).getContent();
     }
 
     @Override
     public List<PostResponseDTO> getAllPostOfCategory(String slug, Pageable pageable) {
-        Category category = categoryRepo.findBySlug(slug);
-        AssertUtils.notNull(category, new NotFoundError("Category not found"));
+        Category category = categoryRepo.findBySlug(slug)
+                .orElseThrow(() -> new NotFoundError(Category.class));
 
-        return postRepo.findPostByCategories(category, pageable)
+        return postRepo.getAllByCategoriesIn(Set.of(category), pageable)
                 .map(this::entityToDTO).getContent();
     }
 
@@ -217,30 +206,44 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
+    public XmlUrlSet genSiteMap() {
+        final String HOST = "https://langthang.trinhdvt.tech";
+        var sitemap = new XmlUrlSet();
+        postRepo.findAll(isPublished())
+                .parallelStream()
+                .map(p -> XmlUrlSet.XmlUrl.builder()
+                        .loc(HOST + "/" + p.getAuthor().getSlug() + "/" + p.getSlug())
+                        .lastmod(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(Date.from(p.getPublishedDate())))
+                        .build())
+                .forEach(sitemap::addUrl);
+
+        return sitemap;
+    }
+
+    @Override
     public void deleteReportedPost(int postId, String adminEmail) {
-        Post post = postRepo.getById(postId);
-
-        try {
-            verifyResourceOwner(post, adminEmail);
-            postRepo.delete(post);
-
-        } catch (HttpError ex) {
-            if (post.isPublished()) {
-                boolean isReportPost = post.getPostReports().stream().anyMatch(rp -> !rp.isSolved());
-                if (isReportPost) {
-                    postRepo.delete(post);
-                    return;
+        postRepo.findById(postId).ifPresent(post -> {
+            try {
+                verifyResourceOwner(post, adminEmail);
+                postRepo.delete(post);
+            } catch (HttpError ex) {
+                if (post.isPublished()) {
+                    boolean isReportPost = post.getPostReports().stream().anyMatch(rp -> !rp.isSolved());
+                    if (isReportPost) {
+                        postRepo.delete(post);
+                        return;
+                    }
                 }
+                throw new UnauthorizedError("Permission denied");
             }
-            throw new UnauthorizedError("Permission denied");
-        }
+        });
     }
 
     private PostResponseDTO entityToDTO(Post post) {
-        Account author = post.getAccount();
+        Account author = post.getAuthor();
 
         AccountDTO authorDTO = AccountDTO.toBasicAccount(author);
-        authorDTO.setPostCount(postRepo.countByAccount_Id(author.getId()));
+        authorDTO.setPostCount(postRepo.count(hasAuthorId(author.getId())));
         authorDTO.setFollowCount(accRepo.countFollowing(author.getId()));
 
         PostResponseDTO postResponse = PostResponseDTO.toPostResponseDTO(post);
@@ -252,12 +255,11 @@ public class PostServicesImpl implements IPostServices {
 
     private Set<Category> getCategories(PostRequestDTO postDTO) {
         List<String> categoriesId = postDTO.getCategories();
-        if (categoriesId == null || categoriesId.size() == 0) {
-            return Collections.emptySet();
-        }
+        if (CollectionUtils.isEmpty(categoriesId))
+            return Set.of();
 
         try {
-            List<Integer> cateIdInt = categoriesId.stream().map(Integer::valueOf).collect(Collectors.toList());
+            List<Integer> cateIdInt = categoriesId.stream().map(Integer::valueOf).toList();
 
             List<Category> categoryList = categoryRepo.findAllById(cateIdInt);
             return new HashSet<>(categoryList);
@@ -268,21 +270,22 @@ public class PostServicesImpl implements IPostServices {
     }
 
     public Post verifyResourceOwner(int postId, String authorEmail) {
-        Post post = postRepo.getById(postId);
+        Post post = postRepo.getReferenceById(postId);
         verifyResourceOwner(post, authorEmail);
         return post;
     }
 
-    private void verifyResourceOwner(Post post, String authorEmail) {
+    private Post verifyResourceOwner(Post post, String authorEmail) {
         AssertUtils.notNull(post, new NotFoundError("Post not found"));
-        AssertUtils.isTrue(post.getAccount().getEmail().equals(authorEmail), new UnauthorizedError("Post not found"));
+        AssertUtils.isTrue(post.getAuthor().getEmail().equals(authorEmail), new UnauthorizedError("Post not found"));
+        return post;
     }
 
     private void updatePostContent(Post existingPost, PostRequestDTO requestDTO) {
         existingPost.setTitle(requestDTO.getTitle());
         existingPost.setContent(requestDTO.getContent());
         existingPost.setPostThumbnail(requestDTO.getPostThumbnail());
-        existingPost.setPostCategories(getCategories(requestDTO));
+        existingPost.setCategories(getCategories(requestDTO));
     }
 
     enum SORT_TYPE {

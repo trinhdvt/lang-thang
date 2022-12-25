@@ -18,6 +18,8 @@ import com.langthang.services.IAuthServices;
 import com.langthang.utils.AssertUtils;
 import com.langthang.utils.MyMailSender;
 import com.langthang.utils.MyStringUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +33,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Calendar;
+import java.util.Optional;
+
+import static com.langthang.specification.AccountSpec.hasRegisterToken;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -70,7 +73,7 @@ public class AuthServicesImpl implements IAuthServices {
         try {
             authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-            Account acc = accountRepository.findAccountByEmail(email);
+            Account acc = accountRepository.getByEmail(email);
             String accessToken = jwtTokenServices.createAccessToken(acc);
             addRefreshTokenCookie(email, accessToken, resp);
 
@@ -87,14 +90,17 @@ public class AuthServicesImpl implements IAuthServices {
     @Override
     public String loginWithGoogle(String idToken, HttpServletResponse resp) {
         try {
-            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
-            AssertUtils.notNull(googleIdToken, new HttpError("Verify Google Token failed", HttpStatus.INTERNAL_SERVER_ERROR));
+            GoogleIdToken googleIdToken = Optional.of(googleIdTokenVerifier.verify(idToken))
+                    .orElseThrow(() -> new HttpError("Verify Google Token failed",
+                            HttpStatus.INTERNAL_SERVER_ERROR)
+                    );
+
 
             Payload payload = googleIdToken.getPayload();
             String email = payload.getEmail();
 
             // checking if account is already exists
-            Account account = accountRepository.findAccountByEmail(email);
+            Account account = accountRepository.getByEmail(email);
 
             if (account != null) {
                 //  if account is already exists but not activated yet
@@ -132,7 +138,7 @@ public class AuthServicesImpl implements IAuthServices {
 
         AssertUtils.isTrue(isAble, new UnauthorizedError("Unable to create new access token"));
 
-        Account acc = accountRepository.findAccountByEmail(email);
+        Account acc = accountRepository.getByEmail(email);
         String newAccessToken = jwtTokenServices.createAccessToken(acc);
         addRefreshTokenCookie(email, newAccessToken, resp);
         return newAccessToken;
@@ -143,7 +149,7 @@ public class AuthServicesImpl implements IAuthServices {
         String registerEmail = registerDTO.getEmail();
 
         // check if email is already registered
-        Account existAcc = accountRepository.findAccountByEmail(registerEmail);
+        Account existAcc = accountRepository.getByEmail(registerEmail);
 
         // if email is already registered
         if (existAcc != null) {
@@ -178,18 +184,19 @@ public class AuthServicesImpl implements IAuthServices {
 
     @Override
     public void validateRegisterToken(String token) {
-        Account account = accountRepository.findAccountByRegisterToken(token);
-
-        AssertUtils.notNull(account, new UnauthorizedError("Invalid token"));
-
-        account.setEnabled(true);
-        account.setRegisterToken(null);
-        accountRepository.saveAndFlush(account);
+        accountRepository.findOne(hasRegisterToken(token))
+                .ifPresentOrElse(acc -> {
+                    acc.setEnabled(true);
+                    acc.setRegisterToken(null);
+                    accountRepository.saveAndFlush(acc);
+                }, () -> {
+                    throw new UnauthorizedError("Invalid token");
+                });
     }
 
     @Override
     public void createPasswordResetToken(String email) {
-        Account account = accountRepository.findAccountByEmail(email);
+        Account account = accountRepository.getByEmail(email);
 
         // assert account is not null and already activated
         AssertUtils.notNull(account, new NotFoundError("Email not found!"));
@@ -261,7 +268,7 @@ public class AuthServicesImpl implements IAuthServices {
                 .build();
     }
 
-    private void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
+    public void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
         String refreshToken = jwtTokenServices.createRefreshToken(email, accessToken);
 
         Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
@@ -269,6 +276,7 @@ public class AuthServicesImpl implements IAuthServices {
         cookie.setSecure(true);
         cookie.setMaxAge(REFRESH_TOKEN_COOKIE_LENGTH); // ms -> s
         cookie.setPath("/");
+        cookie.setDomain("trinhdvt.tech");
         resp.addCookie(cookie);
     }
 }

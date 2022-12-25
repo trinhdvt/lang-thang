@@ -1,10 +1,10 @@
 package com.langthang.model.entity;
 
 import com.langthang.event.listener.BookmarkEntityListener;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @Data
@@ -26,6 +26,7 @@ public class BookmarkedPost {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Column(name = "bookmarked_date")
     private Date bookmarkedDate;
 
     public BookmarkedPost(Account account, Post post) {

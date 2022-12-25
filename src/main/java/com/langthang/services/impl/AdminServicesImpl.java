@@ -1,23 +1,21 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.dto.response.AccountDTO;
-import com.langthang.model.dto.request.PostReportDTO;
-import com.langthang.model.dto.response.PostResponseDTO;
-import com.langthang.model.dto.response.SystemReportDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
+import com.langthang.model.constraints.Role;
+import com.langthang.model.dto.request.PostReportDTO;
+import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.response.PostResponseDTO;
+import com.langthang.model.dto.response.SystemReportDTO;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Post;
 import com.langthang.model.entity.PostReport;
-import com.langthang.model.constraints.Role;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PostReportRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IAdminServices;
-import com.langthang.utils.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,49 +47,45 @@ public class AdminServicesImpl implements IAdminServices {
 
     @Override
     public void assignRoleAdminToUser(int userId) {
-        Account account = accRepo.findAccountByIdAndEnabled(userId, true);
-
-        AssertUtils.notNull(account,
-                new HttpError("No enabled account with id: " + userId,
-                        HttpStatus.UNPROCESSABLE_ENTITY));
-
-        account.setRole(Role.ROLE_ADMIN);
-        accRepo.saveAndFlush(account);
+        accRepo.findById(userId)
+                .filter(Account::isEnabled)
+                .ifPresentOrElse(acc -> {
+                    acc.setRole(Role.ROLE_ADMIN);
+                    accRepo.save(acc);
+                }, () -> {
+                    throw new HttpError("No enabled account with id: " + userId,
+                            HttpStatus.UNPROCESSABLE_ENTITY);
+                });
     }
 
     @Override
     public List<PostReportDTO> getListOfPostReport(Pageable pageable) {
-        Page<PostReport> reportList = reportRepo.findAll(pageable);
-
-        return reportList.map(this::toBasicPostReportDTO).getContent();
+        return reportRepo.findAll(pageable)
+                .map(this::toBasicPostReportDTO)
+                .getContent();
     }
 
     @Override
     public PostReportDTO getPostReportById(int reportId) {
-        PostReport postReport = reportRepo.findById(reportId).orElse(null);
-
-        AssertUtils.notNull(postReport, new NotFoundError("Report not found"));
-
-        return toPostReportDetailDTO(postReport);
+        return reportRepo.findById(reportId)
+                .map(this::toPostReportDetailDTO)
+                .orElseThrow(() -> new NotFoundError(PostReport.class));
     }
 
     @Override
     public PostReportDTO solveReport(int reportId, String decision) {
-        PostReport report = reportRepo.findById(reportId).orElse(null);
+        return reportRepo.findById(reportId)
+                .map(report -> {
+                    if (report.isSolved()) throw new HttpError("Already solved", HttpStatus.NOT_ACCEPTABLE);
 
-        AssertUtils.notNull(report, new NotFoundError("Report not found"));
-        AssertUtils.isTrue(!report.isSolved(), new HttpError("Already solved", HttpStatus.NOT_ACCEPTABLE));
-
-        report.setDecision(decision);
-        report.setSolved(true);
-
-        PostReport savedReport = reportRepo.saveAndFlush(report);
-
-        return toBasicPostReportDTO(savedReport);
+                    report.setDecision(decision);
+                    report.setSolved(true);
+                    return reportRepo.saveAndFlush(report);
+                }).map(this::toBasicPostReportDTO)
+                .orElseThrow(() -> new NotFoundError(PostReport.class));
     }
 
     private PostReportDTO toBasicPostReportDTO(PostReport postReport) {
-
         return PostReportDTO.builder()
                 .reportId(postReport.getId())
                 .reportDate(postReport.getReportedDate())

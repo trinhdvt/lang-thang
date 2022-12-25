@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine as build
+FROM eclipse-temurin:17-jdk-alpine as builder
 
 WORKDIR /app
 
@@ -6,17 +6,20 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-RUN ./mvnw dependency:go-offline -B
+RUN ./mvnw dependency:go-offline -B -Dmaven.artifact.threads=30
 
 COPY src src
-RUN chmod u+x ./mvnw && ./mvnw package -Dspring-boot.run.profiles=docker -DskipTests && mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+RUN chmod u+x ./mvnw && ./mvnw package -DskipTests -Dspring.profiles.active=production && mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
-FROM openjdk:8-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 ARG DEPENDENCY=/app/target/dependency
 
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=builder ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=builder ${DEPENDENCY}/BOOT-INF/classes /app
+
+ENV TZ="Asia/Ho_Chi_Minh"
+ENV SPRING_PROFILES_ACTIVE=production
 
 ENTRYPOINT ["java","-cp","app:app/lib/*", "com.langthang.LangThangApplication"]

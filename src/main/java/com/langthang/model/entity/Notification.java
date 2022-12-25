@@ -1,10 +1,12 @@
 package com.langthang.model.entity;
 
 import com.langthang.event.listener.NotificationEntityListener;
+import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,9 +33,12 @@ public class Notification {
     @JoinColumn(name = "source_account_id")
     private Account sourceAccount;
 
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    private Date notifyDate;
+    @Column(name = "notify_date")
+    @CreatedDate
+    private Instant notifyDate;
 
     @Column(name = "is_seen")
     private boolean seen;
@@ -43,17 +48,16 @@ public class Notification {
         this.post = post;
         this.sourceAccount = sourceAccount;
         this.content = content;
-        this.notifyDate = new Date();
         this.seen = false;
     }
 
     @Override
     public String toString() {
         return "Notify{" +
-                "id=" + id +
-                ", content='" + content + '\'' +
-                ", notifyDate=" + notifyDate +
-                ", isSeen=" + seen +
-                '}';
+               "id=" + id +
+               ", content='" + content + '\'' +
+               ", notifyDate=" + notifyDate +
+               ", isSeen=" + seen +
+               '}';
     }
 }

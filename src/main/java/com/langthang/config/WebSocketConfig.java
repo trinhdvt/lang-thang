@@ -4,6 +4,7 @@ import com.langthang.security.services.TokenServices;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -27,6 +28,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final TokenServices tokenServices;
 
+    @Value("${application.broker.end-point}")
+    private String socketEndpoint = "/socket-server";
+
     @Autowired
     public WebSocketConfig(TokenServices tokenServices) {
         this.tokenServices = tokenServices;
@@ -39,7 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/socket-server")
+        registry.addEndpoint(socketEndpoint)
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }

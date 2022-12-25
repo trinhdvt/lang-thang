@@ -2,8 +2,7 @@ package com.langthang.services;
 
 import com.langthang.model.dto.request.AccountRegisterDTO;
 import com.langthang.model.dto.request.PasswordDTO;
-
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface IAuthServices {
 
@@ -22,5 +21,7 @@ public interface IAuthServices {
     void validatePasswordResetToken(String token);
 
     void resetPassword(String token, PasswordDTO passwordDTO);
+
+    void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp);
 
 }

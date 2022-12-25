@@ -3,9 +3,10 @@ package com.langthang.model.entity;
 import com.langthang.event.listener.CommentEntityListener;
 import lombok.*;
 
-import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
+import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -31,11 +32,14 @@ public class Comment {
     private Post post;
 
     @ManyToMany(mappedBy = "likedComments", fetch = FetchType.EAGER)
-    private Set<Account> likedAccounts = new HashSet<>();
+    private Set<Account> likedAccounts;
 
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    private Date commentDate;
+    @CreatedDate
+    @Column(name = "comment_date", updatable = false)
+    private Instant commentDate;
 
     @ManyToOne(targetEntity = Comment.class)
     @JoinColumn(name = "parent_id")
@@ -50,15 +54,14 @@ public class Comment {
         this.account = account;
         this.post = post;
         this.content = content;
-        this.commentDate = new Date();
     }
 
     @Override
     public String toString() {
         return "Comment{" +
-                "id=" + id +
-                ", content='" + content + '\'' +
-                ", commentDate=" + commentDate +
-                '}';
+               "id=" + id +
+               ", content='" + content + '\'' +
+               ", commentDate=" + commentDate +
+               '}';
     }
 }

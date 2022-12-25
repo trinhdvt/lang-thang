@@ -263,7 +263,7 @@ Lấy ra nội dung của một bài viết hoặc bản nháp bằng `slug` cho
   "title": "abcxyz",
   "content": "abcxyz",
   "postThumbnail": "http://abc.xyz.jpg",
-  "..."
+  "...": "..."
 }
 ```
 

@@ -1,19 +1,19 @@
 package com.langthang.services.impl;
 
-import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
-import com.langthang.exception.UnauthorizedError;
+import com.langthang.model.constraints.NotificationType;
+import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.model.entity.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
 import com.langthang.services.INotificationServices;
-import com.langthang.utils.AssertUtils;
-import com.langthang.model.constraints.NotificationType;
+import com.langthang.specification.AccountSpec;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -45,7 +44,7 @@ public class NotificationServicesImpl implements INotificationServices {
     public void addBookmarkNotification(BookmarkedPost bookmarkedPost) {
         Account sourceAccount = bookmarkedPost.getAccount();
         Post destPost = bookmarkedPost.getPost();
-        Account destAccount = destPost.getAccount();
+        Account destAccount = destPost.getAuthor();
 
         Notification bookmarkNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.BOOKMARK);
 //       cannot create self-notification
@@ -59,7 +58,7 @@ public class NotificationServicesImpl implements INotificationServices {
     public void addCommentNotification(Comment comment) {
         Account sourceAccount = comment.getAccount();
         Post destPost = comment.getPost();
-        Account destAccount = destPost.getAccount();
+        Account destAccount = destPost.getAuthor();
 
         Notification commentNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.COMMENT);
 //      cannot create self-notification
@@ -71,9 +70,10 @@ public class NotificationServicesImpl implements INotificationServices {
     @Override
     @Async
     public void sendFollowersNotification(Post newPost) {
-        Account author = newPost.getAccount();
+        Account author = newPost.getAuthor();
 
-        int pageSize = 100, page = 0;
+        int pageSize = 100;
+        int page = 0;
         Slice<Account> followerPage;
         do {
             followerPage = accRepo.getFollowedAccount(author.getId(), PageRequest.of(page, pageSize, Sort.by("id")));
@@ -109,34 +109,37 @@ public class NotificationServicesImpl implements INotificationServices {
 
     @Override
     public List<NotificationDTO> getNotifications(String accEmail, Pageable pageable) {
-        Page<Notification> notifyList = notifyRepo.findAllByAccount_Email(accEmail, pageable);
-
-        return notifyList.map(NotificationDTO::toNotificationDTO).getContent();
+        return notifyRepo.findAllByAccount_Email(accEmail, pageable)
+                .map(NotificationDTO::toNotificationDTO)
+                .getContent();
     }
 
     @Override
     public List<NotificationDTO> getUnseenNotifications(String accEmail) {
-        List<Notification> unseenList = notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail,
-                Sort.by(Sort.Direction.DESC, "notifyDate"));
-
-        return unseenList.stream().map(NotificationDTO::toNotificationDTO).collect(Collectors.toList());
+        return notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail,
+                        Sort.by(Direction.DESC, Notification_.NOTIFY_DATE))
+                .map(NotificationDTO::toNotificationDTO)
+                .toList();
     }
 
     @Override
     public void maskAsSeen(int notificationId, String accEmail) {
-        Notification notification = notifyRepo.findById(notificationId).orElse(null);
-        AssertUtils.notNull(notification, new NotFoundError("Notification not found"));
-        AssertUtils.isTrue(notification.getAccount().getEmail().equals(accEmail), new UnauthorizedError("Notification not found"));
+        notifyRepo.findById(notificationId)
+                .ifPresentOrElse(notification -> {
+                    if (!notification.getAccount().getEmail().equals(accEmail))
+                        throw new NotFoundError(Notification.class);
 
-        notification.setSeen(true);
-        notifyRepo.save(notification);
+                    notification.setSeen(true);
+                    notifyRepo.save(notification);
+                }, () -> {
+                    throw new NotFoundError(Notification.class);
+                });
     }
 
     @Override
     public void maskAllAsSeen(String accEmail) {
-        Account acc = accRepo.findAccountByEmail(accEmail);
-
-        notifyRepo.maskAllAsSeen(acc.getId());
+        accRepo.findOne(AccountSpec.hasEmail(accEmail))
+                .ifPresent(account -> notifyRepo.maskAllAsSeen(account.getId()));
     }
 
     private String createContentByType(NotificationType type, String sourceName, String postTitle) {
@@ -146,18 +149,11 @@ public class NotificationServicesImpl implements INotificationServices {
     }
 
     private String getNotificationTemplate(NotificationType notificationType) {
-        switch (notificationType) {
-            case LIKE:
-                return likeNotificationTemplate;
-            case COMMENT:
-                return commentNotificationTemplate;
-            case BOOKMARK:
-                return bookmarkNotificationTemplate;
-            case NEW_POST:
-                return newPostNotificationTemplate;
-            default:
-                throw new HttpError("Type: " + notificationType + " not support"
-                        , HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return switch (notificationType) {
+            case LIKE -> likeNotificationTemplate;
+            case COMMENT -> commentNotificationTemplate;
+            case BOOKMARK -> bookmarkNotificationTemplate;
+            case NEW_POST -> newPostNotificationTemplate;
+        };
     }
 }

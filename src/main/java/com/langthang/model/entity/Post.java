@@ -1,18 +1,19 @@
 package com.langthang.model.entity;
 
 import com.langthang.event.listener.PostEntityListener;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.TermVector;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.LazyCollection;
 
-import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+
+import static org.hibernate.annotations.LazyCollectionOption.EXTRA;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,50 +22,55 @@ import java.util.Set;
 @Entity
 @Table(name = "post")
 @EntityListeners(PostEntityListener.class)
-@Indexed
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Field(termVector = TermVector.YES)
+    @Column(name = "title", columnDefinition = "TEXT")
     private String title;
 
-    @Field(termVector = TermVector.YES)
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "slug", unique = true)
     private String slug;
 
-    private Date publishedDate;
+    @Column(name = "published_date")
+    private Instant publishedDate;
 
-    private Date createdDate;
+    @Column(name = "created_date")
+    @CreationTimestamp
+    private Instant createdDate;
 
+    @Column(name = "post_thumbnail")
     private String postThumbnail;
 
     @Column(name = "status")
-    private boolean published;
+    private boolean isPublished;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "account_id")
-    private Account account;
+    private Account author;
 
-    @OneToMany(mappedBy = "post"
-            , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
     private Set<PostReport> postReports;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "post_category",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    private Set<Category> postCategories;
+    private Set<Category> categories;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
+    @LazyCollection(EXTRA)
     private Set<BookmarkedPost> bookmarkedPosts;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post")
     @OrderBy("commentDate ASC")
+    @LazyCollection(EXTRA)
     private List<Comment> comments;
 
     public Post(String title, String content, String postThumbnail) {
@@ -76,12 +82,12 @@ public class Post {
     @Override
     public String toString() {
         return "Post{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", slug='" + slug + '\'' +
-                ", publishedDate=" + publishedDate +
-                ", postThumbnail='" + postThumbnail + '\'' +
-                ", published=" + published +
-                '}';
+               "id=" + id +
+               ", title='" + title + '\'' +
+               ", slug='" + slug + '\'' +
+               ", publishedDate=" + publishedDate +
+               ", postThumbnail='" + postThumbnail + '\'' +
+               ", published=" + isPublished +
+               '}';
     }
 }

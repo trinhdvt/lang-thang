@@ -8,7 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponseDTO {
+public class PostResponseDTO implements Serializable {
 
     private int postId;
 
@@ -29,13 +30,13 @@ public class PostResponseDTO {
 
     private String slug;
 
-    private boolean isOwner = false;
+    private boolean isOwner;
 
-    private boolean isBookmarked = false;
+    private boolean isBookmarked;
 
-    private Date publishedDate;
+    private Instant publishedDate;
 
-    private Date createdDate;
+    private Instant createdDate;
 
     private String postThumbnail;
 
@@ -66,7 +67,7 @@ public class PostResponseDTO {
                         .anyMatch(bp -> bp.getAccount().getEmail().equals(SecurityUtils.getLoggedInEmail())))
                 .bookmarkedCount(entity.getBookmarkedPosts().size())
                 .commentCount(entity.getComments().size())
-                .categories(entity.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
+                .categories(entity.getCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
                 .build();
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class OnNewCommentEvent extends ApplicationEvent {
-    private final CommentDTO newComment;
+    private final transient CommentDTO newComment;
 
     public OnNewCommentEvent(CommentDTO newComment) {
         super(newComment);

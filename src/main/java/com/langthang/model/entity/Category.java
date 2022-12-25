@@ -5,12 +5,12 @@ import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -20,14 +20,19 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NonNull
+    @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "slug", length = 500)
     private String slug;
 
-    @ManyToMany(mappedBy = "postCategories")
+    @ManyToMany(mappedBy = "categories")
     @LazyCollection(LazyCollectionOption.EXTRA)
     private List<Post> postCategories = new ArrayList<>();
+
+    public Category(String name) {
+        this.name = name;
+    }
 
     @PrePersist
     @PreUpdate
@@ -39,8 +44,8 @@ public class Category {
     @Override
     public String toString() {
         return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               '}';
     }
 }

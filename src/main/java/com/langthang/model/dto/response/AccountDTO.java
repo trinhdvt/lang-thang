@@ -8,12 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AccountDTO {
+public class AccountDTO implements Serializable {
     private int accountId;
 
     private String name;
@@ -22,7 +24,7 @@ public class AccountDTO {
 
     private String slug;
 
-    private int postCount;
+    private long postCount;
 
     private int followCount;
 
@@ -38,9 +40,9 @@ public class AccountDTO {
 
     private String about;
 
-    private Role role = null;
+    private Role role;
 
-    private boolean isFollowed = false;
+    private boolean isFollowed;
 
     public static AccountDTO toBasicAccount(Account entity) {
         return AccountDTO.builder()

@@ -1,29 +1,31 @@
 package com.langthang.config;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 @Configuration
 @EnableCaching
+@Slf4j
 public class CacheConfig {
 
     @Bean
-    public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(caffeineConfig());
-        return cacheManager;
+    public RedisCacheConfiguration cacheConfiguration() {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(10))
+                .disableCachingNullValues();
     }
 
-    public Caffeine<Object, Object> caffeineConfig() {
-        return Caffeine.newBuilder()
-                .initialCapacity(5)
-                .maximumSize(10_000)
-                .expireAfterWrite(10, TimeUnit.MINUTES);
+    @Profile("dev")
+    @Bean
+    public CacheManager cacheManager() {
+        return new NoOpCacheManager();
     }
 }

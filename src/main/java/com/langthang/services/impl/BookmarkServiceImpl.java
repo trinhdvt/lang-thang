@@ -9,7 +9,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.BookmarkedPostRepo;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.IBookmarkServices;
-import com.langthang.utils.AssertUtils;
+import com.langthang.specification.PostSpec;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,30 +29,25 @@ public class BookmarkServiceImpl implements IBookmarkServices {
 
     @Override
     public int bookmarkPost(int postId, String currentEmail) {
-        BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, currentEmail);
+        bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, currentEmail)
+                .orElseThrow(() -> new HttpError("Already bookmarked", HttpStatus.NO_CONTENT));
 
-        AssertUtils.isNull(existingBookmark, new HttpError("Already bookmarked", HttpStatus.NO_CONTENT));
+        Post post = postRepo.findOne(PostSpec.isPublished(postId))
+                .orElseThrow(() -> NotFoundError.build(Post.class));
 
-        Post post = postRepo.findPostByIdAndPublished(postId, true);
-
-        AssertUtils.notNull(post, new NotFoundError("Post not found"));
-
-        Account currentAcc = accRepo.findAccountByEmail(currentEmail);
-
+        Account currentAcc = accRepo.getByEmail(currentEmail);
         BookmarkedPost newBookmark = new BookmarkedPost(currentAcc, post);
         bookmarkRepo.save(newBookmark);
-
         return postRepo.countBookmarks(postId);
     }
 
     @Override
     public int deleteBookmark(int postId, String accEmail) {
-        BookmarkedPost existingBookmark = bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, accEmail);
-
-        AssertUtils.notNull(existingBookmark, new NotFoundError("Bookmark not found"));
-
-        bookmarkRepo.delete(existingBookmark);
-
-        return postRepo.countBookmarks(postId);
+        return bookmarkRepo.findBookmarkedPostByPost_IdAndAccount_Email(postId, accEmail)
+                .map(bp -> {
+                    bookmarkRepo.delete(bp);
+                    return postRepo.countBookmarks(postId);
+                })
+                .orElseThrow(() -> new NotFoundError(BookmarkedPost.class));
     }
 }

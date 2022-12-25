@@ -3,7 +3,8 @@ package com.langthang.model.entity;
 import lombok.Getter;
 import org.apache.commons.lang3.time.DateUtils;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
@@ -16,6 +17,7 @@ public class PasswordResetToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "token", length = 50)
     private String token;
 
     @OneToOne(targetEntity = Account.class, fetch = FetchType.EAGER)

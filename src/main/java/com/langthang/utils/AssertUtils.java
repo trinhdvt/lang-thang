@@ -7,7 +7,8 @@ import org.springframework.lang.Nullable;
  * Assertion utility class that assists in validating arguments.
  */
 public class AssertUtils {
-
+    private AssertUtils() {
+    }
 
     /**
      * Check if the given object is not null.
@@ -45,19 +46,6 @@ public class AssertUtils {
     public static <T extends HttpError> void isTrue(boolean expression, T throwable) {
         if (!expression) {
             throw throwable;
-        }
-    }
-
-    /**
-     * Check if the given String is not empty.
-     *
-     * @param sequence  String to check
-     * @param exception Exception to be thrown
-     * @throws HttpError if the object is {@code null}
-     */
-    public static <T extends HttpError> void notEmpty(String sequence, T exception) {
-        if (MyStringUtils.trimToEmpty(sequence).isEmpty()) {
-            throw exception;
         }
     }
 }

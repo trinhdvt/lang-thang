@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +18,7 @@ public class RefreshToken {
     private String email;
 
     @Column(name = "refresh_token", nullable = false, length = 100)
-    private String refreshToken;
+    private String token;
 
     @Column(name = "access_token", nullable = false)
     private String accessToken;

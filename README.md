@@ -42,19 +42,19 @@ Here is a link to the deployed website on AWS EC2: [LangThang](http://trinhdvt.t
 
 > If you haven't installed Docker and Docker compose yet, follow these instructions at [here](https://docs.docker.com/engine/install) and [here](https://docs.docker.com/compose/install/)
 
-2. Clone this repo
+1. Clone this repo
 
 ```
 git clone https://github.com/trinhdvt/lang-thang.git
 ```
 
-3. Go to the project directory
+1. Go to the project directory
 
 ```
 cd lang-thang/
 ```
 
-4. Start the server
+1. Start the server
 
 ```
 docker compose up

@@ -1,10 +1,11 @@
 package com.langthang.model.entity;
 
 import com.langthang.utils.MyStringUtils;
+import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,12 +27,17 @@ public class PostReport {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    private Date reportedDate;
+    @Column(name = "reported_date", updatable = false)
+    @CreatedDate
+    private Instant reportedDate;
 
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "is_solved")
     private boolean isSolved;
 
+    @Column(name = "decision", columnDefinition = "TEXT")
     private String decision;
 
     public PostReport(Account account, Post post, String content) {
@@ -39,7 +45,6 @@ public class PostReport {
         this.post = post;
         this.content = content;
         this.isSolved = false;
-        this.reportedDate = new Date();
     }
 
     @PrePersist
@@ -52,11 +57,11 @@ public class PostReport {
     @Override
     public String toString() {
         return "PostReport{" +
-                "id=" + id +
-                ", reportedDate=" + reportedDate +
-                ", content='" + content + '\'' +
-                ", isSolved=" + isSolved +
-                ", decision='" + decision + '\'' +
-                '}';
+               "id=" + id +
+               ", reportedDate=" + reportedDate +
+               ", content='" + content + '\'' +
+               ", isSolved=" + isSolved +
+               ", decision='" + decision + '\'' +
+               '}';
     }
 }

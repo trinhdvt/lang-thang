@@ -1,0 +1,67 @@
+spring:
+  api-limit:
+    enabled: false
+  batch:
+    job:
+      enabled: true
+    jdbc:
+      initialize-schema: always
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        generate_statistics: false
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 200
+    open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+
+storage:
+  bucket: lang-thang-assets
+
+application:
+  image:
+    support-type: image/png,image/jpg,image/jpeg,image/webp
+
+  broker:
+    prefix: /topic
+    end-point: /socket-server
+    notify:
+      prefix: ${application.broker.prefix}/notify
+    post:
+      prefix: ${application.broker.prefix}/post
+  notify-template:
+    like-comment: "<b>{0}</b> đã thích bình luận của bạn trong bài viết <b>{1}</b>"
+    comment-post: "<b>{0}</b> đã bình luận về bài viết <b>{1}</b>"
+    bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b>"
+    following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
+  server:
+    url: ${HOST:https://langthang.trinhdvt.tech}
+
+server:
+  compression:
+    enabled: true
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+      hibernate:
+        stat: DEBUG
+        SQL_SLOW: INFO
+    com:
+      langthang: DEBUG

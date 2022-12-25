@@ -9,6 +9,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,6 +73,27 @@ public class TokenServices {
                 .compact();
     }
 
+    public String createToken(CurrentUser authUser) {
+        Map<String, Object> payloads = Map.of(
+                "jti", authUser.getUserId(),
+                "sub", authUser.getUsername(),
+                "role", authUser.getRole(),
+                "name", authUser.getSource().getName(),
+                "avatarLink", authUser.getSource().getAvatarLink()
+        );
+        var claims = new HashMap<>(payloads);
+
+        var now = Instant.now();
+        var expireTime = now.plusSeconds(TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expireTime))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
     public Authentication getAuthentication(String token) {
         String username = getUserName(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -87,18 +109,18 @@ public class TokenServices {
         if (rf == null) {
             rf = new RefreshToken(email, refreshToken, accessToken);
         } else {
-            rf.setRefreshToken(refreshToken);
+            rf.setToken(refreshToken);
             rf.setAccessToken(accessToken);
         }
 
-        return refreshTokenRepo.saveAndFlush(rf).getRefreshToken();
+        return refreshTokenRepo.saveAndFlush(rf).getToken();
     }
 
     public boolean isValidToCreateNewAccessToken(String email, String refreshToken, String accessToken) {
         RefreshToken rfTokenInDB = refreshTokenRepo.findByEmail(email);
 
         return (rfTokenInDB != null
-                && rfTokenInDB.getRefreshToken().equals(refreshToken)
+                && rfTokenInDB.getToken().equals(refreshToken)
                 && rfTokenInDB.getAccessToken().equals(accessToken));
     }
 

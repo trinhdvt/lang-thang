@@ -5,13 +5,13 @@ import com.langthang.event.OnNewCommentEvent;
 import com.langthang.model.entity.Comment;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.MyStringUtils;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 
 @Component
 public class CommentEntityListener {
