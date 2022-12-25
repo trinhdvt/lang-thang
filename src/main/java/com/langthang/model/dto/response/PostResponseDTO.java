@@ -67,7 +67,7 @@ public class PostResponseDTO implements Serializable {
                         .anyMatch(bp -> bp.getAccount().getEmail().equals(SecurityUtils.getLoggedInEmail())))
                 .bookmarkedCount(entity.getBookmarkedPosts().size())
                 .commentCount(entity.getComments().size())
-                .categories(entity.getPostCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
+                .categories(entity.getCategories().stream().map(CategoryDTO::toCategoryDTO).collect(Collectors.toSet()))
                 .build();
     }
 }

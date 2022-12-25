@@ -4,7 +4,6 @@ import com.langthang.model.entity.Account;
 import com.langthang.repository.AccountRepository;
 import com.langthang.specification.AccountSpec;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 acc.getPassword(),
                 acc.isEnabled(),
                 acc.getId(),
-                acc.getRole());
+                acc.getRole(),
+                acc);
     }
 }

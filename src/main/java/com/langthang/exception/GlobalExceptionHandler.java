@@ -1,8 +1,7 @@
 package com.langthang.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -13,12 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import javax.validation.ConstraintViolationException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,10 +21,7 @@ public class GlobalExceptionHandler {
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
-    private final ObjectMapper jacksonMapper;
-
-    public GlobalExceptionHandler(ObjectMapper jacksonMapper) {
-        this.jacksonMapper = jacksonMapper;
+    public GlobalExceptionHandler() {
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
@@ -56,13 +48,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BindException.class)
-    public ResponseEntity<Object> handleBindException(BindException ex, HttpServletRequest req) throws JsonProcessingException {
+    public ResponseEntity<Object> handleBindException(BindException ex, HttpServletRequest req) {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-        Map<String, Set<String>> map = fieldErrors.stream().collect(Collectors.groupingBy(FieldError::getField,
-                Collectors.mapping(FieldError::getDefaultMessage, Collectors.toSet())));
+        var firstMessage = fieldErrors.get(0).getDefaultMessage();
 
-        String message = jacksonMapper.writeValueAsString(map);
-        HttpError error = new HttpError(message, HttpStatus.BAD_REQUEST);
+        HttpError error = new HttpError(firstMessage, HttpStatus.BAD_REQUEST);
         error.setPath(req.getRequestURI());
 
         return ResponseEntity.badRequest().body(error);

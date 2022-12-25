@@ -22,4 +22,6 @@ public interface IAuthServices {
 
     void resetPassword(String token, PasswordDTO passwordDTO);
 
+    void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp);
+
 }

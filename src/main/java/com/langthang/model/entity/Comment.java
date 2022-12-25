@@ -20,7 +20,7 @@ import java.util.Set;
 @EntityListeners(CommentEntityListener.class)
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne

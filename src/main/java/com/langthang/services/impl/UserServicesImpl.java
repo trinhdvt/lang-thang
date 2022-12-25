@@ -2,8 +2,10 @@ package com.langthang.services.impl;
 
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
+import com.langthang.mapper.UserMapper;
 import com.langthang.model.dto.request.AccountInfoDTO;
 import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.v2.response.UserDtoV2;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.FollowingRelationship;
 import com.langthang.model.entity.Post;
@@ -22,11 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.langthang.specification.AccountSpec.*;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
@@ -43,29 +48,34 @@ public class UserServicesImpl implements IUserServices {
 
     private final PostReportRepository reportRepo;
 
+    private final UserMapper userMapper;
+
     @Override
     public AccountDTO getDetailInformationById(int accountId) {
-        return accRepo.findById(accountId)
-                .filter(Account::isEnabled)
-                .map(this::toDetailAccountDTO)
-                .orElseThrow(() -> new NotFoundError(Account.class));
+        return this.toDetailAccountDTO(findEnabledUser(accountId, "", ""));
     }
 
     @Override
     public AccountDTO getDetailInformationByEmail(String email) {
-        Account account = accRepo.getByEmail(email);
-        AssertUtils.notNull(account, new NotFoundError("Account not found"));
-        AssertUtils.isTrue(account.isEnabled(), new NotFoundError("Account not found"));
+        return this.toDetailAccountDTO(findEnabledUser(-1, email, ""));
+    }
 
-        return toDetailAccountDTO(account);
+    private Account findEnabledUser(@NonNull Integer id,
+                                    @NonNull String email,
+                                    @NonNull String slug) {
+        return accRepo.findOne(hasId(id).or(hasEmail(email)).or(hasSlug(slug)))
+                .filter(Account::isEnabled)
+                .orElseThrow(() -> new NotFoundError(Account.class));
     }
 
     @Override
     public AccountDTO getDetailInformationBySlug(String slug) {
-        return accRepo.findOne(AccountSpec.hasSlug(slug))
-                .filter(Account::isEnabled)
-                .map(this::toDetailAccountDTO)
-                .orElseThrow(() -> new NotFoundError(Account.class));
+        return this.toDetailAccountDTO(findEnabledUser(-1, "", slug));
+    }
+
+    @Override
+    public UserDtoV2 getMyProfile(Integer userId) {
+        return userMapper.toDto(findEnabledUser(userId, "", ""));
     }
 
     @Override
@@ -139,7 +149,7 @@ public class UserServicesImpl implements IUserServices {
         Post reportPost = postRepo.findOne(PostSpec.isPublished(postId))
                 .orElseThrow(() -> NotFoundError.build(Post.class));
 
-        if (reportPost.getAccount().getEmail().equals(reporterEmail)) {
+        if (reportPost.getAuthor().getEmail().equals(reporterEmail)) {
             throw new HttpError("Cannot report your-self", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 

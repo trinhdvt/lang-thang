@@ -1,8 +1,9 @@
 package com.langthang.services;
 
-import com.langthang.controller.XmlUrlSet;
+import com.langthang.controller.v1.XmlUrlSet;
 import com.langthang.model.dto.request.PostRequestDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
+import com.langthang.model.dto.v2.response.PostDtoV2;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface IPostServices {
 
     List<PostResponseDTO> getPreviewPost(Pageable pageable);
 
-    List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable);
+    List<PostDtoV2> findPostByKeyword(String keyword, Pageable pageable);
 
     List<PostResponseDTO> getAllPostOfCategory(int categoryId, Pageable pageable);
 

@@ -2,6 +2,7 @@ package com.langthang.services;
 
 import com.langthang.model.dto.request.AccountInfoDTO;
 import com.langthang.model.dto.response.AccountDTO;
+import com.langthang.model.dto.v2.response.UserDtoV2;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -29,4 +30,6 @@ public interface IUserServices {
     List<AccountDTO> getFollower(int accountId, Pageable pageable);
 
     AccountDTO getDetailInformationBySlug(String slug);
+
+    UserDtoV2 getMyProfile(Integer userId);
 }

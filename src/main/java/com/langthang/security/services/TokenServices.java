@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +69,27 @@ public class TokenServices {
                 .setClaims(payloads)
                 .setIssuedAt(now)
                 .setExpiration(expireTime)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
+    public String createToken(CurrentUser authUser) {
+        Map<String, Object> payloads = Map.of(
+                "jti", authUser.getUserId(),
+                "sub", authUser.getUsername(),
+                "role", authUser.getRole(),
+                "name", authUser.getSource().getName(),
+                "avatarLink", authUser.getSource().getAvatarLink()
+        );
+        var claims = new HashMap<>(payloads);
+
+        var now = Instant.now();
+        var expireTime = now.plusSeconds(TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expireTime))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }

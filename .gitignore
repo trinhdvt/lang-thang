@@ -151,3 +151,5 @@ frontend-travel-blog/src/users/utils/notification/notification.css
 frontend-travel-blog/src/users/utils/notification/Notification.js
 frontend-travel-blog/src/users/utils/notification/ToastNotification.js
 frontend-travel-blog/src/users/utils/validation/Validation.js
+/.envrc
+/.env

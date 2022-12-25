@@ -4,17 +4,21 @@ import com.langthang.security.ratelimit.ApiBucketManager;
 import com.langthang.security.ratelimit.ApiLimitInterceptor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
     private final ApiBucketManager apiBucketManager;
@@ -30,6 +34,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
                 .allowCredentials(true);
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        log.warn("Prefixing all API in controller.v2 package with /v2");
+
+        configurer.addPathPrefix("/v2",
+                HandlerTypePredicate.forBasePackage("com.langthang.controller.v2"));
     }
 
     @Override

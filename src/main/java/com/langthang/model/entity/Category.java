@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "category")
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "name", nullable = false)
@@ -26,7 +26,7 @@ public class Category {
     @Column(name = "slug", length = 500)
     private String slug;
 
-    @ManyToMany(mappedBy = "postCategories")
+    @ManyToMany(mappedBy = "categories")
     @LazyCollection(LazyCollectionOption.EXTRA)
     private List<Post> postCategories = new ArrayList<>();
 

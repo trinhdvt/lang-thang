@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -45,4 +47,7 @@ public class MyStringUtils extends StringUtils {
         return NanoIdUtils.randomNanoId(NanoIdUtils.DEFAULT_NUMBER_GENERATOR, NanoIdUtils.DEFAULT_ALPHABET, size);
     }
 
+    public static String getTodayString() {
+        return DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDateTime.now());
+    }
 }

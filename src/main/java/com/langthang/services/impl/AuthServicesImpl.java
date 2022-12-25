@@ -268,7 +268,7 @@ public class AuthServicesImpl implements IAuthServices {
                 .build();
     }
 
-    private void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
+    public void addRefreshTokenCookie(String email, String accessToken, HttpServletResponse resp) {
         String refreshToken = jwtTokenServices.createRefreshToken(email, accessToken);
 
         Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);

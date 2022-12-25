@@ -5,6 +5,8 @@ import com.langthang.model.constraints.Role;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
@@ -61,11 +63,13 @@ public class Account {
     @Column(name = "register_token", length = 100)
     private String registerToken;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     @OrderBy("publishedDate DESC")
-    private List<Post> posts;
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    private Set<Post> posts;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.EXTRA)
     private Set<FollowingRelationship> following;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)

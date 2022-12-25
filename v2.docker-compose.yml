@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+
+  backend:
+    image: trinhvideo123/langthang:v2
+    container_name: langthangv2
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://REDIS:6379
+    ports:
+      - "9999:8080"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      langthang:
+        aliases:
+          - BACKEND
+
+  redis:
+    image: redis:alpine
+    networks:
+      langthang:
+        aliases:
+          - REDIS
+
+networks:
+  langthang:

@@ -1,12 +1,14 @@
 package com.langthang.services.impl;
 
-import com.langthang.controller.XmlUrlSet;
+import com.langthang.controller.v1.XmlUrlSet;
 import com.langthang.exception.HttpError;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnauthorizedError;
+import com.langthang.mapper.PostMapper;
 import com.langthang.model.dto.request.PostRequestDTO;
 import com.langthang.model.dto.response.AccountDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
+import com.langthang.model.dto.v2.response.PostDtoV2;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Category;
 import com.langthang.model.entity.Post;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.sql.Date;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -45,13 +48,14 @@ public class PostServicesImpl implements IPostServices {
     private final AccountRepository accRepo;
     private final CategoryRepository categoryRepo;
     private final NotificationServicesImpl notificationServices;
+    private final PostMapper postMapper;
 
     @Override
     public PostResponseDTO addNewPostOrDraft(PostRequestDTO postRequestDTO, String authorEmail, boolean isPublish) {
         Post post = new Post(postRequestDTO.getTitle(), postRequestDTO.getContent(), postRequestDTO.getPostThumbnail());
-        post.setAccount(accRepo.getByEmail(authorEmail));
+        post.setAuthor(accRepo.getByEmail(authorEmail));
         post.setPublished(isPublish);
-        post.setPostCategories(getCategories(postRequestDTO));
+        post.setCategories(getCategories(postRequestDTO));
 
         Post savedPost = postRepo.saveAndFlush(post);
         if (isPublish) {
@@ -84,11 +88,11 @@ public class PostServicesImpl implements IPostServices {
     }
 
     @Override
-    public List<PostResponseDTO> findPostByKeyword(String keyword, Pageable pageable) {
+    public List<PostDtoV2> findPostByKeyword(String keyword, Pageable pageable) {
         keyword = StringUtils.join(StringUtils.split(keyword, " "), " | ");
 
         return postRepo.searchByKeyword(keyword, pageable)
-                .map(this::entityToDTO)
+                .map(postMapper::toDto)
                 .toList();
     }
 
@@ -179,7 +183,7 @@ public class PostServicesImpl implements IPostServices {
         Category category = categoryRepo.findById(categoryId)
                 .orElseThrow(() -> new NotFoundError(Category.class));
 
-        return postRepo.getAllByPostCategoriesIn(Set.of(category), pageable)
+        return postRepo.getAllByCategoriesIn(Set.of(category), pageable)
                 .map(this::entityToDTO).getContent();
     }
 
@@ -188,7 +192,7 @@ public class PostServicesImpl implements IPostServices {
         Category category = categoryRepo.findBySlug(slug)
                 .orElseThrow(() -> new NotFoundError(Category.class));
 
-        return postRepo.getAllByPostCategoriesIn(Set.of(category), pageable)
+        return postRepo.getAllByCategoriesIn(Set.of(category), pageable)
                 .map(this::entityToDTO).getContent();
     }
 
@@ -208,8 +212,8 @@ public class PostServicesImpl implements IPostServices {
         postRepo.findAll(isPublished())
                 .parallelStream()
                 .map(p -> XmlUrlSet.XmlUrl.builder()
-                        .loc(HOST + "/" + p.getAccount().getSlug() + "/" + p.getSlug())
-                        .lastmod(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(p.getPublishedDate()))
+                        .loc(HOST + "/" + p.getAuthor().getSlug() + "/" + p.getSlug())
+                        .lastmod(DateFormatUtils.ISO_8601_EXTENDED_DATETIME_FORMAT.format(Date.from(p.getPublishedDate())))
                         .build())
                 .forEach(sitemap::addUrl);
 
@@ -236,7 +240,7 @@ public class PostServicesImpl implements IPostServices {
     }
 
     private PostResponseDTO entityToDTO(Post post) {
-        Account author = post.getAccount();
+        Account author = post.getAuthor();
 
         AccountDTO authorDTO = AccountDTO.toBasicAccount(author);
         authorDTO.setPostCount(postRepo.count(hasAuthorId(author.getId())));
@@ -273,7 +277,7 @@ public class PostServicesImpl implements IPostServices {
 
     private Post verifyResourceOwner(Post post, String authorEmail) {
         AssertUtils.notNull(post, new NotFoundError("Post not found"));
-        AssertUtils.isTrue(post.getAccount().getEmail().equals(authorEmail), new UnauthorizedError("Post not found"));
+        AssertUtils.isTrue(post.getAuthor().getEmail().equals(authorEmail), new UnauthorizedError("Post not found"));
         return post;
     }
 
@@ -281,7 +285,7 @@ public class PostServicesImpl implements IPostServices {
         existingPost.setTitle(requestDTO.getTitle());
         existingPost.setContent(requestDTO.getContent());
         existingPost.setPostThumbnail(requestDTO.getPostThumbnail());
-        existingPost.setPostCategories(getCategories(requestDTO));
+        existingPost.setCategories(getCategories(requestDTO));
     }
 
     enum SORT_TYPE {

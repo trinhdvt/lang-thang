@@ -16,7 +16,7 @@ import java.time.Instant;
 @Table(name = "post_report")
 public class PostReport {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -28,16 +28,16 @@ public interface AccountRepository extends JpaRepository<Account, Integer>, JpaS
 
     @Query("select count(bp) " +
            "from BookmarkedPost bp join Post p on bp.post.id = p.id " +
-           "where p.account.id = ?1")
+           "where p.author.id = ?1")
     int countBookmarkOnMyPost(int accountId);
 
     @Query("select count(c.id) " +
            "from Comment c join Post p on c.post.id = p.id " +
-           "where p.account.id = ?1")
+           "where p.author.id = ?1")
     int countCommentOnMyPost(int accountId);
 
-    @Query("select count(p.account) " +
-           "from Post p where p.account.id=?1 and p.published=true ")
+    @Query("select count(p.author) " +
+           "from Post p where p.author.id=?1 and p.isPublished=true ")
     int countPublishedPost(int accountId);
 
     @Query("select acc " +

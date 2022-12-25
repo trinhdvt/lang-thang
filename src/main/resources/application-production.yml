@@ -1,0 +1,57 @@
+spring:
+  config:
+    import: application-common.yml
+  cache:
+    type: redis
+  data:
+    redis:
+      repositories:
+        enabled: false
+      url: ${REDIS_URL}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 30000
+      pool-name: SpringBootHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      auto-commit: true
+
+security:
+  cors:
+    allowed-origins: https://langthang.trinhdvt.tech, http://localhost:3000
+  jwt:
+    token:
+      prefix: Bearer
+      secret-key: ${JWT_SECRET_KEY}
+      expire-length: 600000
+    refresh-token:
+      cookie-name: refresh-token
+      cookie-length: 15552000
+  oauth2:
+    google:
+      client-id: ${GOOGLE_CLIENT_ID}
+
+cloud:
+  cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET}
+    url: cloudinary://${cloud.cloudinary.api-key}:${cloud.cloudinary.api-secret}@${cloud.cloudinary.cloud-name}

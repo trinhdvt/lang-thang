@@ -44,7 +44,7 @@ public class NotificationServicesImpl implements INotificationServices {
     public void addBookmarkNotification(BookmarkedPost bookmarkedPost) {
         Account sourceAccount = bookmarkedPost.getAccount();
         Post destPost = bookmarkedPost.getPost();
-        Account destAccount = destPost.getAccount();
+        Account destAccount = destPost.getAuthor();
 
         Notification bookmarkNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.BOOKMARK);
 //       cannot create self-notification
@@ -58,7 +58,7 @@ public class NotificationServicesImpl implements INotificationServices {
     public void addCommentNotification(Comment comment) {
         Account sourceAccount = comment.getAccount();
         Post destPost = comment.getPost();
-        Account destAccount = destPost.getAccount();
+        Account destAccount = destPost.getAuthor();
 
         Notification commentNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.COMMENT);
 //      cannot create self-notification
@@ -70,7 +70,7 @@ public class NotificationServicesImpl implements INotificationServices {
     @Override
     @Async
     public void sendFollowersNotification(Post newPost) {
-        Account author = newPost.getAccount();
+        Account author = newPost.getAuthor();
 
         int pageSize = 100;
         int page = 0;
