@@ -13,6 +13,7 @@ import com.langthang.specification.PostSpec;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,10 +49,10 @@ public class PostServiceV2 {
         );
     }
 
-    public PostDtoV2 getById(Integer postId) {
+    public PostDtoV2 getByIdentity(String postIdentity) {
         return getPost(
-                postId,
-                StringUtils.EMPTY,
+                NumberUtils.toInt(postIdentity, -1),
+                postIdentity,
                 Post::isPublished,
                 postMapper::toDto
         );
@@ -91,14 +92,22 @@ public class PostServiceV2 {
     }
 
     public String updatePost(Integer postId, PostCreateDto payload) {
+        return getPost(postId,
+                StringUtils.EMPTY,
+                authorCheck,
+                ((Function<Post, Post>) post -> postMapper.updateFromDto(post, payload))
+                        .andThen(postRepo::save)
+                        .andThen(Post::getSlug)
+        );
+    }
+
+    public void deletePostById(Integer postId) {
         var post = getPost(postId,
                 StringUtils.EMPTY,
                 authorCheck,
-                Function.identity());
-
-        post = postMapper.updateFromDto(post, payload);
-        post = postRepo.save(post);
-        return post.getSlug();
+                Function.identity()
+        );
+        postRepo.delete(post);
     }
 
     /**

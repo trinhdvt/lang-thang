@@ -65,3 +65,8 @@ logging:
         SQL_SLOW: INFO
     com:
       langthang: DEBUG
+springdoc:
+  api-docs:
+    path: /api-docs
+  packages-to-scan: com.langthang.controller.v2
+
