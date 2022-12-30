@@ -10,7 +10,6 @@ import com.langthang.utils.AssertUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,17 +25,6 @@ public class AuthenticationController {
     private final IAuthServices authServices;
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
-
-    @PostMapping("/auth/google")
-    public ResponseEntity<Object> loginWithGoogle(
-            @RequestParam("google_token")
-            @NotBlank String googleToken
-            , HttpServletResponse resp) {
-
-        String accessToken = authServices.loginWithGoogle(googleToken, resp);
-
-        return ResponseEntity.ok(new JwtTokenDTO(accessToken, TOKEN_EXPIRE_TIME));
-    }
 
     @PostMapping("/auth/refreshToken")
     public ResponseEntity<Object> refreshToken(

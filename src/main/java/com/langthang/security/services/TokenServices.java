@@ -51,37 +51,8 @@ public class TokenServices {
         SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
     }
 
-    public String createAccessToken(Account account) {
-        Map<String, Object> payloads = new HashMap<>();
-        payloads.put("jti", account.getId());
-        payloads.put("sub", account.getEmail());
-        payloads.put("role", account.getRole());
-        payloads.put("name", account.getName());
-        payloads.put("avatarLink", account.getAvatarLink());
-        payloads.put("about", account.getAbout());
-        payloads.put("fbLink", account.getFbLink());
-        payloads.put("instagramLink", account.getInstagramLink());
-
-        Date now = new Date();
-        Date expireTime = new Date(now.getTime() + TOKEN_EXPIRE_TIME);
-
-        return Jwts.builder()
-                .setClaims(payloads)
-                .setIssuedAt(now)
-                .setExpiration(expireTime)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
-    }
-
-    public String createToken(CurrentUser authUser) {
-        Map<String, Object> payloads = Map.of(
-                "jti", authUser.getUserId(),
-                "sub", authUser.getUsername(),
-                "role", authUser.getRole(),
-                "name", authUser.getSource().getName(),
-                "avatarLink", authUser.getSource().getAvatarLink()
-        );
-        var claims = new HashMap<>(payloads);
+    public String createToken(Account account) {
+        Map<String, Object> claims = buildJwtPayload(account);
 
         var now = Instant.now();
         var expireTime = now.plusSeconds(TOKEN_EXPIRE_TIME);
@@ -92,6 +63,16 @@ public class TokenServices {
                 .setExpiration(Date.from(expireTime))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
+    }
+
+    private HashMap<String, Object> buildJwtPayload(Account account) {
+        HashMap<String, Object> payloads = new HashMap<>();
+        payloads.put("jti", account.getId());
+        payloads.put("sub", account.getEmail());
+        payloads.put("role", account.getRole());
+        payloads.put("name", account.getName());
+        payloads.put("avatarLink", account.getAvatarLink());
+        return payloads;
     }
 
     public Authentication getAuthentication(String token) {

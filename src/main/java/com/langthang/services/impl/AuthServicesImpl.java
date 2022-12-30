@@ -74,7 +74,7 @@ public class AuthServicesImpl implements IAuthServices {
             authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             Account acc = accountRepository.getByEmail(email);
-            String accessToken = jwtTokenServices.createAccessToken(acc);
+            String accessToken = jwtTokenServices.createToken(acc);
             addRefreshTokenCookie(email, accessToken, resp);
 
             return accessToken;
@@ -122,7 +122,7 @@ public class AuthServicesImpl implements IAuthServices {
             }
 
             // create access token and refresh-token cookie as well
-            String accessToken = jwtTokenServices.createAccessToken(account);
+            String accessToken = jwtTokenServices.createToken(account);
             addRefreshTokenCookie(email, accessToken, resp);
             return accessToken;
 
@@ -139,7 +139,7 @@ public class AuthServicesImpl implements IAuthServices {
         AssertUtils.isTrue(isAble, new UnauthorizedError("Unable to create new access token"));
 
         Account acc = accountRepository.getByEmail(email);
-        String newAccessToken = jwtTokenServices.createAccessToken(acc);
+        String newAccessToken = jwtTokenServices.createToken(acc);
         addRefreshTokenCookie(email, newAccessToken, resp);
         return newAccessToken;
     }

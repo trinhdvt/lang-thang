@@ -1,7 +1,9 @@
 package com.langthang.controller.v2;
 
 import com.langthang.model.dto.request.AccountRegisterDTO;
+import com.langthang.model.dto.v2.request.GoogleLoginCredential;
 import com.langthang.model.dto.v2.request.LoginCredential;
+import com.langthang.model.dto.v2.response.LoginResponse;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.v2.AuthServiceV2;
 import com.langthang.utils.MyStringUtils;
@@ -19,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -32,10 +33,12 @@ public class AuthControllerV2 {
     private final IAuthServices authServicesV1;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Object> login(@Valid @RequestBody LoginCredential loginCredential,
-                                        HttpServletResponse resp) {
+    public LoginResponse login(
+            @Valid @RequestBody LoginCredential loginCredential,
+            HttpServletResponse resp
+    ) {
         String token = authServices.login(loginCredential, resp);
-        return ResponseEntity.ok(Map.of("token", token));
+        return new LoginResponse(token);
     }
 
     @PostMapping("/auth/register")
@@ -43,6 +46,16 @@ public class AuthControllerV2 {
         authServicesV1.registerAccount(accountRegisterDTO);
         return ResponseEntity.accepted().build();
     }
+
+    @PostMapping("/auth/google")
+    public LoginResponse loginWithGoogle(
+            @Valid @RequestBody GoogleLoginCredential credential,
+            HttpServletResponse response
+    ) {
+        String token = authServices.loginWithGoogle(credential, response);
+        return new LoginResponse(token);
+    }
+
 
     private final JobLauncher jobLauncher;
     private final JobRegistry jobRegistry;
