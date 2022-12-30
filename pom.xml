@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
         <relativePath/>
     </parent>
 
     <groupId>com.langthang</groupId>
     <artifactId>lang-thang</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
     <name>lang-thang</name>
 
@@ -24,7 +24,7 @@
         <spring.context.version>5.3.6</spring.context.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
-        <google.api.version>2.0.1</google.api.version>
+        <google.api.version>2.1.1</google.api.version>
         <apache.common-text.version>1.10.0</apache.common-text.version>
         <hibernate.search.version>5.11.11.Final</hibernate.search.version>
         <bucket4j.version>7.6.0</bucket4j.version>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -169,7 +169,7 @@
         <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>hibernate-types-60</artifactId>
-            <version>2.21.0</version>
+            <version>2.21.1</version>
         </dependency>
 
         <dependency>
