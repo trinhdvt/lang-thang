@@ -17,7 +17,6 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,10 +28,6 @@ import java.util.List;
 
 @Tag(name = "Post API", description = "API for Post")
 public interface IPostAPI {
-    @GetMapping(value = "/post", params = {"slug"})
-    @ResponseStatus(HttpStatus.OK)
-    @Deprecated
-    PostDtoV2 getPostBySlug(@RequestParam String slug);
 
     @Operation(summary = "Get Post by ID or Slug")
     @ApiResponses(value = {

@@ -21,7 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,11 +34,6 @@ import static org.springframework.data.domain.Sort.Direction;
 public class PostControllerV2 implements IPostAPI {
 
     private final PostServiceV2 postServices;
-
-    @Override
-    public PostDtoV2 getPostBySlug(@RequestParam String slug) {
-        return postServices.getBySlug(slug);
-    }
 
     @Override
     public PostDtoV2 getPostByIdentity(@PathVariable String postIdentity) {

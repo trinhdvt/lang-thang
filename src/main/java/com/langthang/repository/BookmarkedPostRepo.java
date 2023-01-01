@@ -1,13 +1,12 @@
 package com.langthang.repository;
 
+import com.langthang.model.entity.Account;
 import com.langthang.model.entity.BookmarkedPost;
 import com.langthang.model.entity.BookmarkedPostKey;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+public interface BookmarkedPostRepo extends JpaRepository<BookmarkedPost, BookmarkedPostKey> {
 
-public interface BookmarkedPostRepo extends CrudRepository<BookmarkedPost, BookmarkedPostKey> {
-
-    Optional<BookmarkedPost> findBookmarkedPostByPost_IdAndAccount_Email(int postId, String accountEmail);
+    boolean existsByAccountAndPost_Id(Account account, int postId);
 
 }

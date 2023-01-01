@@ -1,3 +1,5 @@
 spring:
   config:
     import: application-common.yml, application-production.yml
+  jpa:
+    show-sql: true

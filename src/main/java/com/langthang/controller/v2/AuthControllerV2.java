@@ -1,5 +1,6 @@
 package com.langthang.controller.v2;
 
+import com.langthang.controller.v2.definition.AuthAPI;
 import com.langthang.model.dto.request.AccountRegisterDTO;
 import com.langthang.model.dto.v2.request.GoogleLoginCredential;
 import com.langthang.model.dto.v2.request.LoginCredential;
@@ -7,6 +8,7 @@ import com.langthang.model.dto.v2.response.LoginResponse;
 import com.langthang.services.IAuthServices;
 import com.langthang.services.v2.AuthServiceV2;
 import com.langthang.utils.MyStringUtils;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,32 +28,33 @@ import java.util.Date;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Validated
 @Slf4j
-public class AuthControllerV2 {
+public class AuthControllerV2 implements AuthAPI {
 
     private final AuthServiceV2 authServices;
 
     private final IAuthServices authServicesV1;
 
+    @Override
     @PostMapping("/auth/login")
     public LoginResponse login(
             @Valid @RequestBody LoginCredential loginCredential,
-            HttpServletResponse resp
-    ) {
+            HttpServletResponse resp) {
         String token = authServices.login(loginCredential, resp);
         return new LoginResponse(token);
     }
 
+    @Override
     @PostMapping("/auth/register")
     public ResponseEntity<Object> register(@Valid @RequestBody AccountRegisterDTO accountRegisterDTO) {
         authServicesV1.registerAccount(accountRegisterDTO);
         return ResponseEntity.accepted().build();
     }
 
+    @Override
     @PostMapping("/auth/google")
     public LoginResponse loginWithGoogle(
             @Valid @RequestBody GoogleLoginCredential credential,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
         String token = authServices.loginWithGoogle(credential, response);
         return new LoginResponse(token);
     }
@@ -62,6 +65,7 @@ public class AuthControllerV2 {
 
     @GetMapping(value = "/job", params = {"jobName"})
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Hidden
     public ResponseEntity<?> triggerJob(@RequestParam String jobName) throws Exception {
         var jobParams = new JobParametersBuilder()
                 .addDate("run-time", new Date())

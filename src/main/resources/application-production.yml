@@ -36,7 +36,7 @@ spring:
 
 security:
   cors:
-    allowed-origins: https://langthang.trinhdvt.tech, http://localhost:3000
+    allowed-origins: https://langthang.trinhdvt.tech, https://api.langthang.trinhdvt.tech, http://localhost:3000
   jwt:
     token:
       prefix: Bearer
