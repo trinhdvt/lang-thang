@@ -3,9 +3,12 @@ package com.langthang.services.v2;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnprocessableEntity;
 import com.langthang.mapper.PostMapper;
+import com.langthang.mapper.PostStatsMapper;
 import com.langthang.model.constraints.PostPopularType;
 import com.langthang.model.dto.v2.request.PostCreateDto;
+import com.langthang.model.dto.v2.request.PostStatsRequest;
 import com.langthang.model.dto.v2.response.PostDtoV2;
+import com.langthang.model.dto.v2.response.PostStatsDto;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Post;
 import com.langthang.repository.PostRepository;
@@ -36,18 +39,8 @@ import static com.langthang.specification.PostSpec.*;
 public class PostServiceV2 {
 
     private final PostRepository postRepo;
-
+    private final PostStatsMapper postStatsMapper;
     private final PostMapper postMapper;
-
-
-    public PostDtoV2 getBySlug(String slug) {
-        return getPost(
-                -1,
-                slug,
-                Post::isPublished,
-                postMapper::toDto
-        );
-    }
 
     public PostDtoV2 getByIdentity(String postIdentity) {
         return getPost(
@@ -109,6 +102,14 @@ public class PostServiceV2 {
         );
         postRepo.delete(post);
     }
+
+    public List<PostStatsDto> getPostStats(PostStatsRequest request) {
+        return postRepo.findAll(inIds(request.postIds()).and(isPublished()))
+                .stream()
+                .map(postStatsMapper::toPostStats)
+                .toList();
+    }
+
 
     /**
      * @param id     Post's id

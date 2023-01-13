@@ -20,6 +20,6 @@ public class BookmarkEntityListener {
 
     @PostPersist
     public void onNewBookmark(BookmarkedPost bookmarkedPost) {
-        notificationServices.addBookmarkNotification(bookmarkedPost);
+//        notificationServices.addBookmarkNotification(bookmarkedPost);
     }
 }

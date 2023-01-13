@@ -29,7 +29,7 @@ public class BookmarkServiceImpl implements IBookmarkServices {
                 .map(post -> new BookmarkedPost(user, post))
                 .map(bp -> {
                     bookmarkRepo.save(bp);
-                    return new PostStatsDto(postRepo.countBookmarks(postId), 0, true);
+                    return new PostStatsDto(postRepo.countBookmarks(postId), 0, true, postId);
                 })
                 .orElseThrow(() -> NotFoundError.build(Post.class));
     }
@@ -40,7 +40,7 @@ public class BookmarkServiceImpl implements IBookmarkServices {
                 .map(post -> new BookmarkedPost(user, post))
                 .map(bp -> {
                     bookmarkRepo.delete(bp);
-                    return new PostStatsDto(postRepo.countBookmarks(postId), 0, false);
+                    return new PostStatsDto(postRepo.countBookmarks(postId), 0, false, postId);
                 })
                 .orElseThrow(() -> NotFoundError.build(Post.class));
     }

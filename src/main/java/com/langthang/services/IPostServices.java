@@ -1,8 +1,8 @@
 package com.langthang.services;
 
-import com.langthang.controller.v1.XmlUrlSet;
 import com.langthang.model.dto.request.PostRequestDTO;
 import com.langthang.model.dto.response.PostResponseDTO;
+import com.langthang.model.dto.response.XmlUrlSet;
 import com.langthang.model.dto.v2.response.PostDtoV2;
 import org.springframework.data.domain.Pageable;
 

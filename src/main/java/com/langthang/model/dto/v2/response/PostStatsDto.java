@@ -13,4 +13,5 @@ public class PostStatsDto implements Serializable {
     private Integer bookmarkedCount;
     private Integer commentCount;
     private boolean isBookmarked;
+    private Integer postId;
 }

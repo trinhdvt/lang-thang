@@ -38,6 +38,10 @@ public class PostSpec {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Post_.ID), id);
     }
 
+    public static Specification<Post> inIds(Iterable<Integer> ids) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.in(root.get(Post_.ID)).value(ids);
+    }
+
     public static Specification<Post> isPublished(Integer id) {
         return isPublished().and(hasId(id));
     }

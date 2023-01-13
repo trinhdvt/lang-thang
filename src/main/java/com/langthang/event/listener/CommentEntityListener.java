@@ -1,7 +1,7 @@
 package com.langthang.event.listener;
 
-import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.event.OnNewCommentEvent;
+import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.model.entity.Comment;
 import com.langthang.services.INotificationServices;
 import com.langthang.utils.MyStringUtils;
@@ -37,6 +37,6 @@ public class CommentEntityListener {
     public void postPersist(Comment comment) {
         eventPublisher.publishEvent(new OnNewCommentEvent(CommentDTO.toCommentDTO(comment)));
 
-        notificationServices.addCommentNotification(comment);
+//        notificationServices.addCommentNotification(comment);
     }
 }

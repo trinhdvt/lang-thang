@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class PostControllerV2 implements IPostAPI {
     }
 
     @Override
-    @Cacheable(key = "{#root.methodName,#pageable}")
+//    @Cacheable(key = "{#root.methodName,#pageable}")
     public List<PostDtoV2> getLatestPost(@PageableDefault(
             sort = {Post_.PUBLISHED_DATE},
             direction = Direction.DESC) Pageable pageable) {
@@ -49,7 +48,7 @@ public class PostControllerV2 implements IPostAPI {
     }
 
     @Override
-    @Cacheable(key = "{#root.methodName,#type,#pageable}")
+//    @Cacheable(key = "{#root.methodName,#type,#pageable}")
     public List<PostDtoV2> getPopularPostByProperty(@PageableDefault(
             sort = {Post_.PUBLISHED_DATE},
             direction = Direction.DESC) Pageable pageable, @PathVariable String type) {

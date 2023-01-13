@@ -56,7 +56,7 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private Set<PostReport> postReports;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "post_category",
             joinColumns = @JoinColumn(name = "post_id"),

@@ -13,6 +13,7 @@ public abstract class PostStatsMapper {
     @Autowired
     protected BookmarkedPostRepo bookmarkedPostRepo;
 
+    @Mapping(target = "postId", source = "id")
     @Mapping(target = "bookmarked", ignore = true)
     @Mapping(target = "bookmarkedCount",
             expression = "java(post.getBookmarkedPosts().size())")
