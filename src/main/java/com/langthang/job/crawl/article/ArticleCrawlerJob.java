@@ -9,6 +9,7 @@ import com.langthang.model.constraints.Constant;
 import com.langthang.model.entity.Post;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.PostRepository;
+import com.langthang.specification.AccountSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -84,11 +85,13 @@ public class ArticleCrawlerJob {
     @Bean
     @StepScope
     public ItemProcessor<RssItemModel, Post> articleProcessor() {
-        var author = accountRepository.findById(1).orElseThrow(() -> new RuntimeException("Author not found"));
         return item -> {
+            var activatedUsers = accountRepository.findAll(AccountSpec.isEnabled());
+            var randomAuthor = activatedUsers.get((int) (Math.random() * activatedUsers.size()));
+
             Post post = new DuLichVietNameParser(item).parse();
             post.setPublished(true);
-            post.setAuthor(author);
+            post.setAuthor(randomAuthor);
 
             rssItemRepository.updateStatus(Set.of(item.getId()), true);
             return post;
