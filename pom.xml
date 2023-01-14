@@ -24,7 +24,7 @@
         <spring.context.version>5.3.6</spring.context.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
-        <google.api.version>2.1.1</google.api.version>
+        <google.api.version>2.1.2</google.api.version>
         <apache.common-text.version>1.10.0</apache.common-text.version>
         <hibernate.search.version>5.11.11.Final</hibernate.search.version>
         <bucket4j.version>7.6.0</bucket4j.version>
@@ -84,6 +84,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-batch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
         <dependency>

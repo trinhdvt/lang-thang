@@ -8,12 +8,15 @@ services:
     restart: unless-stopped
     environment:
       - REDIS_URL=redis://REDIS:6379
+      - RABBITMQ_HOST=RABBITMQ
+      - RABBITMQ_PORT=5672
     ports:
       - "9999:8080"
     env_file:
       - .env
     depends_on:
       - redis
+      - rabbit_mq
     networks:
       langthang:
         aliases:
@@ -21,10 +24,26 @@ services:
 
   redis:
     image: redis:alpine
+    restart: unless-stopped
     networks:
       langthang:
         aliases:
           - REDIS
+
+  rabbit_mq:
+    image: rabbitmq:management-alpine
+    restart: unless-stopped
+    ports:
+      - "15672:15672"
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    networks:
+      langthang:
+        aliases:
+          - RABBITMQ
 
 networks:
   langthang:
