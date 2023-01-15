@@ -1,6 +1,6 @@
 package com.langthang.model.entity;
 
-import com.langthang.event.listener.PostEntityListener;
+import com.langthang.event.listener.entity.PostEntityListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

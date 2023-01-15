@@ -1,4 +1,4 @@
-package com.langthang.event.listener;
+package com.langthang.event.listener.entity;
 
 
 import com.langthang.model.entity.Post;

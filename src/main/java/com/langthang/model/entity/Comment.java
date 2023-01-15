@@ -1,9 +1,8 @@
 package com.langthang.model.entity;
 
-import com.langthang.event.listener.CommentEntityListener;
-import lombok.*;
-
+import com.langthang.event.listener.entity.CommentEntityListener;
 import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;

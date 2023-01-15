@@ -1,70 +1,68 @@
 package com.langthang.services.impl;
 
-import com.langthang.exception.HttpError;
+import com.langthang.event.model.NotificationRequest;
 import com.langthang.exception.NotFoundError;
 import com.langthang.model.constraints.NotificationType;
 import com.langthang.model.dto.response.NotificationDTO;
 import com.langthang.model.entity.*;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
+import com.langthang.repository.NotificationTemplateRepository;
+import com.langthang.repository.PostRepository;
 import com.langthang.services.INotificationServices;
 import com.langthang.specification.AccountSpec;
+import com.langthang.specification.PostSpec;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Service
 @Transactional
+@Slf4j
 public class NotificationServicesImpl implements INotificationServices {
 
     private final NotificationRepository notifyRepo;
+    private final PostRepository postRepo;
     private final AccountRepository accRepo;
-    @Value("${application.notify-template.like-comment}")
-    private String likeNotificationTemplate;
-    @Value("${application.notify-template.comment-post}")
-    private String commentNotificationTemplate;
-    @Value("${application.notify-template.bookmark-post}")
-    private String bookmarkNotificationTemplate;
-    @Value("${application.notify-template.following-new-post}")
-    private String newPostNotificationTemplate;
+    private final NotificationTemplateRepository templateRepo;
 
-    @Override
-    @Async
-    public void addBookmarkNotification(BookmarkedPost bookmarkedPost) {
-        Account sourceAccount = bookmarkedPost.getAccount();
-        Post destPost = bookmarkedPost.getPost();
-        Account destAccount = destPost.getAuthor();
+    public void createNotification(@NonNull NotificationRequest request) {
+        if (request.type().equals(NotificationType.PUBLISHED_NEW_POST)) return;
 
-        Notification bookmarkNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.BOOKMARK);
-//       cannot create self-notification
-        if (bookmarkNotification != null) {
-            notifyRepo.saveAndFlush(bookmarkNotification);
+        var users = accRepo.findAllById(Set.of(request.sourceUserId(), request.targetUserId()))
+                .stream()
+                .filter(Account::isEnabled)
+                .toList();
+
+        var sourceUser = users.stream().filter(acc -> acc.getId() == request.sourceUserId()).findFirst().orElse(null);
+        var targetUser = users.stream().filter(acc -> acc.getId() == request.targetUserId()).findFirst().orElse(null);
+        var targetPost = postRepo.findOne(PostSpec.isPublished(request.targetPostId())).orElse(null);
+        var type = request.type();
+
+        if (sourceUser == null || targetUser == null || targetPost == null) {
+            throw new NotFoundError("Can not find source/target user or target post");
         }
-    }
 
-    @Override
-    @Async
-    public void addCommentNotification(Comment comment) {
-        Account sourceAccount = comment.getAccount();
-        Post destPost = comment.getPost();
-        Account destAccount = destPost.getAuthor();
-
-        Notification commentNotification = createNotification(sourceAccount, destAccount, destPost, NotificationType.COMMENT);
-//      cannot create self-notification
-        if (commentNotification != null) {
-            notifyRepo.saveAndFlush(commentNotification);
-        }
+        Optional.ofNullable(buildNotification(sourceUser, targetUser, targetPost, type))
+                .ifPresent(entity -> {
+                    var newNotification = notifyRepo.save(entity);
+                    log.debug("New notification created: {}", newNotification);
+                });
     }
 
     @Override
@@ -72,39 +70,40 @@ public class NotificationServicesImpl implements INotificationServices {
     public void sendFollowersNotification(Post newPost) {
         Account author = newPost.getAuthor();
 
-        int pageSize = 100;
+        int pageSize = 10;
         int page = 0;
         Slice<Account> followerPage;
         do {
-            followerPage = accRepo.getFollowedAccount(author.getId(), PageRequest.of(page, pageSize, Sort.by("id")));
+            followerPage = accRepo.getFollowedAccount(author.getId(), PageRequest.of(page, pageSize, Sort.by(Account_.ID)));
             List<Notification> notificationList = new ArrayList<>();
 
             followerPage.forEach(follower -> {
-                Notification notification = createNotification(author, follower, newPost, NotificationType.NEW_POST);
-                if (notification != null)
-                    notificationList.add(notification);
+                Notification notification = buildNotification(author, follower, newPost, NotificationType.PUBLISHED_NEW_POST);
+                if (notification != null) notificationList.add(notification);
             });
 
             notifyRepo.saveAll(notificationList);
             page++;
         } while (followerPage.hasNext());
-
     }
 
     @Override
-    public Notification createNotification(Account sourceAcc, Account destAcc, Post destPost, NotificationType type) {
+    @Nullable
+    public Notification buildNotification(@NonNull Account sourceUser,
+                                          @NonNull Account targetUser,
+                                          @NonNull Post targetPost,
+                                          NotificationType type) {
 
-        if (sourceAcc == null || destPost == null || destAcc == null) {
-            throw new HttpError("Internal Server Error when create notifications", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if (sourceUser.getId().equals(targetUser.getId())) return null;
 
-        if (sourceAcc.getEmail().equals(destAcc.getEmail())) {
-            return null;
-        }
+        var templateString = getTemplate(type);
+        var valuesForContent = Map.of(
+                "source_user", sourceUser.getName(),
+                "target_post", targetPost.getTitle()
+        );
 
-        String content = createContentByType(type, sourceAcc.getName(), destPost.getTitle());
-
-        return new Notification(destAcc, destPost, sourceAcc, content);
+        String content = new StringSubstitutor(valuesForContent).replace(templateString);
+        return new Notification(targetUser, targetPost, sourceUser, content, type);
     }
 
     @Override
@@ -142,18 +141,9 @@ public class NotificationServicesImpl implements INotificationServices {
                 .ifPresent(account -> notifyRepo.maskAllAsSeen(account.getId()));
     }
 
-    private String createContentByType(NotificationType type, String sourceName, String postTitle) {
-        String notificationTemplate = getNotificationTemplate(type);
-
-        return MessageFormat.format(notificationTemplate, sourceName, postTitle);
-    }
-
-    private String getNotificationTemplate(NotificationType notificationType) {
-        return switch (notificationType) {
-            case LIKE -> likeNotificationTemplate;
-            case COMMENT -> commentNotificationTemplate;
-            case BOOKMARK -> bookmarkNotificationTemplate;
-            case NEW_POST -> newPostNotificationTemplate;
-        };
+    @Cacheable(value = "notification-template")
+    @NonNull
+    public String getTemplate(NotificationType type) {
+        return templateRepo.findByType(type).getTemplate();
     }
 }

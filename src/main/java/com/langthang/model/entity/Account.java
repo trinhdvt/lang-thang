@@ -1,6 +1,6 @@
 package com.langthang.model.entity;
 
-import com.langthang.event.listener.AccountEntityListener;
+import com.langthang.event.listener.entity.AccountEntityListener;
 import com.langthang.model.constraints.Role;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;

@@ -39,11 +39,6 @@ application:
       prefix: ${application.broker.prefix}/notify
     post:
       prefix: ${application.broker.prefix}/post
-  notify-template:
-    like-comment: "<b>{0}</b> đã thích bình luận của bạn trong bài viết <b>{1}</b>"
-    comment-post: "<b>{0}</b> đã bình luận về bài viết <b>{1}</b>"
-    bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b>"
-    following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
   server:
     url: ${HOST:https://langthang.trinhdvt.tech}
 

@@ -12,13 +12,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
-    public static final String QK_EXAMPLE_QUEUE = "exampleQueue";
-    public static final String QK_MESSAGE_QUEUE = "messageQueue";
+    public static final String QK_NOTIFICATION_FACTORY_QUEUE = "notificationFactoryQueue";
 
     @Bean
     public RabbitTemplate jsonRabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(jsonConverter());
+        template.setChannelTransacted(true);
+
         return template;
     }
 
@@ -27,13 +28,8 @@ public class RabbitMqConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    @Bean("exampleQueue")
-    public Queue exampleQueue() {
-        return new Queue(QK_EXAMPLE_QUEUE);
-    }
-
-    @Bean("messageQueue")
-    public Queue messageQueue() {
-        return new Queue(QK_MESSAGE_QUEUE);
+    @Bean
+    public Queue notificationFactoryQueue() {
+        return new Queue(QK_NOTIFICATION_FACTORY_QUEUE, true);
     }
 }
