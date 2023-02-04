@@ -1,11 +1,11 @@
 package com.langthang.event.listener.entity;
 
-import com.langthang.config.RabbitMqConfig;
+import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
+import com.langthang.config.RQueueConfig;
 import com.langthang.event.model.NotificationRequest;
 import com.langthang.model.constraints.NotificationType;
 import com.langthang.model.entity.BookmarkedPost;
 import jakarta.persistence.PostPersist;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookmarkEntityListener {
 
-    private static RabbitTemplate rabbitTemplate;
+    private static RqueueMessageEnqueuer msgPublisher;
 
     @Autowired
-    public void init(RabbitTemplate rabbitTemplate) {
-        BookmarkEntityListener.rabbitTemplate = rabbitTemplate;
+    public void init(RqueueMessageEnqueuer msgPublisher) {
+        BookmarkEntityListener.msgPublisher = msgPublisher;
     }
 
     @PostPersist
@@ -28,6 +28,6 @@ public class BookmarkEntityListener {
                 bookmarkedPost.getPost().getId(),
                 NotificationType.BOOKMARK_POST
         );
-        rabbitTemplate.convertAndSend(RabbitMqConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
+        msgPublisher.enqueue(RQueueConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
     }
 }

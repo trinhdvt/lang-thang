@@ -1,6 +1,7 @@
 package com.langthang.event.listener.entity;
 
-import com.langthang.config.RabbitMqConfig;
+import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
+import com.langthang.config.RQueueConfig;
 import com.langthang.event.model.NotificationRequest;
 import com.langthang.event.model.OnNewCommentEvent;
 import com.langthang.model.constraints.NotificationType;
@@ -10,7 +11,6 @@ import com.langthang.utils.MyStringUtils;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentEntityListener {
 
-    private static RabbitTemplate rabbitTemplate;
+    private static RqueueMessageEnqueuer msgPublisher;
     private static ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public void init(RabbitTemplate rabbitTemplate, ApplicationEventPublisher eventPublisher) {
+    public void init(ApplicationEventPublisher eventPublisher, RqueueMessageEnqueuer msgPublisher) {
         CommentEntityListener.eventPublisher = eventPublisher;
-        CommentEntityListener.rabbitTemplate = rabbitTemplate;
+        CommentEntityListener.msgPublisher = msgPublisher;
     }
 
     @PrePersist
@@ -49,6 +49,6 @@ public class CommentEntityListener {
                 comment.getPost().getId(),
                 NotificationType.COMMENT_ON_POST
         );
-        rabbitTemplate.convertAndSend(RabbitMqConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
+        msgPublisher.enqueue(RQueueConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
     }
 }

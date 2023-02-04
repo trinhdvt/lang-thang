@@ -25,6 +25,9 @@ spring:
       max-file-size: 2MB
       max-request-size: 3MB
 
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
 storage:
   bucket: lang-thang-assets
 
@@ -48,6 +51,7 @@ server:
   port: ${PORT:8080}
   servlet:
     context-path: /api
+  shutdown: graceful
 
 logging:
   level:

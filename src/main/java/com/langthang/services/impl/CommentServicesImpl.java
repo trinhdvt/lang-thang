@@ -1,6 +1,7 @@
 package com.langthang.services.impl;
 
-import com.langthang.config.RabbitMqConfig;
+import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
+import com.langthang.config.RQueueConfig;
 import com.langthang.event.model.NotificationRequest;
 import com.langthang.exception.NotFoundError;
 import com.langthang.model.constraints.NotificationType;
@@ -15,7 +16,6 @@ import com.langthang.services.ICommentServices;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class CommentServicesImpl implements ICommentServices {
 
     private final PostRepository postRepo;
 
-    private final RabbitTemplate rabbitTemplate;
+    private final RqueueMessageEnqueuer msgPublisher;
 
     @Override
     public CommentDTO addNewComment(int postId, Integer parentId, String content, String commenterEmail) {
@@ -131,7 +131,7 @@ public class CommentServicesImpl implements ICommentServices {
                     comment.getPost().getId(),
                     NotificationType.LIKE_COMMENT
             );
-            rabbitTemplate.convertAndSend(RabbitMqConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
+            msgPublisher.enqueue(RQueueConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
         }
 
         accRepo.save(currentAcc);
