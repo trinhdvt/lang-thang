@@ -74,7 +74,7 @@ public class Account {
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @OrderBy("notifyDate DESC ")
-    private List<Notification> notifies;
+    private List<Notification> notifications;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @OrderBy("reportedDate DESC")

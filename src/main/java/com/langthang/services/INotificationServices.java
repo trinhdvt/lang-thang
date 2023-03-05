@@ -2,7 +2,7 @@ package com.langthang.services;
 
 import com.langthang.event.model.NotificationRequest;
 import com.langthang.model.constraints.NotificationType;
-import com.langthang.model.dto.response.NotificationDTO;
+import com.langthang.model.dto.v2.response.NotificationDtoV2;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Notification;
 import com.langthang.model.entity.Post;
@@ -33,9 +33,9 @@ public interface INotificationServices {
 
     void sendFollowersNotification(Post newPost);
 
-    List<NotificationDTO> getNotifications(String accEmail, Pageable pageable);
+    List<NotificationDtoV2> getAll(Integer userId, Pageable pageable);
 
-    List<NotificationDTO> getUnseenNotifications(String accEmail);
+    List<NotificationDtoV2> getAll(Integer userId, boolean isSeen, Pageable pageable);
 
     void maskAsSeen(int notificationId, String accEmail);
 

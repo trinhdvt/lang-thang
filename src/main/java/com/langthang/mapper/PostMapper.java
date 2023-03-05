@@ -23,6 +23,7 @@ public interface PostMapper {
     @Mapping(target = "isPublished", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Named("toReadOnlyDto")
     PostDtoV2 toReadOnlyDto(Post post);
 
     @InheritInverseConfiguration

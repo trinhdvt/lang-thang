@@ -2,9 +2,13 @@ package com.langthang.services.impl;
 
 import com.langthang.event.model.NotificationRequest;
 import com.langthang.exception.NotFoundError;
+import com.langthang.mapper.NotificationMapper;
 import com.langthang.model.constraints.NotificationType;
-import com.langthang.model.dto.response.NotificationDTO;
-import com.langthang.model.entity.*;
+import com.langthang.model.dto.v2.response.NotificationDtoV2;
+import com.langthang.model.entity.Account;
+import com.langthang.model.entity.Account_;
+import com.langthang.model.entity.Notification;
+import com.langthang.model.entity.Post;
 import com.langthang.repository.AccountRepository;
 import com.langthang.repository.NotificationRepository;
 import com.langthang.repository.NotificationTemplateRepository;
@@ -22,7 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,7 @@ public class NotificationServicesImpl implements INotificationServices {
     private final PostRepository postRepo;
     private final AccountRepository accRepo;
     private final NotificationTemplateRepository templateRepo;
+    private final NotificationMapper notificationMapper;
 
     public void createNotification(@NonNull NotificationRequest request) {
         if (request.type().equals(NotificationType.PUBLISHED_NEW_POST)) return;
@@ -107,19 +111,19 @@ public class NotificationServicesImpl implements INotificationServices {
     }
 
     @Override
-    public List<NotificationDTO> getNotifications(String accEmail, Pageable pageable) {
-        return notifyRepo.findAllByAccount_Email(accEmail, pageable)
-                .map(NotificationDTO::toNotificationDTO)
-                .getContent();
+    public List<NotificationDtoV2> getAll(Integer userId, Pageable pageable) {
+        return notifyRepo.findAllByAccount_Id(userId, pageable)
+                .map(notificationMapper::toDto)
+                .toList();
     }
 
     @Override
-    public List<NotificationDTO> getUnseenNotifications(String accEmail) {
-        return notifyRepo.findAllByAccount_EmailAndSeenIsFalse(accEmail,
-                        Sort.by(Direction.DESC, Notification_.NOTIFY_DATE))
-                .map(NotificationDTO::toNotificationDTO)
+    public List<NotificationDtoV2> getAll(Integer userId, boolean isSeen, Pageable pageable) {
+        return notifyRepo.findAllByAccount_IdAndSeenIs(userId, isSeen, pageable)
+                .map(notificationMapper::toDto)
                 .toList();
     }
+
 
     @Override
     public void maskAsSeen(int notificationId, String accEmail) {
