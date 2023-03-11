@@ -37,7 +37,7 @@ public interface INotificationServices {
 
     List<NotificationDtoV2> getAll(Integer userId, boolean isSeen, Pageable pageable);
 
-    void maskAsSeen(int notificationId, String accEmail);
+    void clearNotifications(Integer userId);
 
-    void maskAllAsSeen(String currentEmail);
+    void clearNotifications(Integer userId, Integer notificationId);
 }

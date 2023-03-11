@@ -14,7 +14,6 @@ import com.langthang.repository.NotificationRepository;
 import com.langthang.repository.NotificationTemplateRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.INotificationServices;
-import com.langthang.specification.AccountSpec;
 import com.langthang.specification.PostSpec;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -126,23 +125,13 @@ public class NotificationServicesImpl implements INotificationServices {
 
 
     @Override
-    public void maskAsSeen(int notificationId, String accEmail) {
-        notifyRepo.findById(notificationId)
-                .ifPresentOrElse(notification -> {
-                    if (!notification.getAccount().getEmail().equals(accEmail))
-                        throw new NotFoundError(Notification.class);
-
-                    notification.setSeen(true);
-                    notifyRepo.save(notification);
-                }, () -> {
-                    throw new NotFoundError(Notification.class);
-                });
+    public void clearNotifications(Integer userId) {
+        notifyRepo.maskAllAsSeen(userId);
     }
 
     @Override
-    public void maskAllAsSeen(String accEmail) {
-        accRepo.findOne(AccountSpec.hasEmail(accEmail))
-                .ifPresent(account -> notifyRepo.maskAllAsSeen(account.getId()));
+    public void clearNotifications(Integer userId, Integer notificationId) {
+        notifyRepo.maskAsSeen(userId, notificationId);
     }
 
     @Cacheable(value = "notification-template")

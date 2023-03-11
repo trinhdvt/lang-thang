@@ -14,9 +14,19 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     Stream<Notification> findAllByAccount_IdAndSeenIs(Integer userId, boolean seen, Pageable pageable);
 
-    @Query("update Notification nt " +
-            "set nt.seen=true " +
-            "where nt.account.id = ?1")
+    @Query("""
+            update Notification nt
+            set nt.seen=true
+            where nt.account.id = ?1
+            """)
     @Modifying
     void maskAllAsSeen(int accountId);
+
+    @Query("""
+            update Notification nt
+            set nt.seen=true
+            where nt.account.id = ?1 and nt.id = ?2
+            """)
+    @Modifying
+    void maskAsSeen(int userId, int notificationId);
 }
