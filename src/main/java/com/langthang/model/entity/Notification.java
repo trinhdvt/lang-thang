@@ -1,9 +1,13 @@
 package com.langthang.model.entity;
 
-import com.langthang.event.listener.NotificationEntityListener;
+import com.langthang.event.listener.entity.NotificationEntityListener;
+import com.langthang.model.constraints.NotificationType;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.springframework.lang.Nullable;
 
 import java.time.Instant;
 
@@ -25,11 +29,11 @@ public class Notification {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "source_account_id")
     private Account sourceAccount;
 
@@ -37,27 +41,31 @@ public class Notification {
     private String content;
 
     @Column(name = "notify_date")
-    @CreatedDate
+    @CreationTimestamp
     private Instant notifyDate;
 
     @Column(name = "is_seen")
     private boolean seen;
 
-    public Notification(Account account, Post post, Account sourceAccount, String content) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    @Type(PostgreSQLEnumType.class)
+    private NotificationType type;
+
+    public Notification(Account account, Post post, Account sourceAccount, String content, @Nullable NotificationType type) {
         this.account = account;
         this.post = post;
         this.sourceAccount = sourceAccount;
         this.content = content;
         this.seen = false;
+        this.type = type;
     }
 
     @Override
     public String toString() {
         return "Notify{" +
                "id=" + id +
-               ", content='" + content + '\'' +
-               ", notifyDate=" + notifyDate +
-               ", isSeen=" + seen +
+               ", type=" + type +
                '}';
     }
 }

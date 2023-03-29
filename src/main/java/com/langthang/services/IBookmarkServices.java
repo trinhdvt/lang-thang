@@ -1,8 +1,11 @@
 package com.langthang.services;
 
+import com.langthang.model.dto.v2.response.PostStatsDto;
+import com.langthang.model.entity.Account;
+
 public interface IBookmarkServices {
 
-    int bookmarkPost(int postId, String accEmail);
+    PostStatsDto bookmarkPost(Integer postId, Account user);
 
-    int deleteBookmark(int postId, String accEmail);
+    PostStatsDto deleteBookmark(Integer postId, Account user);
 }

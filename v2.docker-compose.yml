@@ -21,6 +21,7 @@ services:
 
   redis:
     image: redis:alpine
+    restart: unless-stopped
     networks:
       langthang:
         aliases:

@@ -1,11 +1,11 @@
-package com.langthang.event.listener;
+package com.langthang.event.listener.socket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.langthang.event.model.OnNewCommentEvent;
+import com.langthang.event.model.OnNewNotificationEvent;
 import com.langthang.model.dto.response.CommentDTO;
 import com.langthang.model.dto.response.NotificationDTO;
-import com.langthang.event.OnNewCommentEvent;
-import com.langthang.event.OnNewNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

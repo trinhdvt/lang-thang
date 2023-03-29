@@ -1,6 +1,9 @@
 package com.langthang.utils;
 
+import com.langthang.exception.UnauthorizedError;
+import com.langthang.model.entity.Account;
 import com.langthang.security.services.CurrentUser;
+import lombok.NonNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,4 +37,13 @@ public class SecurityUtils {
         else return Optional.empty();
     }
 
+    /**
+     * @return Authenticated {@link Account} if user is logged in, otherwise throw {@link UnauthorizedError}
+     */
+    @NonNull
+    public static Account authenticatedUser() {
+        return currentUser()
+                .map(CurrentUser::getSource)
+                .orElseThrow(() -> new UnauthorizedError("You are not authorized to perform this action"));
+    }
 }

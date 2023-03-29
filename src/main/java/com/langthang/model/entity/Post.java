@@ -1,6 +1,6 @@
 package com.langthang.model.entity;
 
-import com.langthang.event.listener.PostEntityListener;
+import com.langthang.event.listener.entity.PostEntityListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,7 +56,7 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private Set<PostReport> postReports;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "post_category",
             joinColumns = @JoinColumn(name = "post_id"),

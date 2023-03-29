@@ -1,11 +1,11 @@
 package com.langthang.model.entity;
 
-import com.langthang.event.listener.BookmarkEntityListener;
+import com.langthang.event.listener.entity.BookmarkEntityListener;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
@@ -27,12 +27,12 @@ public class BookmarkedPost {
     private Post post;
 
     @Column(name = "bookmarked_date")
-    private Date bookmarkedDate;
+    private Instant bookmarkedDate;
 
     public BookmarkedPost(Account account, Post post) {
         this.id = new BookmarkedPostKey(account.getId(), post.getId());
         this.account = account;
         this.post = post;
-        this.bookmarkedDate = new Date();
+        this.bookmarkedDate = Instant.now();
     }
 }

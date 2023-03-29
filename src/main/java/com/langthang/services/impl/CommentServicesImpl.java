@@ -1,5 +1,8 @@
 package com.langthang.services.impl;
 
+import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
+import com.langthang.config.RQueueConfig;
+import com.langthang.event.model.NotificationRequest;
 import com.langthang.exception.NotFoundError;
 import com.langthang.model.constraints.NotificationType;
 import com.langthang.model.dto.response.CommentDTO;
@@ -10,7 +13,7 @@ import com.langthang.repository.AccountRepository;
 import com.langthang.repository.CommentRepository;
 import com.langthang.repository.PostRepository;
 import com.langthang.services.ICommentServices;
-import com.langthang.services.INotificationServices;
+import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,7 @@ public class CommentServicesImpl implements ICommentServices {
 
     private final PostRepository postRepo;
 
-    private final INotificationServices notificationServices;
+    private final RqueueMessageEnqueuer msgPublisher;
 
     @Override
     public CommentDTO addNewComment(int postId, Integer parentId, String content, String commenterEmail) {
@@ -116,19 +119,22 @@ public class CommentServicesImpl implements ICommentServices {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new NotFoundError(Comment.class));
 
-        Account currentAcc = accRepo.getByEmail(currentEmail);
+        Account currentAcc = SecurityUtils.authenticatedUser();
         boolean isLiked = currentAcc.getLikedComments().removeIf(cm -> cm.getId() == commentId);
 
         if (!isLiked) {
             currentAcc.getLikedComments().add(comment);
 
-            notificationServices.createNotification(currentAcc,
-                    comment.getAccount(),
-                    comment.getPost(),
-                    NotificationType.LIKE);
+            var notificationRequest = new NotificationRequest(
+                    currentAcc.getId(),
+                    comment.getPost().getAuthor().getId(),
+                    comment.getPost().getId(),
+                    NotificationType.LIKE_COMMENT
+            );
+            msgPublisher.enqueue(RQueueConfig.QK_NOTIFICATION_FACTORY_QUEUE, notificationRequest);
         }
 
-        accRepo.saveAndFlush(currentAcc);
+        accRepo.save(currentAcc);
         return commentRepo.countCommentLike(commentId);
     }
 }

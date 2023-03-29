@@ -1,4 +1,4 @@
-package com.langthang.event.listener;
+package com.langthang.event.listener.entity;
 
 
 import com.langthang.model.entity.Account;
@@ -18,7 +18,9 @@ public class AccountEntityListener {
             acc.setAvatarLink(DEFAULT_AVATAR_LINK);
         }
 
-
-        acc.setSlug(MyStringUtils.createSlug(acc.getName() + "-" + RandomStringUtils.randomAlphanumeric(3)));
+        if (acc.getSlug() == null) {
+            var slug = MyStringUtils.createSlug(acc.getName() + "-" + RandomStringUtils.randomAlphanumeric(3));
+            acc.setSlug(slug);
+        }
     }
 }

@@ -3,9 +3,12 @@ package com.langthang.services.v2;
 import com.langthang.exception.NotFoundError;
 import com.langthang.exception.UnprocessableEntity;
 import com.langthang.mapper.PostMapper;
+import com.langthang.mapper.PostStatsMapper;
 import com.langthang.model.constraints.PostPopularType;
 import com.langthang.model.dto.v2.request.PostCreateDto;
+import com.langthang.model.dto.v2.request.PostStatsRequest;
 import com.langthang.model.dto.v2.response.PostDtoV2;
+import com.langthang.model.dto.v2.response.PostStatsDto;
 import com.langthang.model.entity.Account;
 import com.langthang.model.entity.Post;
 import com.langthang.repository.PostRepository;
@@ -13,6 +16,7 @@ import com.langthang.specification.PostSpec;
 import com.langthang.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,23 +39,13 @@ import static com.langthang.specification.PostSpec.*;
 public class PostServiceV2 {
 
     private final PostRepository postRepo;
-
+    private final PostStatsMapper postStatsMapper;
     private final PostMapper postMapper;
 
-
-    public PostDtoV2 getBySlug(String slug) {
+    public PostDtoV2 getByIdentity(String postIdentity) {
         return getPost(
-                -1,
-                slug,
-                Post::isPublished,
-                postMapper::toDto
-        );
-    }
-
-    public PostDtoV2 getById(Integer postId) {
-        return getPost(
-                postId,
-                StringUtils.EMPTY,
+                NumberUtils.toInt(postIdentity, -1),
+                postIdentity,
                 Post::isPublished,
                 postMapper::toDto
         );
@@ -91,15 +85,31 @@ public class PostServiceV2 {
     }
 
     public String updatePost(Integer postId, PostCreateDto payload) {
+        return getPost(postId,
+                StringUtils.EMPTY,
+                authorCheck,
+                ((Function<Post, Post>) post -> postMapper.updateFromDto(post, payload))
+                        .andThen(postRepo::save)
+                        .andThen(Post::getSlug)
+        );
+    }
+
+    public void deletePostById(Integer postId) {
         var post = getPost(postId,
                 StringUtils.EMPTY,
                 authorCheck,
-                Function.identity());
-
-        post = postMapper.updateFromDto(post, payload);
-        post = postRepo.save(post);
-        return post.getSlug();
+                Function.identity()
+        );
+        postRepo.delete(post);
     }
+
+    public List<PostStatsDto> getPostStats(PostStatsRequest request) {
+        return postRepo.findAll(inIds(request.postIds()).and(isPublished()))
+                .stream()
+                .map(postStatsMapper::toPostStats)
+                .toList();
+    }
+
 
     /**
      * @param id     Post's id

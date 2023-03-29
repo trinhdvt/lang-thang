@@ -58,8 +58,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler({SQLException.class, DataAccessException.class})
-    public ResponseEntity<Object> handleQueryException(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler({SQLException.class, DataAccessException.class, NullPointerException.class})
+    public ResponseEntity<HttpError> handleMaliciousException(Exception ex, HttpServletRequest req) {
+        var error = new HttpError(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        error.setPath(req.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

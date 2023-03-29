@@ -8,7 +8,6 @@ spring:
       initialize-schema: always
 
   jpa:
-    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -26,6 +25,9 @@ spring:
       max-file-size: 2MB
       max-request-size: 3MB
 
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
 storage:
   bucket: lang-thang-assets
 
@@ -40,11 +42,6 @@ application:
       prefix: ${application.broker.prefix}/notify
     post:
       prefix: ${application.broker.prefix}/post
-  notify-template:
-    like-comment: "<b>{0}</b> đã thích bình luận của bạn trong bài viết <b>{1}</b>"
-    comment-post: "<b>{0}</b> đã bình luận về bài viết <b>{1}</b>"
-    bookmark-post: "<b>{0}</b> đã bookmark bài viết <b>{1}</b>"
-    following-new-post: "<b>{0}</b> đã đăng một bài viết mới <b>{1}</b>"
   server:
     url: ${HOST:https://langthang.trinhdvt.tech}
 
@@ -54,6 +51,7 @@ server:
   port: ${PORT:8080}
   servlet:
     context-path: /api
+  shutdown: graceful
 
 logging:
   level:
@@ -65,3 +63,8 @@ logging:
         SQL_SLOW: INFO
     com:
       langthang: DEBUG
+springdoc:
+  api-docs:
+    path: /api-docs
+  packages-to-scan: com.langthang.controller.v2
+

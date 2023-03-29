@@ -1,4 +1,4 @@
-package com.langthang.event;
+package com.langthang.event.model;
 
 import com.langthang.model.dto.response.CommentDTO;
 import lombok.Getter;

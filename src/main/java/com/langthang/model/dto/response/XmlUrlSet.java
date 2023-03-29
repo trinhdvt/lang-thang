@@ -1,11 +1,10 @@
-package com.langthang.controller.v1;
+package com.langthang.model.dto.response;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.*;
-
 
 import java.util.ArrayList;
 import java.util.Collection;

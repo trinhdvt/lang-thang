@@ -8,24 +8,22 @@ import org.mapstruct.*;
 import org.springframework.lang.Nullable;
 
 @Mapper(
-        componentModel = "spring",
-        uses = {UserMapper.class, CategoryMapper.class},
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = {UserMapper.class, CategoryMapper.class, PostStatsMapper.class},
         unmappedSourcePolicy = ReportingPolicy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface PostMapper {
 
     @Mapping(target = "isPublished", expression = "java(post.isPublished())")
-    @Mapping(target = "stats.bookmarkedCount",
-            expression = "java(post.getBookmarkedPosts().size())")
-    @Mapping(target = "stats.commentCount",
-            expression = "java(post.getComments().size())")
+    @Mapping(target = "stats", source = ".")
     PostDtoV2 toDto(Post post);
 
     @Mapping(target = "stats", ignore = true)
     @Mapping(target = "isPublished", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Named("toReadOnlyDto")
     PostDtoV2 toReadOnlyDto(Post post);
 
     @InheritInverseConfiguration

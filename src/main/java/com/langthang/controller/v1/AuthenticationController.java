@@ -1,23 +1,21 @@
 package com.langthang.controller.v1;
 
 import com.langthang.annotation.PasswordMatches;
-import com.langthang.annotation.ValidEmail;
-import com.langthang.model.dto.request.AccountRegisterDTO;
-import com.langthang.model.dto.response.JwtTokenDTO;
-import com.langthang.model.dto.request.PasswordDTO;
 import com.langthang.exception.UnauthorizedError;
+import com.langthang.model.dto.request.AccountRegisterDTO;
+import com.langthang.model.dto.request.PasswordDTO;
+import com.langthang.model.dto.response.JwtTokenDTO;
 import com.langthang.services.IAuthServices;
 import com.langthang.utils.AssertUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Validated
@@ -27,28 +25,6 @@ public class AuthenticationController {
     private final IAuthServices authServices;
     @Value("${security.jwt.token.expire-length}")
     private int TOKEN_EXPIRE_TIME;
-
-    @PostMapping("/auth/login")
-    public ResponseEntity<Object> login(
-            @RequestParam("email") @ValidEmail String email,
-            @RequestParam("password") @Size(min = 6, max = 32) String password,
-            HttpServletResponse resp) {
-
-        String jwtToken = authServices.login(email, password, resp);
-
-        return ResponseEntity.ok(new JwtTokenDTO(jwtToken, TOKEN_EXPIRE_TIME));
-    }
-
-    @PostMapping("/auth/google")
-    public ResponseEntity<Object> loginWithGoogle(
-            @RequestParam("google_token")
-            @NotBlank String googleToken
-            , HttpServletResponse resp) {
-
-        String accessToken = authServices.loginWithGoogle(googleToken, resp);
-
-        return ResponseEntity.ok(new JwtTokenDTO(accessToken, TOKEN_EXPIRE_TIME));
-    }
 
     @PostMapping("/auth/refreshToken")
     public ResponseEntity<Object> refreshToken(
@@ -84,7 +60,9 @@ public class AuthenticationController {
 
     @PostMapping("/auth/resetPassword")
     public ResponseEntity<Object> resetPassword(
-            @RequestParam("email") @ValidEmail String email) {
+            @RequestParam("email")
+            @Email(message = "Email is not valid", regexp = "^[A-Za-z0-9+_.-]+@(.+)$")
+            String email) {
 
         authServices.createPasswordResetToken(email);
 

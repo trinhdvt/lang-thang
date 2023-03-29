@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.5</version>
         <relativePath/>
     </parent>
 
     <groupId>com.langthang</groupId>
     <artifactId>lang-thang</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
     <name>lang-thang</name>
 
@@ -20,17 +20,17 @@
 
     <properties>
         <java.version>17</java.version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.26</lombok.version>
         <spring.context.version>5.3.6</spring.context.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jwt.version>0.9.1</jwt.version>
-        <google.api.version>2.0.1</google.api.version>
+        <google.api.version>2.2.0</google.api.version>
         <apache.common-text.version>1.10.0</apache.common-text.version>
         <hibernate.search.version>5.11.11.Final</hibernate.search.version>
         <bucket4j.version>7.6.0</bucket4j.version>
         <nanoid.version>2.0.0</nanoid.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
-        <jpamodelgen.version>6.1.6.Final</jpamodelgen.version>
+        <jpamodelgen.version>6.2.0.CR3</jpamodelgen.version>
         <cloudinary.version>1.33.0</cloudinary.version>
     </properties>
 
@@ -87,6 +87,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
@@ -102,7 +108,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -157,19 +163,20 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.2</version>
             <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.14.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>hibernate-types-60</artifactId>
-            <version>2.21.0</version>
+            <version>2.21.1</version>
         </dependency>
 
         <dependency>
@@ -188,9 +195,20 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.15.3</version>
+            <version>1.15.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.sonus21</groupId>
+            <artifactId>rqueue-spring-boot-starter</artifactId>
+            <version>3.0.1-RELEASE</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -202,6 +220,10 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

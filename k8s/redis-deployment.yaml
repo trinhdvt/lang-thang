@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: redis
+  strategy: { }
+  template:
+    metadata:
+      labels:
+        service: redis
+    spec:
+      containers:
+        - image: redis:alpine
+          name: redis
+          resources: { }
+          envFrom:
+            - secretRef:
+                name: langthang-prod-env
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: redis
+  name: redis
+spec:
+  selector:
+    service: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
